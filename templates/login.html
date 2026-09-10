@@ -1,21 +1,50 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><meta name="theme-color" content="#061327"><meta name="description" content="Entre no campus digital da ETESC/FAETEC Santa Cruz."><title>FaeHub+ · Entre no seu universo</title><link rel="icon" href="{{ url_for('static',filename='logo.svg') }}" type="image/svg+xml"><link rel="stylesheet" href="{{ url_for('static',filename='arrival.css') }}"></head>
-<body class="{{ 'gate-open' if error else '' }}">
-<div class="arrival-scene" aria-hidden="true"><div class="arrival-sky"></div><div class="arrival-stars"></div><img class="arrival-campus" src="{{ url_for('static',filename='campus-arrival-cinematic-v2.webp') }}" alt="" width="1821" height="864" fetchpriority="high" decoding="async"><div class="arrival-clouds arrival-clouds--far"></div><div class="arrival-clouds arrival-clouds--near"></div><div class="arrival-light-shaft"></div><div class="arrival-haze"></div><div class="arrival-beacon"></div><div class="arrival-rain"></div><div class="arrival-mist"></div><div class="arrival-floor"></div><div class="arrival-frame frame-left"></div><div class="arrival-frame frame-right"></div><div class="arrival-grain"></div></div>
-<header class="arrival-header"><a class="arrival-brand" href="{{ url_for('login') }}"><img src="{{ url_for('static',filename='logo.svg') }}" alt=""><span>FaeHub<em>+</em><small>CAMPUS LOBBY</small></span></a><span class="arrival-location">ETESC / SANTA CRUZ <i></i> RIO DE JANEIRO</span><div class="arrival-options"><button id="soundToggle" type="button" aria-pressed="false">Som: desligado</button><button id="lightToggle" type="button" aria-pressed="false">Modo leve</button></div></header>
-<main class="arrival-main">
-<section class="arrival-intro" id="arrivalIntro"><span class="arrival-eyebrow"><i></i> SUA PRÓXIMA HISTÓRIA COMEÇA AQUI</span><h1>O mundo lá fora.<br><em>Seu universo aqui.</em></h1><p>Uma escola. Mil possibilidades.<br>Bem-vindo ao seu Campus Lobby.</p><button class="arrival-primary" type="button" id="enterCampus">Entrar no campus <span>↗</span></button><button class="arrival-skip" type="button" id="skipArrival">Ir direto ao acesso →</button><div class="arrival-coordinate"><span>01 / CHEGADA</span><div></div><span>02 / IDENTIDADE</span><div></div><span>03 / SEU CAMPUS</span></div></section>
-<section class="arrival-terminal" id="arrivalTerminal" aria-label="Identificação no campus" {% if not error %}hidden{% endif %}>
-<div class="terminal-copy"><button class="arrival-back" type="button" id="backArrival">← Voltar à entrada</button><span class="arrival-eyebrow">02 / IDENTIDADE</span><h2>Seu lugar<br>é <em>aqui.</em></h2><p>A mesma escola.<br>Um universo de cada vez.</p><span class="terminal-rule">A conta determina suas permissões.<br>O perfil abaixo personaliza a apresentação.</span></div>
-<div class="credential-wrap"><article class="credential" id="credential"><div class="credential-glint"></div><header><span>FAEHUB / CAMPUS PASS</span><span class="credential-chip" aria-hidden="true">▦</span></header>
-<div class="credential-role"><span id="roleNumber">01</span><div><small>ACESSO AO CAMPUS</small><h2 id="credentialRole">Estudante</h2></div><span class="credential-seal" aria-hidden="true">F+</span></div>
-<div class="credential-tabs" role="group" aria-label="Aparência do cartão de acesso"><button type="button" data-role="aluno" aria-pressed="true">Aluno</button><button type="button" data-role="professor" aria-pressed="false">Professor</button><button type="button" data-role="diretor" aria-pressed="false">Diretor</button></div><p class="credential-profile-hint">Sua conta identifica automaticamente o perfil e as permissões.</p>
-<form id="arrivalForm" method="post" action="{{ url_for('entrar') }}" aria-describedby="arrivalError"><input type="hidden" name="token" value="{{ token }}"><label for="usuario">Usuário</label><input id="usuario" name="usuario" value="{{ username }}" autocomplete="username" required maxlength="120" placeholder="seu.usuario"><label for="senha">Senha</label><div class="password-wrap"><input id="senha" name="senha" type="password" autocomplete="current-password" required placeholder="Sua senha"><button type="button" id="revealPassword" aria-label="Mostrar senha">Mostrar</button></div><p class="arrival-error" id="arrivalError" role="alert">{{ error or '' }}{% for message in get_flashed_messages() %}{{ message }}{% endfor %}</p><button class="arrival-primary" type="submit" id="authenticate"><span>Identificar e entrar</span><b>↗</b></button></form>
-<section class="credential-confirmed" id="credentialConfirmed" hidden aria-live="polite"><span class="confirm-icon">✓</span><small>IDENTIDADE CONFIRMADA</small><h2 id="confirmedName"></h2><p id="confirmedRole"></p><a class="arrival-primary" href="{{ url_for('painel') }}">Entrar no meu espaço ↗</a></section>
-<footer class="credential-footer"><span>IDENTIDADE DIGITAL / 2026</span><span aria-hidden="true">▌▏▎▌▏▌▎▏▌</span></footer></article>
-<details class="arrival-demo"><summary>Contas disponíveis</summary><p>Selecione uma pessoa para preencher o acesso.</p><div>{% for user,name,password in [('thiago.zotti','Thiago','aluno@123'),('jonathan.samuel','Jonathan','aluno@123'),('marlon.eduardo','Marlon','aluno@123'),('pablo.sousa','Pablo','aluno@123'),('aline','Professora','professora@123'),('gilberto','Diretor','direcao@123')] %}<button type="button" data-demo-user="{{ user }}" data-demo-password="{{ password }}">{{ name }}</button>{% endfor %}</div></details>
-</div></section>
-</main>
-<footer class="arrival-footer"><span><i></i> <span id="campusClock">Santa Cruz · Rio de Janeiro</span></span><span>FaeHub+ · Santa Cruz</span></footer>
-<noscript><style>.arrival-intro{display:none}.arrival-terminal[hidden]{display:grid!important}</style></noscript>
-<script src="{{ url_for('static',filename='arrival.js') }}"></script></body></html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#061326">
+  <meta name="description" content="Entre no campus digital da ETESC/FAETEC Santa Cruz.">
+  <title>FaeHub+ · Seu campus começa aqui</title>
+  <link rel="icon" href="{{ url_for('static',filename='logo.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static',filename='arrival.css') }}">
+</head>
+<body>
+  <div class="arrival-scene" aria-hidden="true">
+    <img class="arrival-campus" src="{{ url_for('static',filename='campus-login-cinematic-v3.webp') }}" alt="" width="1920" height="1080" fetchpriority="high" decoding="async">
+    <div class="arrival-atmosphere"></div><div class="arrival-clouds"></div><div class="arrival-light"></div><div class="arrival-reflection"></div><div class="arrival-grain"></div>
+  </div>
+  <header class="arrival-header">
+    <a class="arrival-brand" href="{{ url_for('login') }}" aria-label="FaeHub+ — início"><img src="{{ url_for('static',filename='logo.svg') }}" alt=""><span>FaeHub<em>+</em><small>CAMPUS VIVO</small></span></a>
+    <span class="arrival-location"><i></i> ETESC / SANTA CRUZ <b>RIO DE JANEIRO</b></span>
+    <div class="arrival-options"><button id="soundToggle" type="button" aria-pressed="false"><span>◉</span> Som ambiente</button><button id="lightToggle" type="button" aria-pressed="false">Modo leve</button></div>
+  </header>
+  <main class="arrival-main">
+    <section class="arrival-story" aria-labelledby="arrivalTitle">
+      <span class="arrival-eyebrow"><i></i> EDUCAÇÃO TÉCNICA EM MOVIMENTO</span>
+      <h1 id="arrivalTitle">Seu campus<br><em>começa aqui.</em></h1>
+      <p>Conhecimento, projetos e pessoas conectados em uma experiência feita para acompanhar sua jornada.</p>
+      <div class="arrival-pulse" aria-label="Campus conectado"><span><i></i><b>Campus conectado</b><small>Ambiente seguro e disponível</small></span><strong id="campusClock">Santa Cruz · Rio de Janeiro</strong></div>
+      <div class="arrival-track" aria-hidden="true"><span>01</span><i></i><span>IDENTIDADE</span><i></i><span>02</span><i></i><span>SEU ESPAÇO</span></div>
+    </section>
+    <aside class="credential-wrap" aria-label="Acesso ao FaeHub+">
+      <article class="credential" id="credential"><div class="credential-glint" aria-hidden="true"></div>
+        <header class="credential-header"><div class="credential-logo"><span>F<em>+</em></span></div><div><small>PORTAL ACADÊMICO</small><h2>FaeHub<em>+</em></h2></div><span class="credential-status" title="Conexão segura">●</span></header>
+        <div class="credential-heading"><span>Bem-vindo de volta</span><h3>Entre no seu campus</h3><p>Selecione seu espaço e confirme sua identidade.</p></div>
+        <div class="credential-tabs" role="group" aria-label="Perfil de acesso"><button type="button" data-role="diretor" aria-pressed="false"><span aria-hidden="true">◆</span><b>Diretor</b></button><button type="button" data-role="professor" aria-pressed="false"><span aria-hidden="true">▰</span><b>Professor</b></button><button type="button" data-role="aluno" aria-pressed="true"><span aria-hidden="true">◉</span><b>Aluno</b></button></div>
+        <p class="credential-profile-hint"><i></i><span id="roleHint">Seu espaço de aprendizagem e evolução.</span></p>
+        <form id="arrivalForm" method="post" action="{{ url_for('entrar') }}" aria-describedby="arrivalError">
+          <input type="hidden" name="token" value="{{ token }}"><label for="usuario">Matrícula ou usuário</label><div class="field-shell"><span aria-hidden="true">◎</span><input id="usuario" name="usuario" value="{{ username }}" autocomplete="username" required maxlength="120" placeholder="Digite seu acesso"></div>
+          <label for="senha">Senha</label><div class="field-shell password-wrap"><span aria-hidden="true">◇</span><input id="senha" name="senha" type="password" autocomplete="current-password" required placeholder="Digite sua senha"><button type="button" id="revealPassword" aria-label="Mostrar senha">Mostrar</button></div>
+          <p class="arrival-error" id="arrivalError" role="alert">{{ error or '' }}{% for message in get_flashed_messages() %}{{ message }}{% endfor %}</p><button class="arrival-primary" type="submit" id="authenticate"><span>Validar acesso</span><b>→</b></button>
+        </form>
+        <section class="credential-confirmed" id="credentialConfirmed" hidden aria-live="polite"><span class="confirm-icon">✓</span><small>IDENTIDADE CONFIRMADA</small><h3 id="confirmedName"></h3><p><span id="confirmedRole"></span> · seu espaço está pronto.</p><a class="arrival-primary" id="enterCampus" href="{{ url_for('painel') }}"><span>Entrar no campus</span><b>→</b></a></section>
+        <details class="arrival-demo"><summary>Usar uma conta de demonstração <span>＋</span></summary><div>{% for user,name,password in [('thiago.zotti','Thiago','aluno@123'),('jonathan.samuel','Jonathan','aluno@123'),('marlon.eduardo','Marlon','aluno@123'),('pablo.sousa','Pablo','aluno@123'),('aline','Professora Aline','professora@123'),('gilberto','Diretor Gilberto','direcao@123')] %}<button type="button" data-demo-user="{{ user }}" data-demo-password="{{ password }}">{{ name }}</button>{% endfor %}</div></details>
+        <footer class="credential-footer"><span><i></i> AMBIENTE SEGURO</span><span>FAEHUB / 2026</span></footer>
+      </article>
+    </aside>
+  </main>
+  <footer class="arrival-footer"><span>ETESC · EDUCAÇÃO, TECNOLOGIA E FUTURO</span><span>Santa Cruz · RJ</span></footer>
+  <script src="{{ url_for('static',filename='arrival.js') }}"></script>
+</body></html>
