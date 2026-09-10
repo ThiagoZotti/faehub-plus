@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block content %}
+<div class="view">
+  <div class="section-head"><div><h2>Avisos</h2><p>Comunicados recentes da unidade</p></div></div>
+  <div class="card">{{ m.notice_list(avisos) }}</div>
+</div>
+{% endblock %}

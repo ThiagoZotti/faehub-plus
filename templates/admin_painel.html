@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block content %}
+<div class="view">
+  <section class="welcome-hero welcome-hero--admin"><div><span class="hero-kicker">Centro de gestão</span><h2>Visão geral da unidade</h2><p>Indicadores acadêmicos e operacionais atualizados para apoiar suas decisões.</p><div class="hero-meta"><span>ETESC/FAETEC</span><span>Ano letivo 2026</span><span>Dados sincronizados</span></div></div><div class="hero-score"><span>Frequência</span><strong>{{ d.stats.frequencia_media }}%</strong><small>média da escola</small></div></section>
+  <div class="quick-actions"><a href="{{ url_for('usuarios') }}"><span>◎</span><div><strong>Gerir usuários</strong><small>Alunos e equipe</small></div><b>→</b></a><a href="{{ url_for('turmas') }}"><span>◫</span><div><strong>Organizar turmas</strong><small>Ocupação e turnos</small></div><b>→</b></a><a href="{{ url_for('relatorios') }}"><span>↗</span><div><strong>Ver relatórios</strong><small>Indicadores da unidade</small></div><b>→</b></a></div>
+
+  <div class="pulse">
+    <div class="pulse__item"><span class="pulse__label">Alunos matriculados</span><span class="pulse__value">{{ d.stats.alunos }}</span>{{ m.sparkline([760, 780, 795, 804, d.stats.alunos]) }}</div>
+    <div class="pulse__item"><span class="pulse__label">Professores ativos</span><span class="pulse__value">{{ d.stats.professores }}</span>{{ m.sparkline([41, 43, 44, 45, d.stats.professores]) }}</div>
+    <div class="pulse__item"><span class="pulse__label">Turmas em funcionamento</span><span class="pulse__value">{{ d.stats.turmas }}</span>{{ m.sparkline([20, 21, 22, 23, d.stats.turmas]) }}</div>
+    <div class="pulse__item"><span class="pulse__label">Frequência média</span><span class="pulse__value">{{ d.stats.frequencia_media }}%</span>{{ m.sparkline([88, 89, 90, 90, d.stats.frequencia_media]) }}</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card__head"><div><h3>Ocupação das turmas</h3><p>Percentual de vagas preenchidas</p></div></div>
+      {% for t in d.turmas %}
+      <div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;font-size:.86rem;margin-bottom:6px">
+          <span>{{ t.nome }} <span style="color:var(--gray-400)">· {{ t.turno }}</span></span><span class="mono-cell">{{ t.ocupacao }}%</span>
+        </div>
+        {{ m.bar(t.ocupacao) }}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="card"><div class="card__head"><h3>Avisos da direção</h3></div>{{ m.notice_list(d.avisos) }}</div>
+  </div>
+</div>
+{% endblock %}

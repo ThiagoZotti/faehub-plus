@@ -1,0 +1,68 @@
+{% macro situacao_badge(situacao) -%}
+  {% set map = {"Aprovado": "success", "Recuperação": "warning", "Reprovado": "danger"} %}
+  <span class="badge badge--{{ map.get(situacao, 'info') }}">{{ situacao }}</span>
+{%- endmacro %}
+
+{% macro notice_list(items) -%}
+<div class="notice-list">
+  {% for a in items %}
+  <div class="notice-item">
+    <span class="notice-item__dot"></span>
+    <div>
+      <p class="notice-item__title">{{ a.titulo }}</p>
+      <p class="notice-item__desc">{{ a.desc }}</p>
+      <p class="notice-item__meta">{{ a.quando }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{%- endmacro %}
+
+{% macro initials(nome) -%}
+  {%- set partes = nome.split(' ') -%}
+  {{- (partes[0][0] ~ (partes[1][0] if partes|length > 1 else '')) | upper -}}
+{%- endmacro %}
+
+{% macro roster_table(roster) -%}
+<div class="table-wrap"><table>
+  <thead><tr><th>Aluno</th><th>Matrícula</th><th>Média</th><th>Frequência</th></tr></thead>
+  <tbody>
+    {% for s in roster %}
+    <tr>
+      <td><div class="cell-person"><div class="avatar">{{ initials(s.nome) }}</div>
+        <div><p class="cell-person__name">{{ s.nome }}</p><p class="cell-person__meta">{{ s.turma }}</p></div></div></td>
+      <td class="mono">{{ s.id }}</td>
+      <td class="mono">{{ "%.1f"|format(s.nota) }}</td>
+      <td class="mono">{{ s.freq }}%</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table></div>
+{%- endmacro %}
+
+{% macro bar(pct) -%}
+<div class="bar"><i style="width:{{ pct }}%"></i></div>
+{%- endmacro %}
+
+{% macro sparkline(values) -%}
+{% set maxv = values|max %}
+<div class="pulse__spark">
+  {% for v in values %}
+  <i class="{{ 'is-peak' if loop.last else '' }}" style="height:{{ [8, ((v / maxv) * 100)|round|int]|max }}%; animation-delay: {{ loop.index0 * 60 }}ms"></i>
+  {% endfor %}
+</div>
+{%- endmacro %}
+
+{% macro timetable(schedule) -%}
+<div class="timetable">
+  <div class="timetable__head"></div>
+  {% for dia in schedule.dias %}<div class="timetable__head">{{ dia }}</div>{% endfor %}
+  {% for row in range(schedule.horarios|length) %}
+    <div class="timetable__time">{{ schedule.horarios[row] }}</div>
+    {% for col in range(schedule.dias|length) %}
+      {% set val = schedule.grade[row][col] %}
+      <div class="timetable__slot {{ 'is-empty' if not val else '' }}">{{ val }}</div>
+    {% endfor %}
+  {% endfor %}
+</div>
+{%- endmacro %}

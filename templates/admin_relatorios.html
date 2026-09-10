@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block content %}
+<div class="view">
+  <div class="section-head"><div><h2>Relatórios</h2><p>Indicadores consolidados do período</p></div></div>
+  <div class="grid-3">
+    <div class="card"><p class="pulse__label">Aprovação geral</p><p class="pulse__value" style="margin-top:8px">87%</p></div>
+    <div class="card"><p class="pulse__label">Evasão no semestre</p><p class="pulse__value" style="margin-top:8px;color:var(--red-600)">3.4%</p></div>
+    <div class="card"><p class="pulse__label">Satisfação (pesquisa interna)</p><p class="pulse__value" style="margin-top:8px;color:var(--green-600)">4.6 <small>/5</small></p></div>
+  </div>
+  <div class="card">
+    <div class="card__head"><div><h3>Frequência média por turma</h3></div></div>
+    {% for t in d.turmas %}
+    <div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:.86rem;margin-bottom:6px">
+        <span>{{ t.nome }}</span><span class="mono-cell">{{ t.ocupacao - 5 }}%</span>
+      </div>
+      {{ m.bar(t.ocupacao - 5) }}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

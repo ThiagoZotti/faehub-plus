@@ -1,0 +1,14 @@
+.venv/
+.test_dependencies/
+runtime_packages/
+__pycache__/
+*.py[cod]
+*.log
+.env
+.env.*
+faehub.db
+*.sqlite
+*.sqlite3
+static/campus-arrival-cinematic-v2.png
+static/campus-lobby-v1.png
+static/campus-hero.png

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='avatar-evolution.css') }}">{% endblock %}
+{% block content %}
+<main class="dashboard dashboard-compact" id="dashboard" style="--skin:{{ avatar.skin }};--hair:{{ avatar.hair }};--shirt:{{ avatar.shirt }}">
+<header class="dashboard-heading"><div><span class="dash-kicker">SEU CAMPUS. SEU UNIVERSO.</span><h1>Olá, {{ d.nome.split(' ')[0] }}<span>.</span></h1></div><div class="lobby-utilities"><a class="lobby-inbox" href="{{ url_for('mensagens') }}" aria-label="{{ summary.unread_count }} mensagens não lidas">{{ icons['users']|safe }}<span>Mensagens</span>{% if summary.unread_count %}<b>{{ summary.unread_count }}</b>{% endif %}</a><details class="lobby-options"><summary aria-label="Opções de visualização">⚙ <span>Visualização</span></summary><div class="dash-controls"><button type="button" id="focusLobby" aria-pressed="false">{{ icons['home']|safe }}<span>Modo foco</span></button><button type="button" id="fullscreenLobby" aria-pressed="false">⛶ <span>Tela cheia</span></button><button type="button" id="refreshLobby">↻ <span>Atualizar dados</span></button><time data-updated="{{ summary.now }}">Atualizado agora</time></div></details></div></header>
+<div class="dashboard-layout">
+<aside class="dash-column dash-left" aria-label="Próxima aula"><section class="dash-card next-lesson"><header><span class="dash-kicker">PRÓXIMA AULA</span>{{ icons['clock']|safe }}</header>{% if summary.lessons %}{% set lesson=summary.lessons[0] %}<div class="lesson-clock"><strong>{{ lesson.time }}</strong><span>{{ lesson.day }}<small>{{ lesson.date }}</small></span></div><h2>{{ lesson.subject }}</h2><p class="lesson-countdown" data-lesson-at="{{ lesson.iso }}"></p>{% else %}<h2>Nenhuma aula prevista</h2>{% endif %}<div class="dash-card-footer"><a href="{{ url_for('horario') }}">Ver grade →</a><button type="button" id="openAgenda">Agenda ↗</button></div></section></aside>
+    <section class="dash-character" aria-label="Sua identidade no campus">
+      <div class="character-nameplate"><span class="character-class">{{ d.turma }}</span><div><small>IDENTIDADE DO CAMPUS</small><strong>{{ d.nome }}</strong></div></div>
+      <div class="character-orbit" aria-hidden="true"></div>
+      <a class="character-figure character-link" href="{{ url_for('avatar') }}" aria-label="Personalizar meu avatar" title="Personalizar meu avatar">{% include 'avatar_model.html' %}<div class="character-platform" aria-hidden="true"></div></a>
+      <p class="focus-caption" hidden>Seu espaço para respirar. Use “Modo foco” novamente para voltar.</p>
+    </section>
+
+<aside class="dash-column dash-right" aria-label="Atividades pendentes"><section class="dash-card mission-summary"><header><span class="dash-kicker">SUAS ATIVIDADES</span>{{ icons['layers']|safe }}</header><div class="dash-number-line"><strong>{{ summary.pending_count }}</strong><div><h2>{{ 'atividade pendente' if summary.pending_count == 1 else 'atividades pendentes' }}</h2><p>{{ 'Tudo entregue. Respira!' if summary.total and not summary.pending_count else ('Nenhuma atividade publicada.' if not summary.total else 'Um passo de cada vez.') }}</p></div></div><a class="dash-text-link" href="{{ url_for('exercicios') }}">Abrir exercícios <span>↗</span></a></section></aside>
+</div>
+  <dialog class="agenda-dialog" id="agendaDialog" aria-labelledby="agendaTitle"><header><div><span class="dash-kicker">TURMA {{ d.turma }}</span><h2 id="agendaTitle">Seu próximo roteiro</h2></div><button type="button" id="closeAgenda" aria-label="Fechar próximas aulas">×</button></header>{% for lesson in summary.lessons %}<div class="agenda-row"><strong>{{ lesson.time }}</strong><div><h3>{{ lesson.subject }}</h3><p>{{ lesson.day }} · {{ lesson.date }}</p></div></div>{% else %}<p>Nenhuma aula prevista na grade atual.</p>{% endfor %}<a class="dash-primary" href="{{ url_for('horario') }}">Abrir horário completo →</a></dialog>
+
+<p id="dashboardStatus" class="dashboard-status" role="status" aria-live="polite"></p>
+</main><script src="{{ url_for('static',filename='dashboard.js') }}"></script>
+{% endblock %}

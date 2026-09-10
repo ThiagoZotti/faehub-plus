@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071327">
+  <meta name="color-scheme" content="dark">
+  <title>{{ status }} · {{ title }} · FaeHub+</title>
+  <link rel="icon" href="{{ url_for('static', filename='logo.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='campus-system.css') }}">
+</head>
+<body class="error-page">
+  <main>
+    <a class="error-brand" href="{{ url_for('painel') if session.get('role') else url_for('login') }}">
+      <img src="{{ url_for('static', filename='logo.svg') }}" alt="">
+      <span>FaeHub<em>+</em></span>
+    </a>
+    <p class="error-code">{{ status }}</p>
+    <h1>{{ title }}</h1>
+    <p>{{ message }}</p>
+    <div class="error-actions">
+      <a href="{{ url_for('painel') if session.get('role') else url_for('login') }}">{{ 'Voltar ao painel' if session.get('role') else 'Voltar à entrada' }} →</a>
+    </div>
+  </main>
+</body>
+</html>

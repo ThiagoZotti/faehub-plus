@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#071327" />
+<meta name="color-scheme" content="dark" />
+<meta name="description" content="FaeHub+, o campus digital da ETESC/FAETEC Santa Cruz." />
+<title>{{ view_title }} · FaeHub+</title>
+<link rel="icon" href="{{ url_for('static', filename='logo.svg') }}" type="image/svg+xml" />
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+{% if role in ['aluno', 'professor', 'admin'] %}<link rel="stylesheet" href="{{ url_for('static', filename='campus-shell.css') }}">{% endif %}
+{% block head %}{% endblock %}
+{% if role in ['aluno', 'professor', 'admin'] %}
+<link rel="stylesheet" href="{{ url_for('static', filename='performance.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='campus-system.css') }}">
+{% endif %}
+</head>
+<body class="role-{{ role }}{{ ' campus-shell dark-mode' if role in ['aluno', 'professor', 'admin'] else '' }}">
+<a class="skip-link" href="#main-content">Pular para o conteúdo</a>
+<div class="app" data-view="{{ current_view }}">
+  <div class="app-aurora app-aurora--one"></div><div class="app-aurora app-aurora--two"></div>
+
+  {% if role not in ['aluno', 'professor', 'admin'] %}
+  <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Abrir menu" aria-expanded="false" aria-controls="sidebar">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar__top">
+      <span class="brand-mark brand-mark--sm" aria-hidden="true">
+        <img src="{{ url_for('static', filename='logo.svg') }}" alt="FaeHub+" />
+      </span>
+      <span class="brand-name brand-name--sm">FaeHub<span>+</span></span>
+      <span class="brand-edition">CAMPUS OS</span>
+    </div>
+
+    <nav class="sidebar__nav" aria-label="Navegação principal">
+      <span class="nav-caption">ESPAÇO {{ role_label|upper }}</span>
+      {% for view_id, label, icon in nav_items %}
+      <a href="{{ url_for(view_id) }}" class="nav-item" {{ 'aria-current="page"' | safe if current_view == view_id }}>
+        {{ icons[icon] | safe }}<span>{{ label }}</span>
+      </a>
+      {% endfor %}
+    </nav>
+
+    <div class="sidebar__profile">
+      <div class="avatar" aria-hidden="true">{{ profile_iniciais }}</div>
+      <div class="sidebar__profile-info">
+        <p class="sidebar__profile-name">{{ profile_nome }}</p>
+        <p class="sidebar__profile-role">{{ role_label }}</p>
+      </div>
+      <a href="{{ url_for('sair') }}" class="icon-btn" aria-label="Sair">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </aside>
+
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  {% else %}
+  <header class="campus-header">
+    <a class="campus-brand" href="{{ url_for('painel') }}" aria-label="{{ 'Campus Direção' if role == 'admin' else ('Campus Docente' if role == 'professor' else 'Campus Lobby') }}"><img src="{{ url_for('static', filename='logo.svg') }}" alt=""><span>FaeHub<em>+</em><small>{{ 'CAMPUS DIREÇÃO' if role == 'admin' else ('CAMPUS DOCENTE' if role == 'professor' else 'CAMPUS LOBBY') }}</small></span></a>
+    <nav class="campus-tabs" aria-label="Módulos do campus">
+      {% for view_id, label, icon in nav_items %}<a href="{{ url_for(view_id) }}" {% if current_view == view_id %}aria-current="page"{% endif %}>{{ icons[icon]|safe }}<span>{{ label }}</span></a>{% endfor %}
+    </nav>
+    {% if role == 'aluno' %}<a class="campus-profile" href="{{ url_for('avatar') }}" aria-label="Personalizar o avatar de {{ profile_nome }}" title="Personalizar meu avatar">{{ profile_iniciais }}</a>{% else %}<span class="campus-profile" aria-label="{{ profile_nome }} · {{ role_label }}" role="img">{{ profile_iniciais }}</span>{% endif %}
+    <a class="campus-exit" href="{{ url_for('sair') }}" aria-label="Sair da conta de {{ profile_nome }}">Sair</a>
+  </header>
+  <nav class="campus-pager" aria-label="Percorrer módulos">
+    {% for view_id, label, icon in nav_items %}{% if current_view == view_id %}
+    {% set previous = nav_items[(loop.index0 - 1) % (nav_items|length)] %}{% set next = nav_items[(loop.index0 + 1) % (nav_items|length)] %}
+    <a href="{{ url_for(previous[0]) }}" data-direction="previous" aria-label="Módulo anterior: {{ previous[1] }}">← <span>{{ previous[1] }}</span></a>
+    <span class="campus-position">{{ '%02d'|format(loop.index) }} / {{ '%02d'|format(nav_items|length) }} <b>{{ label }}</b></span>
+    <a href="{{ url_for(next[0]) }}" data-direction="next" aria-label="Próximo módulo: {{ next[1] }}"><span>{{ next[1] }}</span> →</a>
+    {% endif %}{% endfor %}
+  </nav>
+  <div class="campus-transition-hud" aria-hidden="true"><span>PRÓXIMO DESTINO</span><strong>{{ view_title }}</strong><i></i></div>
+  {% endif %}
+
+  <div class="app__main" id="main-content" tabindex="-1">
+    <header class="topbar" {% if role in ['aluno', 'professor', 'admin'] %}hidden{% endif %}>
+      <div>
+        <p class="topbar__eyebrow"><span class="live-dot"></span> ETESC/FAETEC · {{ role_label }}</p>
+        <h1 class="topbar__title">{{ view_title }}</h1>
+      </div>
+      <div class="topbar__actions">
+        <button class="command-trigger" type="button"><span>⌘</span><b>Busca rápida</b><kbd>Ctrl K</kbd></button>
+        <div class="today-chip"><span id="todayLabel">Ambiente acadêmico</span></div>
+        <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Alternar tema" title="Alternar tema">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M20 15.5A8 8 0 0 1 8.5 4 8 8 0 1 0 20 15.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </button>
+        {% block topbar_actions %}{% endblock %}
+      </div>
+    </header>
+
+    <div class="app__content"><div class="cursor-aura" id="cursorAura"></div>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="flash-stack" id="flashToast" role="status" aria-live="polite" aria-atomic="true">
+            {% for message in messages %}<p class="flash-toast">{{ message }}</p>{% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+{% if role in ['aluno', 'professor', 'admin'] %}<script src="{{ url_for('static', filename='campus-shell.js') }}"></script>{% endif %}
+</body>
+</html>

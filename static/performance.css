@@ -1,0 +1,9 @@
+/* Keep the visual palette; avoid repeated backdrop sampling during scrolling. */
+.campus-shell .cursor-aura,.campus-shell .app-aurora{display:none!important}
+.campus-shell .campus-header{backdrop-filter:none;background:#071326f5}
+.campus-shell .campus-pager{backdrop-filter:none;background:#09182bf7}
+.campus-shell .academic-glass,.campus-shell .card,.campus-shell .stream-card,
+.campus-shell .attendance-card,.campus-shell .attendance-kpi,
+.campus-shell .schedule-console{backdrop-filter:none!important}
+/* A página não anima duas árvores completas; a transição do Campus cuida do quadro visível. */
+.campus-shell .academic{animation:none}
