@@ -1,6 +1,8 @@
 (() => {
   const root = document.getElementById('dashboard');
   if (!root) return;
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  let motionFrame;
   const status = document.getElementById('dashboardStatus');
   const focus = document.getElementById('focusLobby');
   focus.addEventListener('click', () => {
@@ -41,5 +43,15 @@
   }
   updateClock();
   const clock = setInterval(updateClock, 30000);
-  addEventListener('pagehide', () => clearInterval(clock), {once:true});
+  root.addEventListener('pointermove', event => {
+    if (reducedMotion.matches || event.pointerType !== 'mouse') return;
+    cancelAnimationFrame(motionFrame);
+    motionFrame = requestAnimationFrame(() => {
+      const x = event.clientX / innerWidth - .5;
+      const y = event.clientY / innerHeight - .5;
+      root.style.setProperty('--scene-x', `${x * -10}px`);
+      root.style.setProperty('--scene-y', `${y * -6}px`);
+    });
+  }, {passive:true});
+  addEventListener('pagehide', () => { clearInterval(clock); cancelAnimationFrame(motionFrame); }, {once:true});
 })();

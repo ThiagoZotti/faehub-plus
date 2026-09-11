@@ -66,7 +66,7 @@
     {% if role == 'aluno' %}<a class="campus-profile" href="{{ url_for('avatar') }}" aria-label="Personalizar o avatar de {{ profile_nome }}" title="Personalizar meu avatar">{{ profile_iniciais }}</a>{% else %}<span class="campus-profile" aria-label="{{ profile_nome }} · {{ role_label }}" role="img">{{ profile_iniciais }}</span>{% endif %}
     <a class="campus-exit" href="{{ url_for('sair') }}" aria-label="Sair da conta de {{ profile_nome }}">Sair</a>
   </header>
-  <nav class="campus-pager" aria-label="Percorrer módulos">
+  <nav class="campus-pager" aria-label="Percorrer módulos"{% if role == 'aluno' and current_view == 'painel' %} style="width:min(520px,calc(100% - 24px))"{% endif %}>
     {% for view_id, label, icon in nav_items %}{% if current_view == view_id %}
     {% set previous = nav_items[(loop.index0 - 1) % (nav_items|length)] %}{% set next = nav_items[(loop.index0 + 1) % (nav_items|length)] %}
     <a href="{{ url_for(previous[0]) }}" data-direction="previous" aria-label="Módulo anterior: {{ previous[1] }}">← <span>{{ previous[1] }}</span></a>

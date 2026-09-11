@@ -1,22 +1,65 @@
 {% extends "base.html" %}
-{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
-<link rel="stylesheet" href="{{ url_for('static',filename='avatar-evolution.css') }}">{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='dashboard.css',v=4) }}"><link rel="stylesheet" href="{{ url_for('static',filename='avatar-evolution.css') }}">{% endblock %}
 {% block content %}
-<main class="dashboard dashboard-compact" id="dashboard" style="--skin:{{ avatar.skin }};--hair:{{ avatar.hair }};--shirt:{{ avatar.shirt }}">
-<header class="dashboard-heading"><div><span class="dash-kicker">SEU CAMPUS. SEU UNIVERSO.</span><h1>Olá, {{ d.nome.split(' ')[0] }}<span>.</span></h1></div><div class="lobby-utilities"><a class="lobby-inbox" href="{{ url_for('mensagens') }}" aria-label="{{ summary.unread_count }} mensagens não lidas">{{ icons['users']|safe }}<span>Mensagens</span>{% if summary.unread_count %}<b>{{ summary.unread_count }}</b>{% endif %}</a><details class="lobby-options"><summary aria-label="Opções de visualização">⚙ <span>Visualização</span></summary><div class="dash-controls"><button type="button" id="focusLobby" aria-pressed="false">{{ icons['home']|safe }}<span>Modo foco</span></button><button type="button" id="fullscreenLobby" aria-pressed="false">⛶ <span>Tela cheia</span></button><button type="button" id="refreshLobby">↻ <span>Atualizar dados</span></button><time data-updated="{{ summary.now }}">Atualizado agora</time></div></details></div></header>
-<div class="dashboard-layout">
-<aside class="dash-column dash-left" aria-label="Próxima aula"><section class="dash-card next-lesson"><header><span class="dash-kicker">PRÓXIMA AULA</span>{{ icons['clock']|safe }}</header>{% if summary.lessons %}{% set lesson=summary.lessons[0] %}<div class="lesson-clock"><strong>{{ lesson.time }}</strong><span>{{ lesson.day }}<small>{{ lesson.date }}</small></span></div><h2>{{ lesson.subject }}</h2><p class="lesson-countdown" data-lesson-at="{{ lesson.iso }}"></p>{% else %}<h2>Nenhuma aula prevista</h2>{% endif %}<div class="dash-card-footer"><a href="{{ url_for('horario') }}">Ver grade →</a><button type="button" id="openAgenda">Agenda ↗</button></div></section></aside>
-    <section class="dash-character" aria-label="Sua identidade no campus">
-      <div class="character-nameplate"><span class="character-class">{{ d.turma }}</span><div><small>IDENTIDADE DO CAMPUS</small><strong>{{ d.nome }}</strong></div></div>
-      <div class="character-orbit" aria-hidden="true"></div>
-      <a class="character-figure character-link" href="{{ url_for('avatar') }}" aria-label="Personalizar meu avatar" title="Personalizar meu avatar">{% include 'avatar_model.html' %}<div class="character-platform" aria-hidden="true"></div></a>
-      <p class="focus-caption" hidden>Seu espaço para respirar. Use “Modo foco” novamente para voltar.</p>
+<main class="dashboard campus-plaza" id="dashboard" style="--skin:{{ avatar.skin }};--hair:{{ avatar.hair }};--shirt:{{ avatar.shirt }}">
+  <div class="plaza-scene" aria-hidden="true"><div class="plaza-backdrop"></div><div class="plaza-light"></div><div class="plaza-particles"></div><div class="plaza-vignette"></div></div>
+
+  <header class="plaza-heading">
+    <div><span class="dash-kicker"><i></i> CAMPUS CONECTADO</span><h1>Olá, {{ d.nome.split(' ')[0] }}<span>.</span></h1><p>Seu dia acadêmico em um só olhar.</p></div>
+    <div class="lobby-utilities">
+      <a class="lobby-inbox" href="{{ url_for('mensagens') }}" aria-label="{{ summary.unread_count }} mensagens não lidas">{{ icons['users']|safe }}<span>Mensagens</span>{% if summary.unread_count %}<b>{{ summary.unread_count }}</b>{% endif %}</a>
+      <details class="lobby-options"><summary aria-label="Opções de visualização">⚙ <span>Visualização</span></summary><div class="dash-controls"><button type="button" id="focusLobby" aria-pressed="false">{{ icons['home']|safe }}<span>Modo foco</span></button><button type="button" id="fullscreenLobby" aria-pressed="false">⛶ <span>Tela cheia</span></button><button type="button" id="refreshLobby">↻ <span>Atualizar dados</span></button><time data-updated="{{ summary.now }}">Atualizado agora</time></div></details>
+    </div>
+  </header>
+
+  <div class="plaza-grid">
+    <aside class="plaza-column plaza-left" aria-label="Agenda e atividades">
+      <section class="plaza-card lesson-card">
+        <header><span class="card-icon cyan">{{ icons['clock']|safe }}</span><h2>Próxima aula</h2><button type="button" id="openAgenda" aria-label="Abrir próximas aulas">›</button></header>
+        {% if summary.lessons %}{% set lesson=summary.lessons[0] %}
+        <div class="lesson-subject"><span>√</span><div><strong>{{ lesson.subject }}</strong><small>{{ lesson.day }} · {{ lesson.time }}</small></div></div>
+        <p class="lesson-countdown" data-lesson-at="{{ lesson.iso }}"></p>
+        {% else %}<div class="empty-state"><strong>Nenhuma aula prevista</strong><small>Seu próximo horário aparecerá aqui.</small></div>{% endif %}
+        <a class="card-action" href="{{ url_for('horario') }}">Ver horário completo <span>→</span></a>
+      </section>
+
+      <section class="plaza-card tasks-card">
+        <header><span class="card-icon violet">{{ icons['layers']|safe }}</span><h2>Atividades</h2><span class="card-count">{{ summary.pending_count }}</span></header>
+        <div class="task-list">
+          {% for task in summary.pending[:3] %}<a href="{{ url_for('exercicios') }}"><i class="{{ 'overdue' if task.overdue }}"></i><span><strong>{{ task.title }}</strong><small>{{ task.urgency }}</small></span><b>›</b></a>{% else %}<div class="empty-state success"><strong>Tudo entregue</strong><small>Você está em dia com as atividades.</small></div>{% endfor %}
+        </div>
+        <a class="card-action" href="{{ url_for('exercicios') }}">Ver todas as atividades <span>→</span></a>
+      </section>
+    </aside>
+
+    <section class="plaza-character" aria-label="Sua identidade no campus">
+      <div class="character-nameplate"><span class="character-level">{{ d.turma }}</span><div><small>IDENTIDADE DO CAMPUS</small><strong>{{ d.nome }}</strong></div></div>
+      <div class="character-halo" aria-hidden="true"><i></i><i></i><span></span></div>
+      <a class="character-figure" href="{{ url_for('avatar') }}" aria-label="Personalizar o avatar de {{ d.nome }}" title="Personalizar meu avatar">{% include 'avatar_model.html' %}</a>
+      <div class="character-platform" aria-hidden="true"><i></i></div>
+      <span class="character-status"><i></i> ONLINE NO CAMPUS</span>
+      <p class="focus-caption" hidden>Clique novamente em “Modo foco” para retornar aos seus cards.</p>
     </section>
 
-<aside class="dash-column dash-right" aria-label="Atividades pendentes"><section class="dash-card mission-summary"><header><span class="dash-kicker">SUAS ATIVIDADES</span>{{ icons['layers']|safe }}</header><div class="dash-number-line"><strong>{{ summary.pending_count }}</strong><div><h2>{{ 'atividade pendente' if summary.pending_count == 1 else 'atividades pendentes' }}</h2><p>{{ 'Tudo entregue. Respira!' if summary.total and not summary.pending_count else ('Nenhuma atividade publicada.' if not summary.total else 'Um passo de cada vez.') }}</p></div></div><a class="dash-text-link" href="{{ url_for('exercicios') }}">Abrir exercícios <span>↗</span></a></section></aside>
-</div>
-  <dialog class="agenda-dialog" id="agendaDialog" aria-labelledby="agendaTitle"><header><div><span class="dash-kicker">TURMA {{ d.turma }}</span><h2 id="agendaTitle">Seu próximo roteiro</h2></div><button type="button" id="closeAgenda" aria-label="Fechar próximas aulas">×</button></header>{% for lesson in summary.lessons %}<div class="agenda-row"><strong>{{ lesson.time }}</strong><div><h3>{{ lesson.subject }}</h3><p>{{ lesson.day }} · {{ lesson.date }}</p></div></div>{% else %}<p>Nenhuma aula prevista na grade atual.</p>{% endfor %}<a class="dash-primary" href="{{ url_for('horario') }}">Abrir horário completo →</a></dialog>
+    <aside class="plaza-column plaza-right" aria-label="Desempenho e frequência">
+      <section class="plaza-card score-card">
+        <header><span class="card-icon cyan">▥</span><h2>Média geral</h2><a href="{{ url_for('boletim') }}" aria-label="Abrir boletim">›</a></header>
+        <div class="metric-ring" style="--value:{{ media_geral * 10 }}%"><strong>{{ '%.1f'|format(media_geral) }}</strong><small>DE 10</small></div>
+        <div class="metric-copy"><span>{{ 'Excelente ritmo' if media_geral >= 8 else ('Em evolução' if media_geral >= 6 else 'Precisa de atenção') }}</span><small>{{ recuperacoes }} {{ 'disciplina em recuperação' if recuperacoes == 1 else 'disciplinas em recuperação' }}</small></div>
+        <a class="card-action" href="{{ url_for('boletim') }}">Ver detalhes <span>→</span></a>
+      </section>
 
-<p id="dashboardStatus" class="dashboard-status" role="status" aria-live="polite"></p>
-</main><script src="{{ url_for('static',filename='dashboard.js') }}"></script>
+      <section class="plaza-card attendance-card">
+        <header><span class="card-icon mint">{{ icons['users']|safe }}</span><h2>Frequência</h2><a href="{{ url_for('frequencia') }}" aria-label="Abrir frequência">›</a></header>
+        <div class="attendance-body"><div class="metric-ring small" style="--value:{{ d.frequencia }}%"><strong>{{ d.frequencia }}%</strong></div><p><strong>{{ 'Presença excelente' if d.frequencia >= 90 else ('Acompanhe suas faltas' if d.frequencia >= 75 else 'Atenção necessária') }}</strong><small>{{ d.faltas }} faltas em {{ d.aulas_dadas }} aulas</small></p></div>
+        <a class="card-action" href="{{ url_for('frequencia') }}">Ver histórico <span>→</span></a>
+      </section>
+    </aside>
+  </div>
+
+  <div class="plaza-quote" aria-hidden="true"><i></i><span>Conhecimento transforma caminhos.</span></div>
+  <dialog class="agenda-dialog" id="agendaDialog" aria-labelledby="agendaTitle"><header><div><span class="dash-kicker">TURMA {{ d.turma }}</span><h2 id="agendaTitle">Seu próximo roteiro</h2></div><button type="button" id="closeAgenda" aria-label="Fechar próximas aulas">×</button></header>{% for lesson in summary.lessons %}<div class="agenda-row"><strong>{{ lesson.time }}</strong><div><h3>{{ lesson.subject }}</h3><p>{{ lesson.day }} · {{ lesson.date }}</p></div></div>{% else %}<p>Nenhuma aula prevista na grade atual.</p>{% endfor %}<a class="card-action dialog-action" href="{{ url_for('horario') }}">Abrir horário completo →</a></dialog>
+  <p id="dashboardStatus" class="dashboard-status" role="status" aria-live="polite"></p>
+</main>
+<script src="{{ url_for('static',filename='dashboard.js') }}"></script>
 {% endblock %}
