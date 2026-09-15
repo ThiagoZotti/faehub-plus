@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='campus-system.css') }}">
 {% endif %}
 </head>
-<body class="role-{{ role }}{{ ' campus-shell dark-mode' if role in ['aluno', 'professor', 'admin'] else '' }}">
+<body class="role-{{ role }}{{ ' campus-shell dark-mode' if role in ['aluno', 'professor', 'admin'] else '' }}{{ (' view-' ~ current_view) if current_view else '' }}">
 <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
 <div class="app" data-view="{{ current_view }}">
   <div class="app-aurora app-aurora--one"></div><div class="app-aurora app-aurora--two"></div>
@@ -59,18 +59,20 @@
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
   {% else %}
   <header class="campus-header">
-    <a class="campus-brand" href="{{ url_for('painel') }}" aria-label="{{ 'Campus Direção' if role == 'admin' else ('Campus Docente' if role == 'professor' else 'Campus Lobby') }}"><img src="{{ url_for('static', filename='logo.svg') }}" alt=""><span>FaeHub<em>+</em><small>{{ 'CAMPUS DIREÇÃO' if role == 'admin' else ('CAMPUS DOCENTE' if role == 'professor' else 'CAMPUS LOBBY') }}</small></span></a>
+    <a class="campus-brand" href="{{ url_for('painel') }}" aria-label="{{ 'Campus Direção' if role == 'admin' else ('Campus Docente' if role == 'professor' else 'Campus Lobby') }}"><img src="{{ url_for('static', filename='logo.svg') }}" alt=""><span>FaeHub<em>+</em><small>{{ 'CAMPUS DIREÇÃO' if role == 'admin' else ('CAMPUS DOCENTE' if role == 'professor' else ('CONHECIMENTO TRANSFORMA AMANHÃ' if current_view == 'painel' else 'CAMPUS LOBBY')) }}</small></span></a>
     <nav class="campus-tabs" aria-label="Módulos do campus">
       {% for view_id, label, icon in nav_items %}<a href="{{ url_for(view_id) }}" {% if current_view == view_id %}aria-current="page"{% endif %}>{{ icons[icon]|safe }}<span>{{ label }}</span></a>{% endfor %}
     </nav>
-    {% if role == 'aluno' %}<a class="campus-profile" href="{{ url_for('avatar') }}" aria-label="Personalizar o avatar de {{ profile_nome }}" title="Personalizar meu avatar">{{ profile_iniciais }}</a>{% else %}<span class="campus-profile" aria-label="{{ profile_nome }} · {{ role_label }}" role="img">{{ profile_iniciais }}</span>{% endif %}
+    {% if role == 'aluno' and current_view == 'painel' %}
+    <a class="campus-profile campus-profile-card" href="{{ url_for('avatar') }}" aria-label="Abrir o avatar de {{ profile_nome }}"><img src="{{ url_for('static', filename='campus-profile-thiago-v2.webp') }}" alt=""><span><strong>Olá, {{ profile_nome.split(' ')[0] }}</strong><small>Turma {{ profile_turma or '3110' }}</small></span><b aria-hidden="true">⌄</b></a>
+    {% elif role == 'aluno' %}<a class="campus-profile" href="{{ url_for('avatar') }}" aria-label="Personalizar o avatar de {{ profile_nome }}" title="Personalizar meu avatar">{{ profile_iniciais }}</a>{% else %}<span class="campus-profile" aria-label="{{ profile_nome }} · {{ role_label }}" role="img">{{ profile_iniciais }}</span>{% endif %}
     <a class="campus-exit" href="{{ url_for('sair') }}" aria-label="Sair da conta de {{ profile_nome }}">Sair</a>
   </header>
-  <nav class="campus-pager" aria-label="Percorrer módulos"{% if role == 'aluno' and current_view == 'painel' %} style="width:min(520px,calc(100% - 24px))"{% endif %}>
+  <nav class="campus-pager" aria-label="Percorrer módulos">
     {% for view_id, label, icon in nav_items %}{% if current_view == view_id %}
     {% set previous = nav_items[(loop.index0 - 1) % (nav_items|length)] %}{% set next = nav_items[(loop.index0 + 1) % (nav_items|length)] %}
     <a href="{{ url_for(previous[0]) }}" data-direction="previous" aria-label="Módulo anterior: {{ previous[1] }}">← <span>{{ previous[1] }}</span></a>
-    <span class="campus-position">{{ '%02d'|format(loop.index) }} / {{ '%02d'|format(nav_items|length) }} <b>{{ label }}</b></span>
+    <span class="campus-position">{{ '%02d'|format(loop.index) }} / {{ '%02d'|format(nav_items|length) }} <b>{{ label }}</b>{% if role == 'aluno' and current_view == 'painel' %}<i class="campus-pages-dots" aria-hidden="true">{% for item in nav_items %}<span class="{{ 'is-active' if loop.index == 1 }}"></span>{% endfor %}</i>{% endif %}</span>
     <a href="{{ url_for(next[0]) }}" data-direction="next" aria-label="Próximo módulo: {{ next[1] }}"><span>{{ next[1] }}</span> →</a>
     {% endif %}{% endfor %}
   </nav>

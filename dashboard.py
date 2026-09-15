@@ -31,19 +31,21 @@ def student_summary(student, exercises, submissions, messages, schedule, now=Non
     submitted = {item['exercise_id'] for item in submissions}
     exercises = [dict(item) for item in exercises if item['class_name'] == student['turma']]
     pending = []
+    activity_preview = []
     for exercise in exercises:
-        if exercise['id'] in submitted:
-            continue
+        is_completed = exercise['id'] in submitted
         try:
             deadline = datetime.strptime(exercise['due_date'], '%Y-%m-%d').date()
             days = (deadline - now.date()).days
-            exercise.update(overdue=days < 0, due_label=deadline.strftime('%d/%m'),
-                            urgency='Prazo encerrado' if days < 0 else ('Entrega hoje' if days == 0 else f'Em {days} dias'))
+            exercise.update(overdue=not is_completed and days < 0, due_label=deadline.strftime('%d/%m'),
+                            urgency='Concluída' if is_completed else ('Prazo encerrado' if days < 0 else ('Entrega hoje' if days == 0 else f'Entrega até {deadline:%d/%m}')))
         except ValueError:
-            exercise.update(overdue=False, due_label='A confirmar', urgency='Sem prazo válido')
-        pending.append(exercise)
+            exercise.update(overdue=False, due_label='A confirmar', urgency='Concluída' if is_completed else 'Sem prazo válido')
+        activity_preview.append(exercise)
+        if not is_completed:
+            pending.append(exercise)
     completed = sum(item['id'] in submitted for item in exercises)
-    return {'pending': pending, 'pending_count': len(pending), 'completed': completed,
+    return {'pending': pending, 'activity_preview': activity_preview, 'pending_count': len(pending), 'completed': completed,
             'total': len(exercises), 'completion': round(completed / len(exercises) * 100) if exercises else 0,
             'overdue': sum(item['overdue'] for item in pending),
             'messages': messages[:2], 'message_count': len(messages),
