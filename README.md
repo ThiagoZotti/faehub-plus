@@ -39,15 +39,15 @@ O perfil visual escolhido na entrada não altera permissões: a conta autenticad
 
 1. Abra a chegada, clique em **Entrar no campus** e use Thiago.
 2. Depois da identificação, clique em **Entrar no meu espaço** para mostrar a aproximação do prédio.
-3. Percorra Painel, Boletim, Frequência, Horário, Avisos, Exercícios, Mensagens e Avatar pelas setas inferiores.
-4. Saia e entre como `aline` para mostrar turma 3110, lançamento de notas, chamada e correção de atividades.
+3. Percorra Painel, Boletim, Frequência, Horário, Avisos, Exercícios, Estágios, Mensagens e Avatar pelas setas inferiores.
+4. Saia e entre como `aline` para mostrar turma 3110, lançamento de notas, chamada, correção de atividades e publicação de estágios.
 5. Entre como `gilberto` para mostrar usuários, vínculos docentes, relatórios CSV e configurações institucionais.
 
 ## Banco de dados: SQLite local ou Supabase
 
 Sem configuração extra, o aplicativo continua usando `faehub.db`. Essa compatibilidade mantém a demonstração local funcionando. Quando `FAEHUB_DATABASE_URL` está definida, o mesmo Flask usa PostgreSQL no Supabase por meio de um pool de conexões.
 
-O esquema Supabase já inclui anos letivos, períodos, cursos, disciplinas, turmas, matrículas, horários, avaliações, notas por avaliação, aulas e frequência. As tabelas atuais foram preservadas durante a transição para que as telas existentes continuem funcionando.
+O esquema Supabase já inclui anos letivos, períodos, cursos, disciplinas, turmas, matrículas, horários, avaliações, notas por avaliação, aulas, frequência e oportunidades de estágio. As tabelas atuais foram preservadas durante a transição para que as telas existentes continuem funcionando.
 
 ### Conectar um projeto Supabase
 

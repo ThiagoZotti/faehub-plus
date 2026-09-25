@@ -11,11 +11,13 @@ from datetime import date, datetime, timedelta, timezone
 from functools import wraps
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from flask import Flask, g, render_template, request, redirect, url_for, session, flash
-from database import (authenticate, create_exercise, create_user, get_exercises,
+from database import (authenticate, archive_internship, create_exercise, create_user, get_exercises,
                       get_messages, get_submissions, init_db, list_users,
                       load_attendance, load_grades, log_action, recent_logs,
                       save_attendance, save_grade, send_message, submit_exercise,
-                      toggle_user, get_avatar, save_avatar)
+                      toggle_user, get_avatar, get_internships, save_avatar,
+                      save_internship)
+from internships import MODALITIES, present_internship, validate_internship
 from school_roster import KNOWN_IDS, ROSTER, ROSTER_NAMES
 
 app = Flask(__name__)
@@ -29,7 +31,11 @@ except ZoneInfoNotFoundError:
 from pathlib import Path
 from database import close_request_connection
 app.teardown_appcontext(close_request_connection)
-_static_versions={p.name:str(p.stat().st_mtime_ns) for p in Path(app.static_folder).iterdir() if p.is_file()}
+_static_versions = {
+    p.relative_to(app.static_folder).as_posix(): str(p.stat().st_mtime_ns)
+    for p in Path(app.static_folder).rglob("*")
+    if p.is_file()
+}
 
 @app.url_defaults
 def version_static(endpoint, values):
@@ -102,6 +108,7 @@ ICONS = {
     "chart": '<svg viewBox="0 0 24 24" fill="none"><path d="M4 20V10M11 20V4M18 20v-7" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>',
     "settings": '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M12 3.5v2M12 18.5v2M4.9 6.4l1.4 1.4M17.7 16.2l1.4 1.4M3.5 12h2M18.5 12h2M4.9 17.6l1.4-1.4M17.7 7.8l1.4-1.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
     "avatar": '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.7"/><path d="M4.2 20c.6-4 3.3-6 7.8-6s7.2 2 7.8 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M18.4 4.1v3.4M16.7 5.8h3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    "briefcase": '<svg viewBox="0 0 24 24" fill="none"><path d="M8 7V5.5A2.5 2.5 0 0 1 10.5 3h3A2.5 2.5 0 0 1 16 5.5V7M4 7h16a1.5 1.5 0 0 1 1.5 1.5v9A2.5 2.5 0 0 1 19 20H5a2.5 2.5 0 0 1-2.5-2.5v-9A1.5 1.5 0 0 1 4 7Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M2.8 12.5c2.7 1.3 5.8 2 9.2 2s6.5-.7 9.2-2M10 13.8v1.7h4v-1.7" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
 }
 
 ROLE_LABEL = {"aluno": "Aluno", "professor": "Professor", "admin": "Diretor"}
@@ -114,6 +121,7 @@ NAV = {
         ("horario", "Horário", "clock"),
         ("avisos", "Avisos", "bell"),
         ("exercicios", "Exercícios", "layers"),
+        ("estagios", "Estágios", "briefcase"),
         ("mensagens", "Mensagens", "users"),
         ("avatar", "Meu avatar", "avatar"),
     ],
@@ -124,6 +132,7 @@ NAV = {
         ("chamada", "Chamada", "check"),
         ("avisos", "Avisos", "bell"),
         ("exercicios", "Exercícios", "layers"),
+        ("estagios", "Estágios", "briefcase"),
         ("mensagens", "Mensagens", "users"),
     ],
     "admin": [
@@ -137,8 +146,8 @@ NAV = {
 }
 
 VIEW_TITLES = {
-    "aluno": {"painel": "Painel", "boletim": "Boletim", "frequencia": "Frequência", "horario": "Horário", "avisos": "Avisos", "exercicios": "Exercícios", "mensagens": "Mensagens", "avatar": "Meu avatar"},
-    "professor": {"painel": "Painel", "turmas": "Minhas turmas", "notas": "Lançar notas", "chamada": "Chamada", "avisos": "Avisos", "exercicios": "Exercícios", "mensagens": "Mensagens"},
+    "aluno": {"painel": "Painel", "boletim": "Boletim", "frequencia": "Frequência", "horario": "Horário", "avisos": "Avisos", "exercicios": "Exercícios", "estagios": "Estágios", "mensagens": "Mensagens", "avatar": "Meu avatar"},
+    "professor": {"painel": "Painel", "turmas": "Minhas turmas", "notas": "Lançar notas", "chamada": "Chamada", "avisos": "Avisos", "exercicios": "Exercícios", "estagios": "Estágios", "mensagens": "Mensagens"},
     "admin": {"painel": "Painel", "usuarios": "Usuários", "turmas": "Turmas", "relatorios": "Relatórios", "configuracoes": "Configurações", "mensagens": "Mensagens"},
 }
 
@@ -598,6 +607,86 @@ def mensagens():
                                users=eligible, token=session['message_token'])
     return render_template("mensagens.html", messages=get_messages(session["username"]),
                            users=[u for u in list_users() if u["username"] != session["username"] and u["active"]])
+
+
+@app.route("/estagios", methods=["GET", "POST"])
+@login_required("estagios")
+def estagios():
+    role = session.get("role")
+    if role == "admin":
+        return redirect(url_for("painel"))
+
+    today = datetime.now(CAMPUS_TIMEZONE).date()
+    error = None
+    failed_form = None
+    classes = []
+    token = ""
+
+    if role == "professor":
+        try:
+            scope = teacher_scope()
+        except ValueError as exc:
+            return str(exc), 403
+        classes = scope["classes"]
+        token = scope["token"]
+        if request.method == "POST":
+            if not teacher_token_valid():
+                return "Sessão expirada. Atualize a página.", 400
+            action = request.form.get("action", "create")
+            internship_id = request.form.get("id", type=int)
+            try:
+                if action in {"archive", "restore"}:
+                    if not internship_id:
+                        raise ValueError("Oportunidade inválida.")
+                    archive_internship(
+                        internship_id, session["username"], action == "archive"
+                    )
+                    verb = "arquivada" if action == "archive" else "restaurada"
+                    log_action(session["username"], f"estagio_{verb}", str(internship_id))
+                    flash(f"Oportunidade {verb}. O histórico foi preservado.")
+                    return redirect(url_for("estagios"))
+
+                if action not in {"create", "edit"}:
+                    raise ValueError("Ação de estágio inválida.")
+                if action == "edit" and not internship_id:
+                    raise ValueError("Oportunidade inválida.")
+                data = validate_internship(request.form, classes, today)
+                save_internship(
+                    session["username"], data,
+                    internship_id=internship_id if action == "edit" else None,
+                )
+                event = "atualizada" if action == "edit" else "publicada"
+                log_action(session["username"], f"estagio_{event}", data["title"])
+                flash(f"Oportunidade {event} para a turma {data['class_name']}.")
+                return redirect(url_for("estagios"))
+            except ValueError as exc:
+                error = str(exc)
+                failed_form = request.form.to_dict()
+    elif request.method == "POST":
+        return "Somente professores podem publicar oportunidades.", 403
+
+    if role == "professor":
+        raw_items = get_internships(teacher=session["username"], include_archived=True)
+    else:
+        raw_items = get_internships(
+            class_name=current_aluno()["turma"], active_on=today.isoformat()
+        )
+    items = [present_internship(item, today) for item in raw_items]
+    open_items = [item for item in items if not item["archived"] and item["days_left"] >= 0]
+    next_deadline = min((item["days_left"] for item in open_items), default=None)
+    return render_template(
+        "p1/estagios.html",
+        items=items,
+        open_count=len(open_items),
+        archived_count=sum(bool(item["archived"]) for item in items),
+        next_deadline=next_deadline,
+        modalities=MODALITIES,
+        classes=classes,
+        token=token,
+        today=today.isoformat(),
+        error=error,
+        failed_form=failed_form,
+    ), 422 if error else 200
 
 
 @app.route("/exercicios", methods=["GET", "POST"])

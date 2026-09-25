@@ -13,12 +13,14 @@ Pendências acordadas para as próximas etapas. Elas ficam registradas aqui para
 - Preservar anos encerrados para consulta histórica, sem misturar ou sobrescrever dados.
 - Migrar os dados atuais sem perda e manter os fluxos já existentes.
 
-## P1 — Módulo de estágios
+## P1 — Módulo de estágios — concluído em 25/09/2026
 
 - Professor publica, edita e arquiva oportunidades de estágio.
 - Aluno consulta vagas ativas, abre o anúncio completo e segue o link ou as instruções para inscrição.
 - Links externos devem abrir com segurança.
 - A primeira versão não armazenará currículo nem acompanhará candidaturas dentro do FaeHub+.
+
+Entregue com publicação, edição, arquivamento e restauração pelo professor; consulta segura pelo aluno; filtros locais; validação de prazo e links; persistência compatível com SQLite e Supabase; testes de permissão e fluxo completo.
 
 ## P1 — Cardápio semanal
 

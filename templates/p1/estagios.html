@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='p1/internships.css') }}">
+{% endblock %}
+{% block content %}
+<main class="internship-world" data-owner="{{ session.username }}" data-role="{{ role }}">
+  <header class="internship-heading">
+    <div>
+      <span class="internship-kicker">{{ 'CAMPUS DOCENTE / PONTE PARA O MERCADO' if role == 'professor' else 'TURMA ' ~ profile_turma|default('3110') ~ ' / RADAR DE OPORTUNIDADES' }}</span>
+      <h1>{{ 'Abra caminhos.' if role == 'professor' else 'Seu próximo passo' }}<br><em>{{ 'A turma atravessa.' if role == 'professor' else 'pode começar aqui.' }}</em></h1>
+      <p>{{ 'Publique oportunidades confiáveis e mantenha cada anúncio sob controle.' if role == 'professor' else 'Oportunidades selecionadas pelos professores para aproximar estudo, prática e futuro.' }}</p>
+    </div>
+    {% if role == 'professor' and classes %}
+    <button class="internship-button internship-primary" type="button" data-internship-open="internshipNew" aria-haspopup="dialog" aria-controls="internshipNew">
+      <span aria-hidden="true">＋</span> Publicar oportunidade
+    </button>
+    {% endif %}
+  </header>
+
+  <section class="internship-radar" aria-labelledby="radarTitle">
+    <div class="radar-signal" aria-hidden="true"><i></i><i></i><i></i><span></span></div>
+    <div class="radar-copy">
+      <span class="internship-kicker">SINAL ATIVO</span>
+      <h2 id="radarTitle">{{ open_count }} {{ 'publicação disponível' if open_count == 1 else 'publicações disponíveis' }}</h2>
+      <p>{% if role == 'professor' %}Apenas você pode editar ou arquivar o que publicou.{% else %}Abra um anúncio para conferir requisitos e como se inscrever.{% endif %}</p>
+    </div>
+    <div class="radar-metrics">
+      <span><strong>{{ open_count }}</strong>em seleção</span>
+      {% if role == 'professor' %}<span><strong>{{ archived_count }}</strong>arquivadas</span>{% endif %}
+      <span><strong>{{ next_deadline if next_deadline is not none else '—' }}</strong>{{ 'dias até o próximo prazo' if next_deadline is not none else 'sem prazo próximo' }}</span>
+    </div>
+  </section>
+
+  {% if error %}<div class="internship-error" role="alert"><strong>Não foi possível salvar.</strong> {{ error }}</div>{% endif %}
+
+  <section class="internship-controls" aria-label="Filtros de oportunidades">
+    <label class="internship-search" for="internshipSearch">
+      <span>Buscar oportunidade</span>
+      <span class="internship-search-field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"></circle><path d="m16 16 4 4"></path></svg><input id="internshipSearch" type="search" placeholder="Empresa, vaga, local ou requisito" autocomplete="off"><button type="button" id="internshipClear" hidden>Limpar</button></span>
+    </label>
+    <div class="internship-filter-set">
+      <span>Modalidade</span>
+      <div role="group" aria-label="Filtrar por modalidade">
+        <button type="button" data-internship-modality="all" aria-pressed="true">Todas</button>
+        {% for value, label in modalities.items() %}<button type="button" data-internship-modality="{{ value }}" aria-pressed="false">{{ label }}</button>{% endfor %}
+      </div>
+    </div>
+    {% if role == 'professor' %}
+    <div class="internship-filter-set">
+      <span>Visibilidade</span>
+      <div role="group" aria-label="Filtrar por visibilidade">
+        <button type="button" data-internship-state="active" aria-pressed="true">Ativas</button>
+        <button type="button" data-internship-state="archived" aria-pressed="false">Arquivadas</button>
+        <button type="button" data-internship-state="all" aria-pressed="false">Todas</button>
+      </div>
+    </div>
+    {% endif %}
+  </section>
+
+  <div class="internship-board">
+    <div class="internship-board-head">
+      <div><span class="internship-kicker">ROTA PROFISSIONAL</span><h2>{{ 'Suas publicações' if role == 'professor' else 'Oportunidades para você' }}</h2></div>
+      <output id="internshipResultCount" aria-live="polite">{{ items|length }} {{ 'resultado' if items|length == 1 else 'resultados' }}</output>
+    </div>
+
+    <div class="internship-track" id="internshipTrack">
+      {% for item in items %}
+      {% set state = 'archived' if item.archived else ('expired' if item.days_left < 0 else 'active') %}
+      <article class="internship-entry" data-internship-card data-modality="{{ item.modality }}" data-state="{{ state }}" data-search="{{ (item.company ~ ' ' ~ item.title ~ ' ' ~ item.location ~ ' ' ~ item.requirements ~ ' ' ~ item.description)|lower }}">
+        <div class="internship-marker" aria-hidden="true"><span>{{ '%02d'|format(loop.index) }}</span></div>
+        <details class="internship-opportunity">
+          <summary>
+            <div class="internship-summary-main">
+              <span class="internship-company">{{ item.company }}</span>
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.description }}</p>
+            </div>
+            <div class="internship-summary-meta">
+              <span class="internship-mode">{{ item.modality_label }}</span>
+              <span>{{ item.location }}</span>
+              {% if item.workload %}<span>{{ item.workload }}</span>{% endif %}
+            </div>
+            <div class="internship-deadline" data-deadline-state="{{ item.deadline_state }}">
+              <small>INSCRIÇÕES ATÉ</small><strong>{{ item.deadline_label }}</strong><span>{{ item.deadline_copy if item.days_left >= 0 else 'Prazo encerrado' }}</span>
+            </div>
+            <span class="internship-expand" aria-hidden="true">＋</span>
+          </summary>
+          <div class="internship-detail">
+            <div class="internship-detail-copy">
+              <section><span class="internship-kicker">SOBRE A OPORTUNIDADE</span><p>{{ item.description }}</p></section>
+              <section><span class="internship-kicker">REQUISITOS</span><p>{{ item.requirements or 'A organização não informou requisitos adicionais.' }}</p></section>
+              {% if item.application_instructions %}<section><span class="internship-kicker">COMO SE INSCREVER</span><p>{{ item.application_instructions }}</p></section>{% endif %}
+            </div>
+            <aside class="internship-action-panel">
+              <span>Publicada por</span><strong>{{ item.teacher_name }}</strong><small>Turma {{ item.class_name }}</small>
+              {% if role == 'aluno' %}
+                {% if item.application_url %}<a class="internship-button internship-primary" href="{{ item.application_url }}" target="_blank" rel="noopener noreferrer nofollow external">Abrir inscrição <span aria-hidden="true">↗</span></a>{% else %}<p>Siga as instruções do anúncio para realizar sua inscrição.</p>{% endif %}
+              {% else %}
+                <button class="internship-button" type="button" data-internship-open="internshipEdit{{ item.id }}" aria-haspopup="dialog" aria-controls="internshipEdit{{ item.id }}">Editar anúncio</button>
+                <button class="internship-button {{ 'internship-restore' if item.archived }}" type="button" data-internship-confirm data-id="{{ item.id }}" data-action="{{ 'restore' if item.archived else 'archive' }}" data-title="{{ item.title }}">{{ 'Restaurar publicação' if item.archived else 'Arquivar publicação' }}</button>
+              {% endif %}
+            </aside>
+          </div>
+        </details>
+      </article>
+
+      {% if role == 'professor' %}
+      <dialog class="internship-dialog" id="internshipEdit{{ item.id }}" aria-labelledby="internshipEditTitle{{ item.id }}">
+        <form method="post" data-internship-form data-draft="edit-{{ item.id }}" novalidate>
+          <header><div><span class="internship-kicker">EDIÇÃO / TURMA {{ item.class_name }}</span><h2 id="internshipEditTitle{{ item.id }}">Atualize o caminho.</h2></div><button type="button" data-internship-close aria-label="Fechar edição">×</button></header>
+          <input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="action" value="edit"><input type="hidden" name="id" value="{{ item.id }}">
+          {% include 'p1/internship_form_fields.html' %}
+          <button class="internship-button internship-primary" type="submit">Salvar alterações <span aria-hidden="true">↗</span></button>
+        </form>
+      </dialog>
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="internship-empty" id="internshipEmpty" {% if items %}hidden{% endif %}>
+      <span aria-hidden="true">◇</span>
+      <h3>{{ 'Nenhuma publicação neste filtro.' if role == 'professor' else 'O radar ainda está em silêncio.' }}</h3>
+      <p>{{ 'Altere os filtros ou publique uma nova oportunidade.' if role == 'professor' else 'Quando um professor publicar uma oportunidade para a turma, ela aparecerá aqui.' }}</p>
+      <button class="internship-button" type="button" id="internshipReset">Limpar filtros</button>
+    </div>
+  </div>
+
+  {% if role == 'professor' %}
+  <dialog class="internship-dialog" id="internshipNew" aria-labelledby="internshipNewTitle">
+    <form method="post" data-internship-form data-draft="new" novalidate>
+      <header><div><span class="internship-kicker">NOVA OPORTUNIDADE</span><h2 id="internshipNewTitle">Conecte a turma ao mercado.</h2></div><button type="button" data-internship-close aria-label="Fechar publicação">×</button></header>
+      <input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="action" value="create">
+      {% set item = none %}{% include 'p1/internship_form_fields.html' %}
+      <button class="internship-button internship-primary" type="submit">Publicar para os alunos <span aria-hidden="true">↗</span></button>
+    </form>
+  </dialog>
+
+  <dialog class="internship-dialog internship-confirm" id="internshipConfirm" aria-labelledby="internshipConfirmTitle">
+    <form method="post" novalidate>
+      <header><div><span class="internship-kicker">CONFIRMAR ALTERAÇÃO</span><h2 id="internshipConfirmTitle">Arquivar publicação?</h2></div><button type="button" data-internship-close aria-label="Cancelar">×</button></header>
+      <p id="internshipConfirmCopy">Ela sairá do radar dos alunos, mas o histórico será preservado.</p>
+      <input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="id"><input type="hidden" name="action">
+      <div class="internship-confirm-actions"><button class="internship-button" type="button" data-internship-close>Cancelar</button><button class="internship-button internship-primary" type="submit" id="internshipConfirmAction">Arquivar</button></div>
+    </form>
+  </dialog>
+  {% endif %}
+
+  {% if failed_form %}<template id="internshipFailed">{{ failed_form|tojson }}</template>{% endif %}
+  <footer class="internship-footnote">O FaeHub+ apresenta oportunidades divulgadas pelos professores. Confirme condições, empresa e prazo antes de enviar dados pessoais em páginas externas.</footer>
+</main>
+<script src="{{ url_for('static', filename='p1/internships.js') }}"></script>
+{% endblock %}

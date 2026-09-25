@@ -1,0 +1,23 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": ["templates/p1", "static/p1"],
+  "locale": "pt-BR",
+  "canonicalMap": "UX-CONTRACT.md",
+  "requiredCapabilities": ["Select/Listbox", "Date", "Form", "Scrollbar", "Toast", "CRUD"],
+  "ownership": {
+    "Select/Listbox": "native",
+    "Date": "native",
+    "Form": "authored",
+    "Scrollbar": "authored",
+    "Toast": "authored",
+    "CRUD": "authored"
+  },
+  "requiredCommands": ["unit"],
+  "commands": {
+    "unit": "python -m unittest test_internships -v"
+  },
+  "evidence": {
+    "crudFullFlow": "test_internships.py",
+    "failurePaths": "test_internships.py"
+  }
+}

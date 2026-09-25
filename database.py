@@ -342,6 +342,28 @@ def init_db():
                 archived INTEGER NOT NULL DEFAULT 0,
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
+            CREATE TABLE IF NOT EXISTS internships (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                teacher TEXT NOT NULL REFERENCES users(username),
+                company TEXT NOT NULL,
+                title TEXT NOT NULL,
+                description TEXT NOT NULL,
+                location TEXT NOT NULL,
+                modality TEXT NOT NULL CHECK(modality IN ('presencial','hibrido','remoto')),
+                workload TEXT NOT NULL DEFAULT '',
+                requirements TEXT NOT NULL DEFAULT '',
+                application_url TEXT,
+                application_instructions TEXT NOT NULL DEFAULT '',
+                deadline TEXT NOT NULL,
+                class_name TEXT NOT NULL DEFAULT '3110',
+                archived INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS internships_teacher_idx
+                ON internships(teacher, archived, updated_at);
+            CREATE INDEX IF NOT EXISTS internships_class_deadline_idx
+                ON internships(class_name, archived, deadline);
             CREATE TABLE IF NOT EXISTS exercise_states (
                 exercise_id INTEGER PRIMARY KEY REFERENCES exercises(id),
                 archived INTEGER NOT NULL DEFAULT 0
@@ -601,6 +623,74 @@ def archive_notice(notice_id, teacher, archived):
     with connection() as db:
         result=db.execute('UPDATE notices SET archived=? WHERE id=? AND teacher=?',(bool(archived),notice_id,teacher))
         if result.rowcount!=1:raise ValueError('Comunicado não pertence à sua conta.')
+
+
+def get_internships(teacher=None, class_name=None, include_archived=False, active_on=None):
+    """Return opportunities in a portable shape for SQLite and PostgreSQL."""
+    conditions = []
+    params = []
+    if teacher:
+        conditions.append("i.teacher=?")
+        params.append(teacher)
+    if class_name:
+        conditions.append("i.class_name=?")
+        params.append(class_name)
+    if not include_archived:
+        conditions.append("i.archived=FALSE")
+    if active_on:
+        conditions.append("i.deadline>=?")
+        params.append(active_on)
+    where = " WHERE " + " AND ".join(conditions) if conditions else ""
+    with connection() as db:
+        rows = db.execute(
+            """SELECT i.*, u.name AS teacher_name
+                 FROM internships i
+                 JOIN users u ON u.username=i.teacher"""
+            + where
+            + " ORDER BY i.archived, i.deadline, i.updated_at DESC, i.id DESC",
+            tuple(params),
+        )
+        return [dict(row) for row in rows]
+
+
+def save_internship(teacher, data, internship_id=None):
+    fields = (
+        data["company"], data["title"], data["description"], data["location"],
+        data["modality"], data["workload"], data["requirements"],
+        data["application_url"], data["application_instructions"],
+        data["deadline"], data["class_name"],
+    )
+    with connection() as db:
+        if internship_id:
+            result = db.execute(
+                """UPDATE internships SET company=?,title=?,description=?,location=?,
+                   modality=?,workload=?,requirements=?,application_url=?,
+                   application_instructions=?,deadline=?,class_name=?,
+                   updated_at=CURRENT_TIMESTAMP WHERE id=? AND teacher=?""",
+                fields + (internship_id, teacher),
+            )
+            if result.rowcount != 1:
+                raise ValueError("Esta oportunidade não pertence à sua conta.")
+            return internship_id
+        cursor = db.execute(
+            """INSERT INTO internships
+               (teacher,company,title,description,location,modality,workload,
+                requirements,application_url,application_instructions,deadline,class_name)
+               VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (teacher,) + fields,
+        )
+        return getattr(cursor._cursor, "lastrowid", None) if hasattr(cursor, "_cursor") else None
+
+
+def archive_internship(internship_id, teacher, archived):
+    with connection() as db:
+        result = db.execute(
+            """UPDATE internships SET archived=?,updated_at=CURRENT_TIMESTAMP
+               WHERE id=? AND teacher=?""",
+            (bool(archived), internship_id, teacher),
+        )
+        if result.rowcount != 1:
+            raise ValueError("Esta oportunidade não pertence à sua conta.")
 
 
 def edit_exercise(exercise_id, teacher, title, description, due_date):
