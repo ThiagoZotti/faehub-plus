@@ -1,9 +1,8 @@
-"""Institution management backed by SQLite; no illustrative metrics."""
+"""Institution management backed by the configured FaeHub+ database."""
 import csv
 import io
 import re
 import secrets
-import sqlite3
 from datetime import date
 from flask import request, session, render_template, redirect, url_for, flash, Response
 from werkzeug.security import generate_password_hash
@@ -82,8 +81,8 @@ def manage(section, roster, subjects):
                             if username==session['username']:raise ValueError('Você não pode desativar sua própria conta.')
                             active=request.form.get('active')
                             if active not in ('0','1'):raise ValueError('Status inválido.')
-                            if active=='0' and existing['role']=='diretor' and conn.execute("SELECT COUNT(*) FROM users WHERE role='diretor' AND active=1").fetchone()[0]<=1:raise ValueError('Mantenha ao menos um diretor ativo.')
-                            conn.execute('UPDATE users SET active=? WHERE username=?',(int(active),username))
+                            if active=='0' and existing['role']=='diretor' and conn.execute("SELECT COUNT(*) AS total FROM users WHERE role='diretor' AND active=TRUE").fetchone()['total']<=1:raise ValueError('Mantenha ao menos um diretor ativo.')
+                            conn.execute('UPDATE users SET active=? WHERE username=?',(active=='1',username))
                         elif action=='password':conn.execute('UPDATE users SET password_hash=? WHERE username=?',(password(),username))
                         if action in ('status','password'):
                             conn.execute('INSERT INTO auth_versions(username,version) VALUES(?,1) ON CONFLICT(username) DO UPDATE SET version=version+1',(username,))
@@ -101,7 +100,7 @@ def manage(section, roster, subjects):
                         teacher=field('teacher');discipline=field('discipline')
                         if action=='assign':
                             if discipline not in subjects:raise ValueError('Disciplina não está na grade cadastrada.')
-                            if not conn.execute("SELECT 1 FROM users WHERE username=? AND role='professor' AND active=1",(teacher,)).fetchone():raise ValueError('Selecione um professor ativo.')
+                            if not conn.execute("SELECT 1 FROM users WHERE username=? AND role='professor' AND active=TRUE",(teacher,)).fetchone():raise ValueError('Selecione um professor ativo.')
                             conn.execute('INSERT OR IGNORE INTO teacher_assignments VALUES(?,?,?)',(teacher,class_name,discipline))
                         else:conn.execute('DELETE FROM teacher_assignments WHERE teacher=? AND class_name=? AND discipline=?',(teacher,class_name,discipline))
                 else:
@@ -118,8 +117,12 @@ def manage(section, roster, subjects):
                 session['display_name']=request.form['name'].strip()
             flash('Alteração salva com sucesso.')
             return redirect(url_for(section))
-        except (ValueError,sqlite3.IntegrityError) as exc:
-            error=str(exc) if isinstance(exc,ValueError) else 'Cadastro já existente ou vínculo inválido. Confira os dados.'
+        except ValueError as exc:
+            error=str(exc)
+        except Exception as exc:
+            if not db.is_integrity_error(exc):
+                raise
+            error='Cadastro já existente ou vínculo inválido. Confira os dados.'
     users=db.list_users() if section in ('painel','usuarios','turmas') else []
     with db.connection() as conn:
         assignments=[dict(r) for r in conn.execute('SELECT a.*,u.name FROM teacher_assignments a JOIN users u ON u.username=a.teacher ORDER BY class_name,discipline')] if section in ('painel','turmas') else []

@@ -38,6 +38,6 @@ class TeacherDashboardTests(unittest.TestCase):
         self.assertNotIn(b'id="sidebar"',response.data)
         self.assertNotIn(b'3210',response.data)
         with client.session_transaction() as session:session.update(role='aluno',username='thiago.zotti',aluno_id='23081')
-        self.assertIn(b'CAMPUS LOBBY',client.get('/painel').data)
+        self.assertIn(b'aria-label="Campus Lobby"',client.get('/painel').data)
 
 if __name__=='__main__':unittest.main()

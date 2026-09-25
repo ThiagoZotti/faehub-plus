@@ -1,8 +1,11 @@
-"""Persistência local do FaeHub+ usando apenas a biblioteca padrão."""
+"""Persistência do FaeHub+ com SQLite local ou Supabase PostgreSQL."""
 
 import os
+import re
 import sqlite3
 from contextlib import contextmanager
+from datetime import date, datetime
+from decimal import Decimal
 from pathlib import Path
 from flask import g, has_request_context
 
@@ -11,18 +14,166 @@ from school_roster import GENERIC_ACCOUNTS, LEGACY_STUDENT_IDS, canonical_studen
 
 
 BASE_DIR = Path(__file__).resolve().parent
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(BASE_DIR / ".env")
+except ImportError:
+    # Mantém o modo local disponível antes da primeira instalação de dependências.
+    pass
+
 DB_PATH = Path(os.getenv("FAEHUB_DATABASE", BASE_DIR / "faehub.db"))
+DATABASE_URL = os.getenv("FAEHUB_DATABASE_URL") or os.getenv("DATABASE_URL")
+_postgres_pool = None
+
+
+class CompatRow(dict):
+    """Mapping compatible with sqlite3.Row key and numeric access."""
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return tuple(self.values())[key]
+        return super().__getitem__(key)
+
+
+def _portable_value(value):
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, date):
+        return value.isoformat()
+    if isinstance(value, Decimal):
+        return float(value)
+    return value
+
+
+def _portable_row(row):
+    if row is None:
+        return None
+    if isinstance(row, dict):
+        return CompatRow((key, _portable_value(value)) for key, value in row.items())
+    return row
+
+
+def _postgres_sql(statement):
+    """Translate the small SQLite subset still used by the legacy Flask layer."""
+    sql = statement.strip()
+    ignore = bool(re.search(r"\binsert\s+or\s+ignore\s+into\b", sql, re.I))
+    sql = re.sub(r"\binsert\s+or\s+ignore\s+into\b", "INSERT INTO", sql, flags=re.I)
+    sql = sql.replace("strftime('%Y-%m-%d %H:%M:%f','now')", "clock_timestamp()")
+    sql = sql.replace("?", "%s")
+    if ignore and "on conflict" not in sql.lower():
+        sql = sql.rstrip("; ") + " ON CONFLICT DO NOTHING"
+    return sql
+
+
+class PostgresCursor:
+    def __init__(self, cursor):
+        self._cursor = cursor
+
+    @property
+    def rowcount(self):
+        return self._cursor.rowcount
+
+    def fetchone(self):
+        return _portable_row(self._cursor.fetchone())
+
+    def fetchall(self):
+        return [_portable_row(row) for row in self._cursor.fetchall()]
+
+    def __iter__(self):
+        for row in self._cursor:
+            yield _portable_row(row)
+
+
+class PostgresConnection:
+    def __init__(self, raw):
+        self.raw = raw
+
+    def execute(self, statement, params=()):
+        return PostgresCursor(self.raw.execute(_postgres_sql(statement), params))
+
+    def executemany(self, statement, params):
+        cursor = self.raw.cursor()
+        cursor.executemany(_postgres_sql(statement), params)
+        return PostgresCursor(cursor)
+
+    def executescript(self, script):
+        for statement in script.split(";"):
+            if statement.strip():
+                self.raw.execute(_postgres_sql(statement))
+
+    def commit(self):
+        self.raw.commit()
+
+    def rollback(self):
+        self.raw.rollback()
+
+
+def using_postgres():
+    return bool(DATABASE_URL)
+
+
+def database_backend():
+    return "supabase-postgres" if using_postgres() else "sqlite"
+
+
+def is_integrity_error(error):
+    if isinstance(error, sqlite3.IntegrityError):
+        return True
+    try:
+        import psycopg
+    except ImportError:
+        return False
+    return isinstance(error, psycopg.IntegrityError)
+
+
+def _pool():
+    global _postgres_pool
+    if _postgres_pool is not None:
+        return _postgres_pool
+    try:
+        from psycopg.rows import dict_row
+        from psycopg_pool import ConnectionPool
+    except ImportError as exc:
+        raise RuntimeError(
+            "O PostgreSQL foi configurado, mas as dependências não estão instaladas. "
+            "Execute: pip install -r requirements.txt"
+        ) from exc
+    local = "localhost" in DATABASE_URL or "127.0.0.1" in DATABASE_URL
+    sslmode = os.getenv("FAEHUB_DB_SSLMODE", "disable" if local else "require")
+    pool_size = max(1, min(int(os.getenv("FAEHUB_DB_POOL_SIZE", "5")), 20))
+    _postgres_pool = ConnectionPool(
+        conninfo=DATABASE_URL,
+        min_size=1,
+        max_size=pool_size,
+        kwargs={
+            "autocommit": False,
+            "row_factory": dict_row,
+            "prepare_threshold": None,
+            "sslmode": sslmode,
+        },
+        open=True,
+    )
+    return _postgres_pool
 
 
 @contextmanager
 def connection():
-    request_owned=has_request_context()
-    conn=getattr(g,'faehub_connection',None) if request_owned else None
-    if conn is None:
+    request_owned = has_request_context()
+    conn = getattr(g, "faehub_connection", None) if request_owned else None
+    lease = None
+    if conn is None and using_postgres():
+        lease = _pool().connection()
+        conn = PostgresConnection(lease.__enter__())
+        if request_owned:
+            g.faehub_connection = conn
+            g.faehub_connection_lease = lease
+    elif conn is None:
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys = ON")
-        if request_owned:g.faehub_connection=conn
+        if request_owned:
+            g.faehub_connection = conn
     try:
         yield conn
         conn.commit()
@@ -30,12 +181,20 @@ def connection():
         conn.rollback()
         raise
     finally:
-        if not request_owned:conn.close()
+        if not request_owned:
+            if lease is not None:
+                lease.__exit__(None, None, None)
+            else:
+                conn.close()
 
 
 def close_request_connection(error=None):
-    conn=g.pop('faehub_connection',None)
-    if conn is not None:conn.close()
+    conn = g.pop("faehub_connection", None)
+    lease = g.pop("faehub_connection_lease", None)
+    if lease is not None:
+        lease.__exit__(None, None, None)
+    elif conn is not None:
+        conn.close()
 
 
 def _migrate_legacy_student_ids(db):
@@ -98,7 +257,15 @@ def _migrate_seed_exercises(db):
 
 def init_db():
     with connection() as db:
-        db.executescript(
+        if using_postgres():
+            schema = db.execute("SELECT to_regclass('public.users') AS table_name").fetchone()
+            if not schema or not schema["table_name"]:
+                raise RuntimeError(
+                    "O Supabase está conectado, mas a migração inicial ainda não foi aplicada. "
+                    "Execute: npx supabase db push"
+                )
+        else:
+            db.executescript(
             """
             CREATE TABLE IF NOT EXISTS users (
                 username TEXT PRIMARY KEY,
@@ -221,7 +388,7 @@ def init_db():
                 PRIMARY KEY(legacy_student_id, discipline, source_updated_at, n1, n2)
             );
             """
-        )
+            )
         accounts = [
             ("gilberto", "direcao@123", "Gilberto", "diretor", None),
             ("aline", "professora@123", "Profa. Aline", "professor", None),
@@ -234,7 +401,7 @@ def init_db():
             if db.execute('SELECT 1 FROM users WHERE username=?', (username,)).fetchone():
                 continue
             db.execute(
-                "INSERT OR IGNORE INTO users VALUES (?, ?, ?, ?, ?, 1)",
+                "INSERT OR IGNORE INTO users(username,password_hash,name,role,student_id,active) VALUES (?, ?, ?, ?, ?, TRUE)",
                 (username, generate_password_hash(password), name, role, student_id),
             )
         # Contas genéricas criadas por versões anteriores continuam válidas e
@@ -263,7 +430,7 @@ def init_db():
 def authenticate(username, password):
     with connection() as db:
         row = db.execute(
-            "SELECT * FROM users WHERE username = ? AND active = 1", (username,)
+            "SELECT * FROM users WHERE username = ? AND active = TRUE", (username,)
         ).fetchone()
     return dict(row) if row and check_password_hash(row["password_hash"], password) else None
 
@@ -342,13 +509,13 @@ def list_users():
 
 def create_user(username, password, name, role, student_id=None):
     with connection() as db:
-        db.execute("INSERT INTO users(username,password_hash,name,role,student_id,active) VALUES(?,?,?,?,?,1)",
+        db.execute("INSERT INTO users(username,password_hash,name,role,student_id,active) VALUES(?,?,?,?,?,TRUE)",
                    (username, generate_password_hash(password), name, role, student_id or None))
 
 
 def toggle_user(username):
     with connection() as db:
-        db.execute("UPDATE users SET active = CASE active WHEN 1 THEN 0 ELSE 1 END WHERE username = ?", (username,))
+        db.execute("UPDATE users SET active = NOT active WHERE username = ?", (username,))
 
 
 def send_message(sender, recipient, subject, body):
@@ -358,7 +525,7 @@ def send_message(sender, recipient, subject, body):
 
 def mark_message_read(message_id, username):
     with connection() as db:
-        db.execute("UPDATE messages SET is_read=1 WHERE id=? AND recipient=?", (message_id, username))
+        db.execute("UPDATE messages SET is_read=TRUE WHERE id=? AND recipient=?", (message_id, username))
 
 
 def get_teacher_assignments(username):
@@ -393,9 +560,9 @@ def create_exercise(teacher, title, description, discipline, class_name, due_dat
 
 def get_exercises(include_archived=False):
     with connection() as db:
-        return [dict(r) for r in db.execute("""SELECT e.*, COALESCE(s.archived,0) archived FROM exercises e
+        return [dict(r) for r in db.execute("""SELECT e.*, COALESCE(s.archived,FALSE) archived FROM exercises e
             LEFT JOIN exercise_states s ON s.exercise_id=e.id """ +
-            ("" if include_archived else " WHERE COALESCE(s.archived,0)=0 ") + " ORDER BY due_date, e.id DESC")]
+            ("" if include_archived else " WHERE COALESCE(s.archived,FALSE)=FALSE ") + " ORDER BY due_date, e.id DESC")]
 
 
 def submit_exercise(exercise_id, student, answer):
@@ -432,7 +599,7 @@ def save_notice(teacher, class_name, title, body, priority, notice_id=None):
 
 def archive_notice(notice_id, teacher, archived):
     with connection() as db:
-        result=db.execute('UPDATE notices SET archived=? WHERE id=? AND teacher=?',(int(archived),notice_id,teacher))
+        result=db.execute('UPDATE notices SET archived=? WHERE id=? AND teacher=?',(bool(archived),notice_id,teacher))
         if result.rowcount!=1:raise ValueError('Comunicado não pertence à sua conta.')
 
 
@@ -448,7 +615,7 @@ def archive_exercise(exercise_id, teacher, archived):
         if not db.execute('SELECT 1 FROM exercises WHERE id=? AND teacher=?',(exercise_id,teacher)).fetchone():
             raise ValueError('Atividade não pertence à sua conta.')
         db.execute('INSERT INTO exercise_states VALUES(?,?) ON CONFLICT(exercise_id) DO UPDATE SET archived=excluded.archived',
-                   (exercise_id,int(archived)))
+                   (exercise_id,bool(archived)))
 
 
 def review_submission(submission_id, teacher, feedback, score, expected_answer):
