@@ -16,7 +16,21 @@ Este arquivo segue o roteiro aprovado em 25/09/2026. Ele é a fonte de verdade p
 - Migração segura do legado e banco único no Supabase.
 - Criação completa de turmas, matrículas e vínculos pela Direção.
 
-Status: núcleo funcional concluído. A Direção administra anos, períodos, cursos, disciplinas, turmas, grades, estudantes, matrículas e vínculos docentes em `/estrutura`; aluno, responsável e Direção consultam a trajetória preservada em `/historico`. Notas legadas são sincronizadas com avaliações normalizadas. A migração estrutural foi aplicada ao Supabase; o corte do aplicativo local para o banco remoto e a importação final dependem da connection string privada do projeto.
+Status: **parcial — fundação ainda não concluída**. A auditoria de 03/10/2026 identificou estrutura normalizada com telas e testes, mas horários, notas e chamada ainda usam fontes e fluxos legados. PostgreSQL em produção e a importação integral não foram verificados nesta etapa.
+
+Evidências, critérios de aceite e situação dos dez itens aprovados: [P0-AUDIT.md](P0-AUDIT.md).
+
+Prioridades verificadas:
+
+1. Impedir que a inicialização recrie matrículas encerradas e sobrescreva dados administrados.
+2. Corrigir ativação de ano que fecha o anterior com período aberto; unificar fechamento/reabertura com justificativa e auditoria.
+3. Aplicar autorização e bloqueio ao ano/período efetivamente alterado, incluindo notas normalizadas e sincronização do legado.
+4. Remover dependências operacionais de `ALUNOS_DB`, `ROSTER` e `SCHEDULE_3110`, mantendo dados demonstrativos somente na carga inicial.
+5. Implementar horários configuráveis com conflitos, avaliações com pesos/regras e frequência por aula/disciplina.
+6. Atualizar o importador para todas as entidades e campos atuais; validar dados e anexos em homologação antes da troca para PostgreSQL.
+7. Automatizar backup do banco/anexos e comprovar restauração.
+
+A consulta multi-anual e a estrutura básica existem, mas isso não comprova imutabilidade do histórico nem conclusão do P0. A suíte local de 81 testes passou; foram reproduzidos problemas fora de sua cobertura atual.
 
 ## P1 — Operação escolar completa
 
@@ -60,7 +74,7 @@ Status: aguardando o cardápio real da escola.
 
 - Integração com a rede social escolar FaeNet.
 - Biblioteca, patrimônio, transporte, ocorrências e atendimentos.
-- Avatares 3D modulares e animações mais avançadas.
+- Avatares: removidos da versão atual por decisão anterior; não reintroduzir sem solicitação explícita.
 
 ## Trilha visual — Tela de login
 
