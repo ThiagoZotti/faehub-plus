@@ -22,15 +22,15 @@ Evidências, critérios de aceite e situação dos dez itens aprovados: [P0-AUDI
 
 Prioridades verificadas:
 
-1. Impedir que a inicialização recrie matrículas encerradas e sobrescreva dados administrados.
-2. Corrigir ativação de ano que fecha o anterior com período aberto; unificar fechamento/reabertura com justificativa e auditoria.
+1. **Concluído em 03/10/2026:** carga acadêmica inicial com marcador transacional; instalações existentes são adotadas sem reaplicar dados demonstrativos. Matrículas encerradas e dados cadastrais são preservados ao reiniciar.
+2. **Correção inicial concluída em 03/10/2026:** ativar outro ano exige que todos os períodos dos anos ativos anteriores estejam fechados. Unificar os demais caminhos de fechamento/reabertura com justificativa e auditoria continua pendente.
 3. Aplicar autorização e bloqueio ao ano/período efetivamente alterado, incluindo notas normalizadas e sincronização do legado.
 4. Remover dependências operacionais de `ALUNOS_DB`, `ROSTER` e `SCHEDULE_3110`, mantendo dados demonstrativos somente na carga inicial.
 5. Implementar horários configuráveis com conflitos, avaliações com pesos/regras e frequência por aula/disciplina.
 6. Atualizar o importador para todas as entidades e campos atuais; validar dados e anexos em homologação antes da troca para PostgreSQL.
 7. Automatizar backup do banco/anexos e comprovar restauração.
 
-A consulta multi-anual e a estrutura básica existem, mas isso não comprova imutabilidade do histórico nem conclusão do P0. A suíte local de 81 testes passou; foram reproduzidos problemas fora de sua cobertura atual.
+A consulta multi-anual e a estrutura básica existem, mas isso não comprova imutabilidade do histórico nem conclusão do P0. Após as primeiras correções, a suíte local de **86 testes passou**, incluindo cinco testes novos de integridade. As demais pendências permanecem abertas.
 
 ## P1 — Operação escolar completa
 

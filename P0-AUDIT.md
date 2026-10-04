@@ -2,6 +2,16 @@
 
 Data: 03/10/2026. Base: versão recuperada e publicada no commit `3328086e4add00ddd397534a449e00b2a5dff424`.
 
+## Primeira implementação — 03/10/2026
+
+Os problemas 1 e 2 abaixo foram corrigidos após a auditoria. A descrição original permanece como registro do diagnóstico da versão de referência.
+
+- Carga acadêmica inicial protegida pelo marcador `academic_core_initial_v1`, gravado na mesma transação da carga. Instalações com estudantes/matrículas existentes recebem o marcador sem reaplicar o seed. Reinícios não recriam matrículas encerradas, não sobrescrevem nomes editados e não acrescentam disciplinas à grade automaticamente.
+- Ativação de outro ano bloqueada se um ano ativo anterior tiver período aberto ou em planejamento. A validação ocorre antes das alterações; um destino inexistente é rejeitado. Com períodos fechados, a transição mantém matrículas/histórico e registra auditoria.
+- **86 testes aprovados**, incluindo cinco novos testes que exercitam reinícios repetidos, quatro estados de encerramento, adoção de instalação antiga sem marcador, nomes editados, transições rejeitadas sem alterações parciais e ativação permitida após fechamento.
+
+As correções impedem novas alterações indevidas; não tentam identificar ou desfazer matrículas que versões anteriores já possam ter recriado. A carga de outros módulos, a sincronização de notas legadas, permissões por período e integração real com PostgreSQL continuam fora desta entrega.
+
 ## Resultado
 
 **O P0 está parcialmente implementado.** A estrutura acadêmica normalizada tem telas, persistência e testes locais, mas os fluxos de horários, notas e chamada ainda dependem do modelo legado. Não considerar a fundação concluída nem realizar a importação remota com o script atual.
@@ -78,4 +88,4 @@ Aceite: toda turma/aluno cadastrado pela Direção funciona nos mesmos fluxos; d
 - A versão de código auditada passou nos 81 testes `unittest` executados em 03/10/2026 com SQLite separado, antes desta atualização documental.
 - A auditoria executou duas verificações adicionais de comportamento em base isolada e comparou o inventário do importador com o esquema local.
 - Os testes de backend atuais verificam tradução de SQL e compatibilidade de valores; não equivalem a testes de integração com PostgreSQL real.
-- Não houve mudança de código funcional nem aplicação de migrações nesta etapa. Os problemas acima são pendências registradas, não correções concluídas.
+- Na etapa original de auditoria não houve mudança funcional nem aplicação de migrações. Os problemas eram pendências da versão auditada; o status das primeiras correções está no início deste documento.

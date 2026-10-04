@@ -93,6 +93,18 @@ def init_academic_core():
 
 
 def _seed(conn):
+    # Claim the initial load once, in the same transaction as its data. Existing
+    # installations adopt the marker without reapplying demo data to managed rows.
+    conn.execute("CREATE TABLE IF NOT EXISTS seed_markers (name TEXT PRIMARY KEY)")
+    claimed = conn.execute(
+        """INSERT INTO seed_markers(name) VALUES('academic_core_initial_v1')
+           ON CONFLICT(name) DO NOTHING RETURNING name"""
+    ).fetchone()
+    if not claimed:
+        return
+    if (conn.execute("SELECT 1 FROM students LIMIT 1").fetchone()
+            or conn.execute("SELECT 1 FROM enrollments LIMIT 1").fetchone()):
+        return
     conn.execute("""INSERT INTO academic_years(name,starts_on,ends_on,status)
                     VALUES('2026','2026-02-02','2026-12-18','active') ON CONFLICT(name) DO NOTHING""")
     year = conn.execute("SELECT id FROM academic_years WHERE name='2026'").fetchone()["id"]
@@ -118,8 +130,7 @@ def _seed(conn):
     for person in ROSTER:
         username = conn.execute("SELECT username FROM users WHERE student_id=?", (person["id"],)).fetchone()
         conn.execute("""INSERT INTO students(registration,user_username,full_name,active)
-                        VALUES(?,?,?,TRUE) ON CONFLICT(registration) DO UPDATE SET
-                        full_name=excluded.full_name,user_username=COALESCE(students.user_username,excluded.user_username)""",
+                        VALUES(?,?,?,TRUE) ON CONFLICT(registration) DO NOTHING""",
                      (person["id"], username["username"] if username else None, person["nome"]))
         student_id = conn.execute("SELECT id FROM students WHERE registration=?", (person["id"],)).fetchone()["id"]
         if not conn.execute("SELECT 1 FROM enrollments WHERE student_id=? AND status='active'", (student_id,)).fetchone():
@@ -194,7 +205,17 @@ def mutate(action, data, actor):
         elif action == "year_status":
             year_id, status = int(data.get("year_id", 0)), data.get("status")
             if status not in {"planning", "active", "closed", "archived"}: raise ValueError("Situação do ano inválida.")
+            if not conn.execute("SELECT 1 FROM academic_years WHERE id=?", (year_id,)).fetchone():
+                raise ValueError("Ano letivo não encontrado.")
             if status == "active":
+                unfinished = conn.execute(
+                    """SELECT 1 FROM academic_periods p
+                       JOIN academic_years y ON y.id=p.academic_year_id
+                       WHERE y.status='active' AND y.id<>? AND p.status<>'closed'
+                       LIMIT 1""", (year_id,)
+                ).fetchone()
+                if unfinished:
+                    raise ValueError("Feche todos os períodos do ano ativo antes de ativar outro ano letivo.")
                 conn.execute("UPDATE academic_years SET status='closed' WHERE status='active' AND id<>?", (year_id,))
             if status == "closed" and conn.execute("SELECT 1 FROM academic_periods WHERE academic_year_id=? AND status<>'closed'", (year_id,)).fetchone():
                 raise ValueError("Feche todos os períodos antes de encerrar o ano letivo.")
