@@ -42,7 +42,7 @@ A interface oculta rotas não autorizadas, mas o servidor sempre revalida sessã
 | Select/Listbox | Navegador nativo | `templates/p0/estrutura.html` | curso, turma, disciplina, situação | teste de mutação P0 + teclado |
 | Date | Navegador nativo | `templates/p0/estrutura.html` | início, término e encerramento | teste de cadeia acadêmica |
 | Form | FaeHub `academic-core.js` | `static/p0/academic-core.js` | criação, vínculo, alteração de situação | erro inline + retry + testes P0 |
-| Scrollbar | Shell FaeHub | `static/p0/academic-core.css` | página e tabela responsiva | desktop e celular |
+| Scrollbar | Shell FaeHub | `static/campus-system.css` | página, navegação e tabela responsiva | desktop e celular |
 | Toast | Shell FaeHub | `templates/base.html` | sucesso após redirect | teste de mutação P0 |
 | CRUD | Núcleo acadêmico | `academic_core.py` | criação e mudança de estado sem exclusão física | `test_p0_academic_core.py` |
 

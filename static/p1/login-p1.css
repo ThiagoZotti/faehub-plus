@@ -1,2 +1,4 @@
-.credential-recovery{position:relative;display:inline-flex;margin:10px 2px 0;color:var(--accent);font-size:10px;font-weight:750;text-decoration:none}.credential-recovery:hover{text-decoration:underline}.credential-tabs{grid-template-columns:repeat(4,1fr)}
+.credential-recovery{position:relative;display:inline-flex;margin:10px 2px 0;color:var(--accent);font-size:14px;font-weight:750;text-decoration:none}.credential-recovery:hover{text-decoration:underline}.credential-tabs{grid-template-columns:repeat(4,1fr)}
 @media(max-width:470px){.credential-tabs{grid-template-columns:repeat(2,1fr)}}
+
+.credential-recovery{min-height:44px;align-items:center}.credential-glint{display:none}.arrival-clouds,.arrival-light,.arrival-reflection{animation:none}.credential-tabs button[aria-pressed=true]{box-shadow:none}.arrival-demo button{min-height:44px}

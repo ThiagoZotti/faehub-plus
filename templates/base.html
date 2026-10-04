@@ -14,7 +14,7 @@
 {% block head %}{% endblock %}
 {% if role in ['aluno', 'professor', 'admin', 'responsavel'] %}
 <link rel="stylesheet" href="{{ url_for('static', filename='performance.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='campus-system.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='campus-system.css', v=2) }}">
 {% endif %}
 </head>
 <body class="role-{{ role }}{{ ' campus-shell dark-mode' if role in ['aluno', 'professor', 'admin', 'responsavel'] else '' }}{{ (' view-' ~ current_view) if current_view else '' }}">

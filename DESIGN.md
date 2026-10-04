@@ -10,16 +10,16 @@ colors:
   tertiary: "#B7EBD0"
   tertiary-container: "#FFD19A"
   error: "#FFB798"
-  surface: "#0D2037"
-  surface-bright: "#102943"
-  background: "#061225"
+  surface: "#112438"
+  surface-bright: "#172E43"
+  background: "#091522"
   on-background: "#F3F8FF"
   outline: "#B4C8DC"
 typography:
   sans:
     fontFamily: "Segoe UI Variable Text, Segoe UI, Arial, sans-serif"
   display:
-    fontFamily: "Bahnschrift, Arial Narrow, Segoe UI, sans-serif"
+    fontFamily: "Segoe UI Variable Display, Segoe UI, Arial, sans-serif"
   mono:
     fontFamily: "Cascadia Code, Cascadia Mono, Consolas, monospace"
 rounded:
@@ -135,3 +135,7 @@ A voz é direta, encorajadora e escolar, sem mencionar IA, mockup ou implementa�
 - **Do:** reutilizar tokens, navegação, foco e feedback já existentes.
 - **Don't:** transformar cada informação em um cartão de vidro independente.
 - **Don't:** esconder operações essenciais em hover, gesto ou ícone sem nome.
+
+## Refinamento Campus moderno
+
+A entrada preserva a fotografia escolar, com título editorial moderado e formulário sóbrio. O shell usa fundo azul sólido; a fotografia fica concentrada na recepção do aluno. Superfícies, bordas e tipografia vêm do owner existente `static/campus-system.css`. A agenda usa uma lista cronológica legível, sem radar animado. Textos operacionais usam 12–16 px e ações mantêm pelo menos 44 px. `static/arrival.css` é o owner público e `static/dashboard-v2.css` o owner do resumo do aluno.

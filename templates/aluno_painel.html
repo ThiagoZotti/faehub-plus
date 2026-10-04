@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='dashboard-v2.css',v=7) }}">{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='dashboard-v2.css',v=8) }}">{% endblock %}
 {% block content %}
 <main class="student-dashboard" id="dashboard">
   <header class="dashboard-hero">
     <div class="dashboard-hero__copy">
       <span class="dashboard-context">{{ summary.date_label }} · Turma {{ d.turma }}</span>
-      <h1>Bem-vindo,<br>{{ d.nome.split(' ')[0] }}.</h1>
+      <h1>Bem-vindo, {{ d.nome.split(' ')[0] }}.</h1>
       <p>O essencial para começar seu dia acadêmico.</p>
       {% if summary.unread_count %}<a class="dashboard-message-alert" href="{{ url_for('mensagens') }}"><span aria-hidden="true">✦</span><strong>{{ summary.unread_count }} {{ 'mensagem nova' if summary.unread_count == 1 else 'mensagens novas' }}</strong><small>Abrir conversas</small></a>{% endif %}
     </div>
@@ -16,7 +16,7 @@
     <article class="dashboard-panel day-radar">
       <header class="dashboard-panel__head"><div><span class="dashboard-context">Radar do dia</span><h2>Seu próximo movimento</h2></div><a href="{{ url_for('horario') }}">Horário completo</a></header>
       {% if summary.lessons %}{% set lesson=summary.lessons[0] %}
-      <div class="radar-focus"><div class="radar-time"><strong>{{ lesson.time }}</strong><span>{{ lesson.day }}</span></div><div class="radar-subject"><span>Próxima aula</span><h3>{{ lesson.subject }}</h3><p class="lesson-countdown" data-lesson-at="{{ lesson.iso }}"></p><small>Turma {{ d.turma }} · Sala de aula</small></div><div class="radar-pulse" aria-hidden="true"><i></i><i></i><i></i><b></b></div></div>
+      <div class="radar-focus"><div class="radar-time"><strong>{{ lesson.time }}</strong><span>{{ lesson.day }}</span></div><div class="radar-subject"><span>Próxima aula</span><h3>{{ lesson.subject }}</h3><p class="lesson-countdown" data-lesson-at="{{ lesson.iso }}"></p><small>Turma {{ d.turma }} · Sala de aula</small></div></div>
       <ol class="day-route" aria-label="Próximas aulas">{% for item in summary.lessons[:4] %}<li class="{{ 'is-next' if loop.first }}"><time>{{ item.time }}</time><span><strong>{{ item.subject }}</strong><small>{{ item.day }} · {{ item.date }}</small></span></li>{% endfor %}</ol>
       {% else %}<div class="dashboard-empty"><strong>Nenhuma aula prevista.</strong><p>Seu próximo horário aparecerá aqui quando houver aula na grade.</p></div>{% endif %}
     </article>
