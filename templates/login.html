@@ -9,6 +9,7 @@
   <title>FaeHub+ · Seu campus começa aqui</title>
   <link rel="icon" href="{{ url_for('static',filename='logo.svg') }}" type="image/svg+xml">
   <link rel="stylesheet" href="{{ url_for('static',filename='arrival.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static',filename='p1/login-p1.css') }}">
 </head>
 <body>
   <div class="arrival-scene" aria-hidden="true">
@@ -32,7 +33,7 @@
       <article class="credential" id="credential"><div class="credential-glint" aria-hidden="true"></div>
         <header class="credential-header"><div class="credential-logo"><span>F<em>+</em></span></div><div><small>PORTAL ACADÊMICO</small><h2>FaeHub<em>+</em></h2></div><span class="credential-status" title="Conexão segura">●</span></header>
         <div class="credential-heading"><span>Bem-vindo de volta</span><h3>Entre no seu campus</h3><p>Selecione seu espaço e confirme sua identidade.</p></div>
-        <div class="credential-tabs" role="group" aria-label="Perfil de acesso"><button type="button" data-role="diretor" aria-pressed="false"><span aria-hidden="true">◆</span><b>Diretor</b></button><button type="button" data-role="professor" aria-pressed="false"><span aria-hidden="true">▰</span><b>Professor</b></button><button type="button" data-role="aluno" aria-pressed="true"><span aria-hidden="true">◉</span><b>Aluno</b></button></div>
+        <div class="credential-tabs" role="group" aria-label="Perfil de acesso"><button type="button" data-role="diretor" aria-pressed="false"><span aria-hidden="true">◆</span><b>Diretor</b></button><button type="button" data-role="professor" aria-pressed="false"><span aria-hidden="true">▰</span><b>Professor</b></button><button type="button" data-role="aluno" aria-pressed="true"><span aria-hidden="true">◉</span><b>Aluno</b></button><button type="button" data-role="responsavel" aria-pressed="false"><span aria-hidden="true">◇</span><b>Responsável</b></button></div>
         <p class="credential-profile-hint"><i></i><span id="roleHint">Seu espaço de aprendizagem e evolução.</span></p>
         <form id="arrivalForm" method="post" action="{{ url_for('entrar') }}" aria-describedby="arrivalError">
           <input type="hidden" name="token" value="{{ token }}"><label for="usuario">Matrícula ou usuário</label><div class="field-shell"><span aria-hidden="true">◎</span><input id="usuario" name="usuario" value="{{ username }}" autocomplete="username" required maxlength="120" placeholder="Digite seu acesso"></div>
@@ -40,7 +41,8 @@
           <p class="arrival-error" id="arrivalError" role="alert">{{ error or '' }}{% for message in get_flashed_messages() %}{{ message }}{% endfor %}</p><button class="arrival-primary" type="submit" id="authenticate"><span>Validar acesso</span><b>→</b></button>
         </form>
         <section class="credential-confirmed" id="credentialConfirmed" hidden aria-live="polite"><span class="confirm-icon">✓</span><small>IDENTIDADE CONFIRMADA</small><h3 id="confirmedName"></h3><p><span id="confirmedRole"></span> · seu espaço está pronto.</p><a class="arrival-primary" id="enterCampus" href="{{ url_for('painel') }}"><span>Entrar no campus</span><b>→</b></a></section>
-        <details class="arrival-demo"><summary>Usar uma conta de demonstração <span>＋</span></summary><div>{% for user,name,password in [('thiago.zotti','Thiago','aluno@123'),('jonathan.samuel','Jonathan','aluno@123'),('marlon.eduardo','Marlon','aluno@123'),('pablo.sousa','Pablo','aluno@123'),('aline','Professora Aline','professora@123'),('gilberto','Diretor Gilberto','direcao@123')] %}<button type="button" data-demo-user="{{ user }}" data-demo-password="{{ password }}">{{ name }}</button>{% endfor %}</div></details>
+        <a class="credential-recovery" href="{{ url_for('recuperar_senha') }}">Esqueci minha senha</a>
+        <details class="arrival-demo"><summary>Usar uma conta de demonstração <span>＋</span></summary><div>{% for user,name,password in [('thiago.zotti','Thiago','aluno@123'),('jonathan.samuel','Jonathan','aluno@123'),('marlon.eduardo','Marlon','aluno@123'),('pablo.sousa','Pablo','aluno@123'),('aline','Professora Aline','professora@123'),('gilberto','Diretor Gilberto','direcao@123'),('responsavel.thiago','Responsável','responsavel@123')] %}<button type="button" data-demo-user="{{ user }}" data-demo-password="{{ password }}">{{ name }}</button>{% endfor %}</div></details>
         <footer class="credential-footer"><span><i></i> AMBIENTE SEGURO</span><span>FAEHUB / 2026</span></footer>
       </article>
     </aside>

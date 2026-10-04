@@ -1,9 +1,11 @@
 """Teacher publishing workflows: owned records, reversible archives and reviews."""
+import hashlib
 import math
 import secrets
 from datetime import date
 from flask import request, session, render_template, redirect, url_for, flash
 import database as db
+import p1_operations as operations
 
 
 def text_field(name, limit):
@@ -52,27 +54,46 @@ def studio(kind):
                     if priority not in ('normal','importante'):raise ValueError('Prioridade inválida.')
                     db.save_notice(teacher,class_name,title,text_field('body',10000),priority,item_id if item else None)
                 else:
+                    validated=operations.validate_upload(request.files.get('attachment'))
                     description=text_field('description',20000)
                     due_date=request.form.get('due_date','')
                     try:date.fromisoformat(due_date)
                     except ValueError:raise ValueError('Informe uma data de entrega válida.')
-                    if item:db.edit_exercise(item_id,teacher,title,description,due_date)
+                    if item:
+                        db.edit_exercise(item_id,teacher,title,description,due_date)
+                        exercise_id=item_id
                     else:
                         discipline=request.form.get('discipline','')
                         if not any(a['class_name']==class_name and a['discipline']==discipline for a in assignments):
                             raise ValueError('Disciplina não vinculada à turma.')
-                        db.create_exercise(teacher,title,description,discipline,class_name,due_date)
+                        exercise_id=db.create_exercise(teacher,title,description,discipline,class_name,due_date)
+                    operations.save_attachment(teacher,'exercise',exercise_id,validated=validated)
             db.log_action(teacher,kind+'_'+action,str(item_id or 'novo'))
             flash('Alteração salva. Publicações ativas e correções ficam disponíveis para os alunos.')
             return redirect(url_for(kind))
         except ValueError as exc:error=str(exc)
     ids={e['id'] for e in exercises}
     submissions=[s for s in db.get_submissions() if s['exercise_id'] in ids]
+    exercise_attachments={}
+    for attachment in operations.list_attachments('exercise',list(ids)):
+        exercise_attachments.setdefault(attachment['entity_id'],[]).append(attachment)
+    submission_attachments={}
+    for attachment in operations.list_attachments('submission',[s['id'] for s in submissions]):
+        submission_attachments.setdefault(attachment['entity_id'],[]).append(attachment)
     return render_template('professor_studio.html',kind=kind,items=owned,classes=classes,assignments=assignments,
-                           submissions=submissions,token=session['studio_token'],error=error),422 if error else 200
+                           submissions=submissions,token=session['studio_token'],error=error,
+                           exercise_attachments=exercise_attachments,
+                           submission_attachments=submission_attachments),422 if error else 200
 
 
 def student_notices(class_name, legacy):
-    current=[dict(titulo=n['title'],desc=n['body'],quando=f"{n['priority'].title()} · {n['updated_at'][:10]}")
+    current=[dict(key=f"notice:{n['id']}",titulo=n['title'],desc=n['body'],
+                  quando=f"{n['priority'].title()} · {n['updated_at'][:10]}")
              for n in db.get_notices() if n['class_name']==class_name and not n['archived']]
-    return current+legacy
+    historic=[]
+    for item in legacy:
+        digest=hashlib.sha256(
+            f"{item['titulo']}|{item['desc']}|{item['quando']}".encode('utf-8')
+        ).hexdigest()[:20]
+        historic.append(dict(item,key=f"legacy:{digest}"))
+    return current+historic

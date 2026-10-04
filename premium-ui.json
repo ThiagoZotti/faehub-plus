@@ -1,0 +1,23 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": ["templates/p0", "static/p0"],
+  "locale": "pt-BR",
+  "canonicalMap": "UX-CONTRACT.md",
+  "requiredCapabilities": ["Select/Listbox", "Date", "Form", "Scrollbar", "Toast", "CRUD"],
+  "ownership": {
+    "Select/Listbox": "native",
+    "Date": "native",
+    "Form": "authored",
+    "Scrollbar": "authored",
+    "Toast": "authored",
+    "CRUD": "authored"
+  },
+  "requiredCommands": ["unit"],
+  "commands": {
+    "unit": "python -m unittest discover -v"
+  },
+  "evidence": {
+    "crudFullFlow": "test_p0_academic_core.py",
+    "failurePaths": "test_p0_academic_core.py"
+  }
+}

@@ -76,12 +76,6 @@ body { font-family: var(--font-body); text-rendering: optimizeLegibility; overfl
     linear-gradient(90deg, #07152b55, transparent 50%, #07152b55),
     url("campus-lobby-v1.webp");
 }
-.identity-stage {
-  background-image:
-    radial-gradient(ellipse at 50% 55%, #6bcbb32b, transparent 55%),
-    linear-gradient(#071b3266, #081b35e6),
-    url("campus-lobby-v1.webp");
-}
 .campus-shell .app::after {
   content: "";
   position: fixed;
@@ -406,13 +400,6 @@ body { font-family: var(--font-body); text-rendering: optimizeLegibility; overfl
 .studio-dialog,
 .director-dialog,
 .agenda-dialog { border-radius: 12px; }
-
-/* Avatar: cenário e bancada; controles deixam de parecer cards soltos. */
-.identity-layout { align-items: stretch; }
-.identity-stage { border-radius: 12px; border-color: var(--campus-line); }
-.identity-controls { border-radius: 12px; border-top: 3px solid var(--campus-accent); }
-.atelier-tabs { border-radius: 6px; }
-.identity-field { border-top-color: var(--campus-line); }
 
 /* Professor: o painel vira uma mesa de trabalho, com menos caixas isoladas. */
 .campus-shell.role-professor::before { filter: saturate(.65) hue-rotate(-8deg); }

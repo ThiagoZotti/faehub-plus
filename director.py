@@ -1,13 +1,13 @@
-"""Institution management backed by SQLite; no illustrative metrics."""
+"""Institution management backed by the configured FaeHub+ database."""
 import csv
 import io
 import re
 import secrets
-import sqlite3
 from datetime import date
 from flask import request, session, render_template, redirect, url_for, flash, Response
 from werkzeug.security import generate_password_hash
 import database as db
+import p1_operations as operations
 
 
 def init_director():
@@ -34,7 +34,9 @@ def access_version(username):
 
 def valid_account(username, role):
     with db.connection() as conn:
-        row=conn.execute('SELECT active,role FROM users WHERE username=?',(username,)).fetchone()
+        row=conn.execute('''SELECT u.active,COALESCE(ar.role,u.role) role FROM users u
+                            LEFT JOIN account_roles ar ON ar.username=u.username
+                            WHERE u.username=?''',(username,)).fetchone()
     return bool(row and row['active'] and row['role']==('diretor' if role=='admin' else role))
 
 
@@ -68,13 +70,18 @@ def manage(section, roster, subjects):
                     if action=='create':
                         if not re.fullmatch(r'[a-z0-9_.-]{3,50}',username):raise ValueError('Usuário: 3 a 50 letras sem acento, números, ponto, hífen ou sublinhado.')
                         role=request.form.get('role')
-                        if role not in ('aluno','professor','diretor'):raise ValueError('Perfil inválido.')
-                        sid=request.form.get('student_id','') if role=='aluno' else None
-                        if role=='aluno':
+                        if role not in ('aluno','professor','diretor','responsavel'):raise ValueError('Perfil inválido.')
+                        sid=request.form.get('student_id','') if role in ('aluno','responsavel') else None
+                        if role in ('aluno','responsavel'):
                             if sid not in {s['id'] for s in roster}:raise ValueError('Selecione um aluno da lista cadastrada.')
-                            if conn.execute('SELECT 1 FROM users WHERE student_id=?',(sid,)).fetchone():raise ValueError('Já existe uma conta para esta matrícula.')
+                            if role=='aluno' and conn.execute('SELECT 1 FROM users WHERE student_id=?',(sid,)).fetchone():raise ValueError('Já existe uma conta para esta matrícula.')
+                        stored_role='aluno' if role=='responsavel' else role
                         conn.execute('INSERT INTO users(username,password_hash,name,role,student_id) VALUES(?,?,?,?,?)',
-                                     (username,password(),field('name'),role,sid))
+                                     (username,password(),field('name'),stored_role,sid if role=='aluno' else None))
+                        if role=='responsavel':
+                            conn.execute('INSERT INTO account_roles(username,role) VALUES(?,?)',(username,role))
+                            conn.execute('''INSERT INTO guardian_links(guardian_username,student_id,relationship)
+                                            VALUES(?,?,?)''',(username,sid,'Responsável legal'))
                     else:
                         if not existing:raise ValueError('Conta não encontrada.')
                         if action=='update':conn.execute('UPDATE users SET name=? WHERE username=?',(field('name'),username))
@@ -82,8 +89,8 @@ def manage(section, roster, subjects):
                             if username==session['username']:raise ValueError('Você não pode desativar sua própria conta.')
                             active=request.form.get('active')
                             if active not in ('0','1'):raise ValueError('Status inválido.')
-                            if active=='0' and existing['role']=='diretor' and conn.execute("SELECT COUNT(*) FROM users WHERE role='diretor' AND active=1").fetchone()[0]<=1:raise ValueError('Mantenha ao menos um diretor ativo.')
-                            conn.execute('UPDATE users SET active=? WHERE username=?',(int(active),username))
+                            if active=='0' and existing['role']=='diretor' and conn.execute("SELECT COUNT(*) AS total FROM users WHERE role='diretor' AND active=TRUE").fetchone()['total']<=1:raise ValueError('Mantenha ao menos um diretor ativo.')
+                            conn.execute('UPDATE users SET active=? WHERE username=?',(active=='1',username))
                         elif action=='password':conn.execute('UPDATE users SET password_hash=? WHERE username=?',(password(),username))
                         if action in ('status','password'):
                             conn.execute('INSERT INTO auth_versions(username,version) VALUES(?,1) ON CONFLICT(username) DO UPDATE SET version=version+1',(username,))
@@ -101,7 +108,7 @@ def manage(section, roster, subjects):
                         teacher=field('teacher');discipline=field('discipline')
                         if action=='assign':
                             if discipline not in subjects:raise ValueError('Disciplina não está na grade cadastrada.')
-                            if not conn.execute("SELECT 1 FROM users WHERE username=? AND role='professor' AND active=1",(teacher,)).fetchone():raise ValueError('Selecione um professor ativo.')
+                            if not conn.execute("SELECT 1 FROM users WHERE username=? AND role='professor' AND active=TRUE",(teacher,)).fetchone():raise ValueError('Selecione um professor ativo.')
                             conn.execute('INSERT OR IGNORE INTO teacher_assignments VALUES(?,?,?)',(teacher,class_name,discipline))
                         else:conn.execute('DELETE FROM teacher_assignments WHERE teacher=? AND class_name=? AND discipline=?',(teacher,class_name,discipline))
                 else:
@@ -118,8 +125,12 @@ def manage(section, roster, subjects):
                 session['display_name']=request.form['name'].strip()
             flash('Alteração salva com sucesso.')
             return redirect(url_for(section))
-        except (ValueError,sqlite3.IntegrityError) as exc:
-            error=str(exc) if isinstance(exc,ValueError) else 'Cadastro já existente ou vínculo inválido. Confira os dados.'
+        except ValueError as exc:
+            error=str(exc)
+        except Exception as exc:
+            if not db.is_integrity_error(exc):
+                raise
+            error='Cadastro já existente ou vínculo inválido. Confira os dados.'
     users=db.list_users() if section in ('painel','usuarios','turmas') else []
     with db.connection() as conn:
         assignments=[dict(r) for r in conn.execute('SELECT a.*,u.name FROM teacher_assignments a JOIN users u ON u.username=a.teacher ORDER BY class_name,discipline')] if section in ('painel','turmas') else []
@@ -138,6 +149,15 @@ def manage(section, roster, subjects):
         kind=request.args['export'];output=io.StringIO();writer=csv.writer(output,delimiter=';')
         if kind=='attendance':headers=['Matrícula','Data','Presença'];values=[[r['student_id'],r['class_date'],r['status']] for r in records]
         elif kind=='grades':headers=['Matrícula','Disciplina','N1','N2'];values=[[r['student_id'],r['discipline'],r['n1'],r['n2']] for r in grades]
+        elif kind=='documents':
+            headers=['Protocolo','Matrícula','Documento','Situação','Solicitante','Data']
+            values=[[r['protocol'],r['student_id'],r['document_type'],r['status'],r['requester_name'],r['requested_at']] for r in operations.list_document_requests()]
+        elif kind=='diary':
+            headers=['Professor','Turma','Disciplina','Data','Tempos','Situação','Conteúdo']
+            values=[[r['teacher_name'],r['class_name'],r['discipline'],r['lesson_date'],r['class_hours'],r['status'],r['content']] for r in operations.list_diary_entries()]
+        elif kind=='interventions':
+            headers=['Matrícula','Categoria','Situação','Responsável','Registro','Plano']
+            values=[[r['student_id'],r['category'],r['status'],r['opened_by_name'],r['summary'],r['plan']] for r in operations.list_interventions()]
         else:return 'Relatório inválido.',400
         writer.writerow(headers)
         for row in values:writer.writerow([("'"+str(v)) if str(v).lstrip().startswith(('=','+','-','@')) else v for v in row])
@@ -149,4 +169,5 @@ def manage(section, roster, subjects):
     return render_template('director.html',section=section,token=token,error=error,users=users,roster=roster,
                            classes=class_rows,assignments=assignments,subjects=subjects,stats=stats,settings=settings(),
                            logs=db.recent_logs(50) if section=='relatorios' else [],records=records,grades=grades,start=start,end=end,
+                           p1_metrics=operations.p1_metrics() if section in ('painel','relatorios') else {},
                            retry={k:v for k,v in request.form.items() if k not in ('password','token')} if error else None),422 if error else 200

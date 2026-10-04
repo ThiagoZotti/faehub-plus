@@ -1,0 +1,13 @@
+<div class="internship-form-grid">
+  <label><span>Turma</span><select name="class_name" required>{% for class_name in classes %}<option value="{{ class_name }}" {{ 'selected' if item and item.class_name == class_name }}>{{ class_name }}</option>{% endfor %}</select></label>
+  <label><span>Modalidade</span><select name="modality" required>{% for value, label in modalities.items() %}<option value="{{ value }}" {{ 'selected' if item and item.modality == value }}>{{ label }}</option>{% endfor %}</select></label>
+  <label class="internship-wide"><span>Empresa ou instituição</span><input name="company" required maxlength="120" value="{{ item.company if item else '' }}" placeholder="Quem oferece a oportunidade"></label>
+  <label class="internship-wide"><span>Título da vaga</span><input name="title" required maxlength="160" value="{{ item.title if item else '' }}" placeholder="Ex.: Estágio em suporte de TI"></label>
+  <label><span>Local de atuação</span><input name="location" required maxlength="160" value="{{ item.location if item else '' }}" placeholder="Bairro, cidade ou online"></label>
+  <label><span>Carga horária</span><input name="workload" maxlength="80" value="{{ item.workload if item else '' }}" placeholder="Ex.: 20h semanais"></label>
+  <label><span>Prazo de inscrição</span><input name="deadline" type="date" required min="{{ today }}" value="{{ item.deadline if item else '' }}"></label>
+  <label><span>Link de inscrição</span><input name="application_url" type="url" maxlength="2048" value="{{ item.application_url or '' if item else '' }}" placeholder="https://..."></label>
+  <label class="internship-wide"><span>Descrição</span><textarea class="resize-none" name="description" rows="5" required maxlength="10000" placeholder="Explique atividades, benefícios e contexto da vaga">{{ item.description if item else '' }}</textarea></label>
+  <label class="internship-wide"><span>Requisitos</span><textarea class="resize-none" name="requirements" rows="4" maxlength="5000" placeholder="Conhecimentos, período, idade mínima ou documentos">{{ item.requirements if item else '' }}</textarea></label>
+  <label class="internship-wide"><span>Instruções de inscrição</span><textarea class="resize-none" name="application_instructions" rows="4" maxlength="3000" placeholder="Informe o passo a passo quando não houver link">{{ item.application_instructions if item else '' }}</textarea><small>É obrigatório informar um link seguro ou instruções de inscrição.</small></label>
+</div>

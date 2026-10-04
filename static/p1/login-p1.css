@@ -1,0 +1,2 @@
+.credential-recovery{position:relative;display:inline-flex;margin:10px 2px 0;color:var(--accent);font-size:10px;font-weight:750;text-decoration:none}.credential-recovery:hover{text-decoration:underline}.credential-tabs{grid-template-columns:repeat(4,1fr)}
+@media(max-width:470px){.credential-tabs{grid-template-columns:repeat(2,1fr)}}

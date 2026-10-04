@@ -42,8 +42,9 @@ class DirectorTests(unittest.TestCase):
         self.assertEqual(response.status_code,302)
         self.login('new.student','aluno')
         with self.client.session_transaction() as s:s['aluno_id']=sid
-        for page in ('painel','boletim','frequencia','horario','exercicios','mensagens','avatar'):
+        for page in ('painel','boletim','agenda','horario','exercicios','mensagens'):
             self.assertEqual(self.client.get('/'+page).status_code,200,page)
+        self.assertEqual(self.client.get('/avatar').status_code,404)
 
     def test_disable_and_reactivate_revokes_session(self):
         db.create_user('temp.teacher','strong-pass123','Temporário','professor')

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='p1/operations.css') }}">{% endblock %}
+{% block content %}
+<main class="ops">
+  <section class="ops-hero">
+    <div><p class="ops-kicker">Campus Família · acompanhamento autorizado</p><h1>A escola, sem pontos cegos.</h1><p>Frequência, desempenho, documentos e acompanhamento pedagógico reunidos com acesso restrito às matrículas vinculadas.</p></div>
+    <div class="ops-score"><span>Estudantes vinculados</span><strong>{{ students|length }}</strong><i style="--progress:100%"></i><small>vínculo ativo e protegido</small></div>
+  </section>
+  {% for student in students %}
+  <section class="ops-grid">
+    <article class="ops-card ops-card--wide ops-card--accent">
+      <div class="ops-card__head"><div><h2>{{ student.nome }}</h2><p>Turma {{ student.turma }} · matrícula {{ student.matricula }}</p></div><span class="ops-status">Vínculo ativo</span></div>
+      <div class="ops-stats">
+        <div class="ops-stat"><span>Média geral</span><strong>{{ student.average }}</strong><small>visão consolidada</small></div>
+        <div class="ops-stat"><span>Frequência</span><strong>{{ student.frequencia }}%</strong><small>{{ student.faltas }} faltas</small></div>
+        <div class="ops-stat"><span>Documentos</span><strong>{{ documents|selectattr('student_id','equalto',student.matricula)|list|length }}</strong><small>protocolos</small></div>
+        <div class="ops-stat"><span>Acompanhamentos</span><strong>{{ interventions|selectattr('student_id','equalto',student.matricula)|list|length }}</strong><small>registros</small></div>
+      </div>
+    </article>
+    <article class="ops-card"><div class="ops-card__head"><div><h2>Disciplinas</h2><p>Resultados mais recentes</p></div></div><div class="ops-list">{% for grade in student.grades %}<div class="ops-row"><div><h3>{{ grade.disciplina }}</h3><p>{{ grade.situacao }}</p></div><strong>{{ grade.media }}</strong></div>{% endfor %}</div></article>
+    <article class="ops-card ops-card--full"><div class="ops-card__head"><div><h2>Ações rápidas</h2><p>Serviços que você pode acompanhar agora.</p></div></div><div class="ops-actions"><a class="ops-btn ops-btn--primary" href="{{ url_for('secretaria') }}">Solicitar documento</a><a class="ops-btn" href="{{ url_for('calendario') }}">Ver calendário</a><a class="ops-btn" href="{{ url_for('mensagens') }}">Falar com a escola</a></div></article>
+  </section>
+  {% else %}<div class="ops-empty">Nenhuma matrícula está vinculada a esta conta. Procure a secretaria.</div>{% endfor %}
+</main>
+{% endblock %}
