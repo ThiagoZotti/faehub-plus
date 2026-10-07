@@ -10,16 +10,16 @@ colors:
   tertiary: "#B7EBD0"
   tertiary-container: "#FFD19A"
   error: "#FFB798"
-  surface: "#0D2037"
-  surface-bright: "#102943"
-  background: "#061225"
+  surface: "#112438"
+  surface-bright: "#172E43"
+  background: "#091522"
   on-background: "#F3F8FF"
   outline: "#B4C8DC"
 typography:
   sans:
     fontFamily: "Segoe UI Variable Text, Segoe UI, Arial, sans-serif"
   display:
-    fontFamily: "Bahnschrift, Arial Narrow, Segoe UI, sans-serif"
+    fontFamily: "Segoe UI Variable Display, Segoe UI, Arial, sans-serif"
   mono:
     fontFamily: "Cascadia Code, Cascadia Mono, Consolas, monospace"
 rounded:
@@ -65,15 +65,15 @@ A sinalização de um campus técnico ao entardecer: orientação clara, superf�
 
 ### Product context and register
 
-- **Audience and primary job:** alunos consultam sua vida acadêmica; professores operam turmas e publicações; a direção administra a instituição.
+- **Audience and primary job:** alunos consultam sua vida acadêmica; responsáveis acompanham matrículas vinculadas; professores operam turmas e registros; coordenação, secretaria e direção administram a instituição.
 - **Target market(s) and evidence:** ensino técnico brasileiro, conforme ETESC/FAETEC, turma 3110 e conteúdo do repositório.
 - **Locale(s) and language policy:** português do Brasil em toda a interface; textos institucionais devem ser revisados pelo responsável pelo projeto.
 - **Usage scene:** uso recorrente em computador e celular, muitas vezes entre aulas; decisões principais precisam ser identificáveis rapidamente.
 - **Register:** híbrido. Login e painel têm expressão de marca; formulários, listas, notas e frequência priorizam familiaridade de produto.
-- **Memorable signature:** o campus é tratado como um lugar navegável; cada módulo recebe uma peça de sinalização ou instrumento próprio, como o radar de oportunidades de Estágios.
+- **Memorable signature:** o campus é tratado como um lugar navegável; cada módulo recebe uma peça de sinalização ou instrumento próprio. O painel do aluno usa um radar do dia — agenda, desempenho e prioridade — no lugar de personagens. Na P0, a estrutura acadêmica é um mapa vivo com percurso numerado, inventário e linha do tempo do estudante. Na P1, operações escolares usam a linguagem de uma mesa de controle: trilhas, protocolos, linhas do tempo e estados luminosos.
 - **Restraint:** CRUD, campos, confirmação, busca e estados de erro permanecem previsíveis, legíveis e sem gestos escondidos.
 - **Anti-references:** não imitar kits genéricos de SaaS, interfaces proprietárias de jogos, excesso de vidro/neon ou mosaicos de cartões sem hierarquia.
-- **Token ownership/runtime mapping:** este documento espelha os tokens canônicos de `static/campus-system.css` e `static/academic.css`; mudanças visuais compartilhadas devem alterar primeiro esses arquivos e depois atualizar este contrato.
+- **Token ownership/runtime mapping:** este documento espelha os tokens canônicos de `static/campus-system.css` e `static/academic.css`; a P0 deriva esses tokens em `static/p0/academic-core.css`. Mudanças visuais compartilhadas devem alterar primeiro os arquivos canônicos e depois atualizar este contrato.
 
 ## Colors
 
@@ -107,7 +107,11 @@ Ação primária recebe preenchimento com o acento do perfil. Ações secundári
 
 ### Navigation and data display
 
-A barra superior é sinalização de campus, com sublinhado ativo e carrossel inferior. Listas de operação devem ter título, estado, metadados essenciais e uma ação principal clara. Etiquetas informam modalidade, prazo e arquivo; não substituem títulos.
+A barra superior é sinalização de campus, com sublinhado ativo e carrossel inferior. Ela expõe no máximo sete destinos frequentes; módulos secundários permanecem no disclosure compartilhado “Mais”. Para alunos, a arquitetura agrupa presença e eventos em **Agenda**, avisos e notificações em **Comunicados**, e documentos e histórico em **Secretaria**. Listas de operação devem ter título, estado, metadados essenciais e uma ação principal clara. Etiquetas informam modalidade, prazo e arquivo; não substituem títulos.
+
+O sistema não utiliza avatares ou personalização de personagem. A identificação da conta é textual e o painel resume o dia acadêmico com a mesma estrutura de página dos demais módulos.
+
+O painel do aluno é deliberadamente enxuto: boas-vindas, **Seu próximo movimento** e **Seu ritmo acadêmico** são os únicos blocos editoriais. As pendências do resumo são uma navegação direta para a lista de atividades já filtrada. Mensagens usam a metáfora de conversa direta — pessoas, histórico em balões e compositor contextual — em vez de caixa de e-mail. O compositor apresenta anexo como ação nomeada, mostra prévia antes do envio e mantém fotos dentro do fluxo da conversa; exclusão usa confirmação própria e estado restaurável.
 
 ### Forms and overlays
 
@@ -131,3 +135,7 @@ A voz é direta, encorajadora e escolar, sem mencionar IA, mockup ou implementa�
 - **Do:** reutilizar tokens, navegação, foco e feedback já existentes.
 - **Don't:** transformar cada informação em um cartão de vidro independente.
 - **Don't:** esconder operações essenciais em hover, gesto ou ícone sem nome.
+
+## Refinamento Campus moderno
+
+A entrada preserva a fotografia escolar, com título editorial moderado e formulário sóbrio. O shell usa fundo azul sólido; a fotografia fica concentrada na recepção do aluno. Superfícies, bordas e tipografia vêm do owner existente `static/campus-system.css`. A agenda usa uma lista cronológica legível, sem radar animado. Textos operacionais usam 12–16 px e ações mantêm pelo menos 44 px. `static/arrival.css` é o owner público e `static/dashboard-v2.css` o owner do resumo do aluno.

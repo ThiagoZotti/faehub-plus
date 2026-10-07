@@ -1,41 +1,6 @@
 (() => {
   const root = document.getElementById('dashboard');
   if (!root) return;
-  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-  let motionFrame;
-  const status = document.getElementById('dashboardStatus');
-  const focus = document.getElementById('focusLobby');
-  focus?.addEventListener('click', () => {
-    const on = root.classList.toggle('is-focused');
-    focus.setAttribute('aria-pressed', String(on));
-    const caption = root.querySelector('.focus-caption');
-    if (caption) caption.hidden = !on;
-    root.querySelector('.lobby-options')?.removeAttribute('open');
-  });
-  const fullscreen = document.getElementById('fullscreenLobby');
-  if (fullscreen) fullscreen.hidden = !document.fullscreenEnabled;
-  fullscreen?.addEventListener('click', async () => {
-    try {
-      if (document.fullscreenElement) await document.exitFullscreen();
-      else await document.documentElement.requestFullscreen();
-    } catch {
-      if (status) status.textContent = 'Tela cheia indisponível neste navegador.';
-    }
-  });
-  document.addEventListener('fullscreenchange', () => {
-    if (!fullscreen) return;
-    fullscreen.setAttribute('aria-pressed', String(!!document.fullscreenElement));
-    const label = fullscreen.querySelector('span');
-    if (label) label.textContent = document.fullscreenElement ? 'Sair da tela cheia' : 'Tela cheia';
-  });
-  document.getElementById('refreshLobby')?.addEventListener('click', () => location.reload());
-  const agenda = document.getElementById('agendaDialog');
-  document.getElementById('openAgenda')?.addEventListener('click', () => agenda?.showModal());
-  document.getElementById('closeAgenda')?.addEventListener('click', () => agenda?.close());
-  agenda?.addEventListener('click', event => {
-    const box = agenda.getBoundingClientRect();
-    if (event.target === agenda && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) agenda.close();
-  });
   function updateClock() {
     const lesson = root.querySelector('[data-lesson-at]');
     if (lesson) {
@@ -43,20 +8,8 @@
       lesson.textContent = minutes <= 0 ? 'Horário alcançado. Atualize para ver a próxima aula.' :
         minutes < 60 ? `Começa em ${minutes} min` : minutes < 1440 ? `Começa em ${Math.floor(minutes / 60)}h ${minutes % 60}min` : `Começa em ${Math.floor(minutes / 1440)}d ${Math.floor(minutes % 1440 / 60)}h`;
     }
-    const updated = root.querySelector('[data-updated]');
-    if (updated) updated.textContent = 'Atualizado às ' + new Intl.DateTimeFormat('pt-BR', {timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit'}).format(new Date(updated.dataset.updated));
   }
   updateClock();
   const clock = setInterval(updateClock, 30000);
-  root.addEventListener('pointermove', event => {
-    if (reducedMotion.matches || event.pointerType !== 'mouse') return;
-    cancelAnimationFrame(motionFrame);
-    motionFrame = requestAnimationFrame(() => {
-      const x = event.clientX / innerWidth - .5;
-      const y = event.clientY / innerHeight - .5;
-      root.style.setProperty('--scene-x', `${x * -10}px`);
-      root.style.setProperty('--scene-y', `${y * -6}px`);
-    });
-  }, {passive:true});
-  addEventListener('pagehide', () => { clearInterval(clock); cancelAnimationFrame(motionFrame); }, {once:true});
+  addEventListener('pagehide', () => clearInterval(clock), {once:true});
 })();

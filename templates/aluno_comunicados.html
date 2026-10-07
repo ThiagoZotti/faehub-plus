@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='academic.css') }}"><link rel="stylesheet" href="{{ url_for('static',filename='campus-modules.css') }}"><link rel="stylesheet" href="{{ url_for('static',filename='unified-sections.css',v=2) }}">{% endblock %}
+{% block content %}
+<main class="academic module-world unified-page communications-page">
+  <header class="unified-hero">
+    <div><span class="unified-kicker">Central de comunicados</span><h1>O que merece sua atenção.</h1><p>Orientações da turma e atualizações da sua conta, reunidas sem duplicar informação.</p></div>
+    <div class="unified-stats"><div><strong>{{ avisos|length }}</strong><span>da turma</span></div><div><strong>{{ notifications|length }}</strong><span>da conta</span></div><div><strong>{{ unread }}</strong><span>não lidas</span></div></div>
+  </header>
+  {% if error %}<p class="ops-error" role="alert">{{ error }}</p>{% endif %}
+  <section class="unified-comms">
+    <article class="unified-panel">
+      <header class="unified-panel__head"><div><span class="unified-kicker">Professores e turma</span><h2>Avisos da turma</h2><p>Leia o aviso antes de descartá-lo. O descarte é reversível.</p></div></header>
+      <div class="unified-feed">{% for item in avisos %}
+        <article class="unified-message {{ 'is-read' if item.is_read else 'is-unread' }}">
+          <div class="unified-message__meta"><time>{{ item.quando }}</time><span>{{ 'Lido' if item.is_read else 'Novo' }}</span></div>
+          <h3>{{ item.titulo }}</h3><p>{{ item.desc }}</p>
+          <div class="unified-message__actions">
+            <form method="post" novalidate><input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="kind" value="notice"><input type="hidden" name="item_key" value="{{ item.key }}"><input type="hidden" name="action" value="{{ 'unread' if item.is_read else 'read' }}"><button class="unified-action" type="submit">{{ 'Marcar como não lido' if item.is_read else 'Marcar como lido' }}</button></form>
+            {% if item.is_read %}<form method="post" novalidate><input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="kind" value="notice"><input type="hidden" name="item_key" value="{{ item.key }}"><input type="hidden" name="action" value="dismiss"><button class="unified-action unified-action--quiet" type="submit">Descartar aviso</button></form>{% endif %}
+          </div>
+        </article>
+      {% else %}<p class="unified-empty">Nenhum aviso ativo para a turma.</p>{% endfor %}</div>
+    </article>
+
+    <article class="unified-panel">
+      <header class="unified-panel__head"><div><span class="unified-kicker">Sistema e serviços</span><h2>Atualizações da conta</h2><p>Documentos, eventos e mudanças de situação com leitura sincronizada.</p></div></header>
+      <div class="unified-feed">{% for item in notifications %}
+        <article class="unified-message {{ 'is-read' if item.is_read else 'is-unread' }}">
+          <div class="unified-message__meta"><time>{{ item.created_at|local_datetime }}</time><span>{{ item.category }} · {{ 'Lida' if item.is_read else 'Nova' }}</span></div>
+          <h3>{{ item.title }}</h3><p>{{ item.body }}</p>
+          <div class="unified-message__actions">
+            {% if item.action_url %}<a class="unified-link" href="{{ item.action_url }}">Abrir contexto</a>{% endif %}
+            <form method="post" novalidate><input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="kind" value="notification"><input type="hidden" name="item_key" value="{{ item.id }}"><input type="hidden" name="id" value="{{ item.id }}"><input type="hidden" name="action" value="{{ 'unread' if item.is_read else 'read' }}"><button class="unified-action" type="submit">{{ 'Marcar como não lida' if item.is_read else 'Marcar como lida' }}</button></form>
+            {% if item.is_read %}<form method="post" novalidate><input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="kind" value="notification"><input type="hidden" name="item_key" value="{{ item.id }}"><input type="hidden" name="id" value="{{ item.id }}"><input type="hidden" name="action" value="dismiss"><button class="unified-action unified-action--quiet" type="submit">Descartar atualização</button></form>{% endif %}
+          </div>
+        </article>
+      {% else %}<p class="unified-empty">Nenhuma atualização ativa na sua conta.</p>{% endfor %}</div>
+    </article>
+  </section>
+
+  {% if dismissed %}<details class="communications-discarded unified-panel"><summary>Descartados <span>{{ dismissed|length }}</span></summary><div class="communications-discarded__list">{% for item in dismissed %}<article><div><small>{{ 'Aviso da turma' if item.kind == 'notice' else 'Atualização da conta' }}</small><strong>{{ item.titulo if item.kind == 'notice' else item.title }}</strong></div><form method="post" novalidate><input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="kind" value="{{ item.kind }}"><input type="hidden" name="item_key" value="{{ item.item_key }}"><input type="hidden" name="action" value="restore">{% if item.kind == 'notification' %}<input type="hidden" name="id" value="{{ item.id }}">{% endif %}<button class="unified-action" type="submit">Restaurar</button></form></article>{% endfor %}</div></details>{% endif %}
+  <p id="moduleStatus" role="status" aria-live="polite"></p>
+</main>
+{% endblock %}

@@ -9,19 +9,20 @@
 <title>{{ view_title }} · FaeHub+</title>
 <link rel="icon" href="{{ url_for('static', filename='logo.svg') }}" type="image/svg+xml" />
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-{% if role in ['aluno', 'professor', 'admin'] %}<link rel="stylesheet" href="{{ url_for('static', filename='campus-shell.css') }}">{% endif %}
+{% if role in ['aluno', 'professor', 'admin', 'responsavel'] %}<link rel="stylesheet" href="{{ url_for('static', filename='campus-shell.css') }}">{% endif %}
+{% if role in ['aluno', 'professor', 'admin', 'responsavel'] %}<link rel="stylesheet" href="{{ url_for('static', filename='p1/shell-p1.css') }}">{% endif %}
 {% block head %}{% endblock %}
-{% if role in ['aluno', 'professor', 'admin'] %}
+{% if role in ['aluno', 'professor', 'admin', 'responsavel'] %}
 <link rel="stylesheet" href="{{ url_for('static', filename='performance.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='campus-system.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='campus-system.css', v=2) }}">
 {% endif %}
 </head>
-<body class="role-{{ role }}{{ ' campus-shell dark-mode' if role in ['aluno', 'professor', 'admin'] else '' }}{{ (' view-' ~ current_view) if current_view else '' }}">
+<body class="role-{{ role }}{{ ' campus-shell dark-mode' if role in ['aluno', 'professor', 'admin', 'responsavel'] else '' }}{{ (' view-' ~ current_view) if current_view else '' }}">
 <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
 <div class="app" data-view="{{ current_view }}">
   <div class="app-aurora app-aurora--one"></div><div class="app-aurora app-aurora--two"></div>
 
-  {% if role not in ['aluno', 'professor', 'admin'] %}
+  {% if role not in ['aluno', 'professor', 'admin', 'responsavel'] %}
   <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Abrir menu" aria-expanded="false" aria-controls="sidebar">
     <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
   </button>
@@ -59,13 +60,12 @@
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
   {% else %}
   <header class="campus-header">
-    <a class="campus-brand" href="{{ url_for('painel') }}" aria-label="{{ 'Campus Direção' if role == 'admin' else ('Campus Docente' if role == 'professor' else 'Campus Lobby') }}"><img src="{{ url_for('static', filename='logo.svg') }}" alt=""><span>FaeHub<em>+</em><small>{{ 'CAMPUS DIREÇÃO' if role == 'admin' else ('CAMPUS DOCENTE' if role == 'professor' else ('CONHECIMENTO TRANSFORMA AMANHÃ' if current_view == 'painel' else 'CAMPUS LOBBY')) }}</small></span></a>
+    <a class="campus-brand" href="{{ url_for('painel') }}" aria-label="{{ 'Campus Direção' if role == 'admin' else ('Campus Docente' if role == 'professor' else ('Campus Família' if role == 'responsavel' else 'Campus Lobby')) }}"><img src="{{ url_for('static', filename='logo.svg') }}" alt=""><span>FaeHub<em>+</em><small>{{ 'CAMPUS DIREÇÃO' if role == 'admin' else ('CAMPUS DOCENTE' if role == 'professor' else ('CAMPUS FAMÍLIA' if role == 'responsavel' else ('CONHECIMENTO TRANSFORMA AMANHÃ' if current_view == 'painel' else 'CAMPUS LOBBY'))) }}</small></span></a>
     <nav class="campus-tabs" aria-label="Módulos do campus">
-      {% for view_id, label, icon in nav_items %}<a href="{{ url_for(view_id) }}" {% if current_view == view_id %}aria-current="page"{% endif %}>{{ icons[icon]|safe }}<span>{{ label }}</span></a>{% endfor %}
+      {% for view_id, label, icon in nav_primary %}<a href="{{ url_for(view_id) }}" {% if current_view == view_id %}aria-current="page"{% endif %}>{{ icons[icon]|safe }}<span>{{ label }}</span>{% if view_id in ['notificacoes','comunicados'] and notification_unread %}<b class="campus-nav-badge" aria-label="{{ notification_unread }} não lidas">{{ notification_unread }}</b>{% endif %}</a>{% endfor %}
     </nav>
-    {% if role == 'aluno' and current_view == 'painel' %}
-    <a class="campus-profile campus-profile-card" href="{{ url_for('avatar') }}" aria-label="Abrir o avatar de {{ profile_nome }}"><img src="{{ url_for('static', filename='campus-profile-thiago-v2.webp') }}" alt=""><span><strong>Olá, {{ profile_nome.split(' ')[0] }}</strong><small>Turma {{ profile_turma or '3110' }}</small></span><b aria-hidden="true">⌄</b></a>
-    {% elif role == 'aluno' %}<a class="campus-profile" href="{{ url_for('avatar') }}" aria-label="Personalizar o avatar de {{ profile_nome }}" title="Personalizar meu avatar">{{ profile_iniciais }}</a>{% else %}<span class="campus-profile" aria-label="{{ profile_nome }} · {{ role_label }}" role="img">{{ profile_iniciais }}</span>{% endif %}
+    {% if nav_more %}<details class="campus-more"{% if nav_more_current %} data-current="true"{% endif %}><summary aria-label="Abrir mais módulos">{{ icons['layers']|safe }}<span>Mais</span><b aria-hidden="true">⌄</b></summary><div>{% for view_id, label, icon in nav_more %}<a href="{{ url_for(view_id) }}" {% if current_view == view_id %}aria-current="page"{% endif %}>{{ icons[icon]|safe }}<span>{{ label }}</span>{% if view_id=='notificacoes' and notification_unread %}<b class="campus-nav-badge" aria-label="{{ notification_unread }} não lidas">{{ notification_unread }}</b>{% endif %}</a>{% endfor %}</div></details>{% endif %}
+    <span class="campus-account" aria-label="Conta de {{ profile_nome }}"><strong>{{ profile_nome }}</strong><small>{{ ('Turma ' ~ (profile_turma or '3110')) if role == 'aluno' else role_label }}</small></span>
     <a class="campus-exit" href="{{ url_for('sair') }}" aria-label="Sair da conta de {{ profile_nome }}">Sair</a>
   </header>
   <nav class="campus-pager" aria-label="Percorrer módulos">
@@ -80,7 +80,7 @@
   {% endif %}
 
   <div class="app__main" id="main-content" tabindex="-1">
-    <header class="topbar" {% if role in ['aluno', 'professor', 'admin'] %}hidden{% endif %}>
+    <header class="topbar" {% if role in ['aluno', 'professor', 'admin', 'responsavel'] %}hidden{% endif %}>
       <div>
         <p class="topbar__eyebrow"><span class="live-dot"></span> ETESC/FAETEC · {{ role_label }}</p>
         <h1 class="topbar__title">{{ view_title }}</h1>
@@ -109,6 +109,6 @@
 </div>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
-{% if role in ['aluno', 'professor', 'admin'] %}<script src="{{ url_for('static', filename='campus-shell.js') }}"></script>{% endif %}
+{% if role in ['aluno', 'professor', 'admin', 'responsavel'] %}<script src="{{ url_for('static', filename='campus-shell.js') }}"></script>{% endif %}
 </body>
 </html>

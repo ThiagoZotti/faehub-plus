@@ -1,54 +1,37 @@
 {% extends "base.html" %}
-{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='dashboard-v2.css',v=3) }}">{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='dashboard-v2.css',v=8) }}">{% endblock %}
 {% block content %}
-<main class="dashboard campus-plaza" id="dashboard" style="--skin:{{ avatar.skin }};--hair:{{ avatar.hair }};--shirt:{{ avatar.shirt }}">
-  <div class="plaza-scene" aria-hidden="true"><div class="plaza-backdrop"></div><div class="plaza-light"></div><div class="plaza-particles"></div><div class="plaza-vignette"></div></div>
+<main class="student-dashboard" id="dashboard">
+  <header class="dashboard-hero">
+    <div class="dashboard-hero__copy">
+      <span class="dashboard-context">{{ summary.date_label }} · Turma {{ d.turma }}</span>
+      <h1>Bem-vindo, {{ d.nome.split(' ')[0] }}.</h1>
+      <p>O essencial para começar seu dia acadêmico.</p>
+      {% if summary.unread_count %}<a class="dashboard-message-alert" href="{{ url_for('mensagens') }}"><span aria-hidden="true">✦</span><strong>{{ summary.unread_count }} {{ 'mensagem nova' if summary.unread_count == 1 else 'mensagens novas' }}</strong><small>Abrir conversas</small></a>{% endif %}
+    </div>
+    <div class="dashboard-scoreboard" aria-label="Resumo acadêmico"><div><strong>{{ '%.1f'|format(media_geral) }}</strong><span>Média geral</span></div><div><strong>{{ d.frequencia }}%</strong><span>Frequência</span></div><a class="dashboard-pending" href="{{ url_for('exercicios', status='pending') }}"><strong>{{ summary.pending_count }}</strong><span>{{ 'Pendência' if summary.pending_count == 1 else 'Pendências' }} <b>Ver trabalhos</b></span></a></div>
+  </header>
 
-  <div class="plaza-grid">
-    <aside class="plaza-column plaza-left" aria-label="Agenda e atividades">
-      <section class="plaza-card lesson-card">
-        <header><span class="card-icon cyan">{{ icons['clock']|safe }}</span><h2>Próxima aula</h2><button type="button" id="openAgenda" aria-label="Abrir próximas aulas">›</button></header>
-        {% if summary.lessons %}{% set lesson=summary.lessons[0] %}
-        <div class="lesson-subject"><span>√</span><div><strong>{{ lesson.subject }}</strong><small>{{ lesson.day }} · {{ lesson.time }}</small></div></div>
-        <p class="lesson-countdown" data-lesson-at="{{ lesson.iso }}"></p>
-        <p class="lesson-location">⌖ Turma {{ d.turma }} · Sala de aula</p>
-        {% else %}<div class="empty-state"><strong>Nenhuma aula prevista</strong><small>Seu próximo horário aparecerá aqui.</small></div>{% endif %}
-        <a class="card-action" href="{{ url_for('horario') }}">Ver horário completo <span>→</span></a>
-      </section>
+  <section class="dashboard-layout">
+    <article class="dashboard-panel day-radar">
+      <header class="dashboard-panel__head"><div><span class="dashboard-context">Radar do dia</span><h2>Seu próximo movimento</h2></div><a href="{{ url_for('horario') }}">Horário completo</a></header>
+      {% if summary.lessons %}{% set lesson=summary.lessons[0] %}
+      <div class="radar-focus"><div class="radar-time"><strong>{{ lesson.time }}</strong><span>{{ lesson.day }}</span></div><div class="radar-subject"><span>Próxima aula</span><h3>{{ lesson.subject }}</h3><p class="lesson-countdown" data-lesson-at="{{ lesson.iso }}"></p><small>Turma {{ d.turma }} · Sala de aula</small></div></div>
+      <ol class="day-route" aria-label="Próximas aulas">{% for item in summary.lessons[:4] %}<li class="{{ 'is-next' if loop.first }}"><time>{{ item.time }}</time><span><strong>{{ item.subject }}</strong><small>{{ item.day }} · {{ item.date }}</small></span></li>{% endfor %}</ol>
+      {% else %}<div class="dashboard-empty"><strong>Nenhuma aula prevista.</strong><p>Seu próximo horário aparecerá aqui quando houver aula na grade.</p></div>{% endif %}
+    </article>
 
-      <section class="plaza-card tasks-card">
-        <header><span class="card-icon violet">{{ icons['layers']|safe }}</span><h2>Atividades</h2><span class="card-count">{{ summary.pending_count }}</span></header>
-        <div class="task-list">{% for task in summary.activity_preview[:3] %}<a href="{{ url_for('exercicios') }}"><i class="{{ 'overdue' if task.overdue else '' }}"></i><span><strong>{{ task.title }}</strong><small>{{ task.urgency }}</small></span><b>›</b></a>{% else %}<div class="empty-state success"><strong>Tudo entregue</strong><small>Você está em dia com as atividades.</small></div>{% endfor %}</div>
-        <a class="card-action" href="{{ url_for('exercicios') }}">Ver todas as atividades <span>→</span></a>
-      </section>
+    <aside class="dashboard-panel performance-panel">
+      <header class="dashboard-panel__head"><div><span class="dashboard-context">Desempenho</span><h2>Seu ritmo acadêmico</h2></div><a href="{{ url_for('boletim') }}">Boletim</a></header>
+      <div class="performance-index"><strong>{{ '%.1f'|format(media_geral) }}</strong><span>{{ 'Ritmo forte' if media_geral >= 8 else ('Em evolução' if media_geral >= 6 else 'Pede atenção') }}</span></div>
+      <div class="performance-track"><span>Média geral</span><i><b style="width:{{ media_geral * 10 }}%"></b></i><strong>{{ '%.1f'|format(media_geral) }}</strong></div>
+      <div class="performance-track"><span>Frequência</span><i><b style="width:{{ d.frequencia }}%"></b></i><strong>{{ d.frequencia }}%</strong></div>
+      <div class="performance-note"><strong>{{ recuperacoes }}</strong><span>{{ 'disciplina em recuperação' if recuperacoes == 1 else 'disciplinas em recuperação' }}</span></div>
+      <a class="dashboard-action" href="{{ url_for('boletim') }}">Ver resultados por matéria</a>
     </aside>
 
-    <section class="plaza-character" aria-label="Sua identidade no campus">
-      <a class="character-figure" href="{{ url_for('avatar') }}" aria-label="Personalizar o avatar de {{ d.nome }}" title="Personalizar meu avatar"><img src="{{ url_for('static', filename='campus-avatar-thiago-v2.webp') }}" alt="Avatar de {{ d.nome }}"></a>
-      <div class="character-platform" aria-hidden="true"><i></i></div>
-      <p class="focus-caption" hidden>Clique novamente em “Modo foco” para retornar aos seus cards.</p>
-    </section>
-
-    <aside class="plaza-column plaza-right" aria-label="Desempenho e frequência">
-      <section class="plaza-card score-card">
-        <header><span class="card-icon cyan">▥</span><h2>Média geral</h2><a href="{{ url_for('boletim') }}" aria-label="Abrir boletim">›</a></header>
-        <div class="metric-ring" style="--value:{{ media_geral * 10 }}%"><strong>{{ '%.1f'|format(media_geral) }}</strong><small>DE 10</small></div>
-        <div class="metric-copy"><span>{{ 'Excelente ritmo' if media_geral >= 8 else ('Em evolução' if media_geral >= 6 else 'Precisa de atenção') }}</span><small>{{ recuperacoes }} {{ 'disciplina em recuperação' if recuperacoes == 1 else 'disciplinas em recuperação' }}</small></div>
-        <a class="card-action" href="{{ url_for('boletim') }}">Ver detalhes <span>→</span></a>
-      </section>
-
-      <section class="plaza-card attendance-card">
-        <header><span class="card-icon mint">{{ icons['users']|safe }}</span><h2>Frequência</h2><a href="{{ url_for('frequencia') }}" aria-label="Abrir frequência">›</a></header>
-        <div class="attendance-body"><div class="metric-ring small" style="--value:{{ d.frequencia }}%"><strong>{{ d.frequencia }}%</strong></div><p><strong>{{ 'Presença excelente' if d.frequencia >= 90 else ('Acompanhe suas faltas' if d.frequencia >= 75 else 'Atenção necessária') }}</strong><small>{{ d.faltas }} faltas em {{ d.aulas_dadas }} aulas</small></p></div>
-        <a class="card-action" href="{{ url_for('frequencia') }}">Ver histórico <span>→</span></a>
-      </section>
-    </aside>
-  </div>
-
-  <div class="plaza-quote plaza-quote-left" aria-hidden="true"><span>“Grandes pessoas constroem grandes histórias.”</span><i></i></div>
-  <div class="plaza-quote plaza-quote-right" aria-hidden="true"><span>Mais que ensino.<br>Uma comunidade que te leva mais longe.</span><i></i></div>
-  <dialog class="agenda-dialog" id="agendaDialog" aria-labelledby="agendaTitle"><header><div><span class="dash-kicker">TURMA {{ d.turma }}</span><h2 id="agendaTitle">Seu próximo roteiro</h2></div><button type="button" id="closeAgenda" aria-label="Fechar próximas aulas">×</button></header>{% for lesson in summary.lessons %}<div class="agenda-row"><strong>{{ lesson.time }}</strong><div><h3>{{ lesson.subject }}</h3><p>{{ lesson.day }} · {{ lesson.date }}</p></div></div>{% else %}<p>Nenhuma aula prevista na grade atual.</p>{% endfor %}<a class="card-action dialog-action" href="{{ url_for('horario') }}">Abrir horário completo →</a></dialog>
+  </section>
   <p id="dashboardStatus" class="dashboard-status" role="status" aria-live="polite"></p>
 </main>
-<script src="{{ url_for('static',filename='dashboard.js') }}"></script>
+<script src="{{ url_for('static',filename='dashboard.js',v=5) }}"></script>
 {% endblock %}

@@ -25,7 +25,9 @@
   root.querySelectorAll('[data-record-date]').forEach(button => button.addEventListener('click', () => {
     root.querySelectorAll('[data-record-date]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
     const [year, month, day] = button.dataset.recordDate.split('-');
-    document.getElementById('recordDate').textContent = `${day}/${month}/${year}`;
-    document.getElementById('recordStatus').textContent = {presente:'Presença confirmada na chamada deste dia.', ausente:'Falta registrada na chamada deste dia.', unrecorded:'Nenhuma chamada salva para este dia. Isso não indica ausência.'}[button.dataset.recordStatus];
+    const dateOutput = document.getElementById('recordDate');
+    if (dateOutput) dateOutput.textContent = `${day}/${month}/${year}`;
+    const statusOutput = document.getElementById('recordStatus');
+    if (statusOutput) statusOutput.textContent = {presente:'Presença confirmada na chamada deste dia.', ausente:'Falta registrada na chamada deste dia.', unrecorded:'Nenhuma chamada salva para este dia. Isso não indica ausência.'}[button.dataset.recordStatus];
   }));
 })();

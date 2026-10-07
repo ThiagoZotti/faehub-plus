@@ -25,8 +25,11 @@ REQUIRED_TABLES = (
 def main() -> int:
     print(f"Backend configurado: {database.database_backend()}")
     if not database.using_postgres():
-        print(f"SQLite local: {database.DB_PATH}")
-        return 0
+        print(
+            "FAEHUB_DATABASE_URL não está definida; o aplicativo não inicia sem Supabase.",
+            file=sys.stderr,
+        )
+        return 1
     try:
         with database.connection() as connection:
             version = connection.execute("SELECT current_database() AS database_name").fetchone()

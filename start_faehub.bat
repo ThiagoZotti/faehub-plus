@@ -17,6 +17,21 @@ if not exist ".venv\Scripts\python.exe" (
   if errorlevel 1 goto :failure
 )
 
+if not exist ".env" (
+  echo.
+  echo Supabase nao configurado. Copie .env.example para .env e preencha FAEHUB_DATABASE_URL.
+  pause
+  exit /b 1
+)
+
+".venv\Scripts\python.exe" scripts\check_database.py
+if errorlevel 1 (
+  echo.
+  echo Nao foi possivel conectar ao Supabase. Confira o arquivo .env.
+  pause
+  exit /b 1
+)
+
 echo.
 echo FaeHub pronto em http://127.0.0.1:5000
 echo Mantenha esta janela aberta durante a apresentacao.

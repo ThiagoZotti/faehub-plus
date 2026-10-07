@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='p1/operations.css') }}">{% endblock %}
+{% block content %}
+<article class="ops-document">
+<p>FAETEC · Escola Técnica Estadual de Santa Cruz</p>
+<h1>{{ document_name }}</h1>
+<p>Estudante: <strong>{{ student.nome if student else record.student_id }}</strong> · Matrícula: <strong>{{ record.student_id }}</strong></p>
+{% if record.document_type == 'matricula' %}
+<p>Declaramos que o estudante possui vínculo acadêmico registrado nesta unidade escolar.</p>
+{% elif record.document_type == 'frequencia' %}
+{% if frequency is not none %}<p>Frequência nas {{ attendance|length }} chamadas registradas: <strong>{{ frequency }}%</strong>.</p>
+{% else %}<p>Ainda não existem chamadas registradas para apurar a frequência.</p>{% endif %}
+{% elif record.document_type == 'historico' %}
+<p>Extrato das notas registradas no sistema. Não substitui o histórico oficial consolidado de todos os anos letivos.</p>
+<table><thead><tr><th>Disciplina</th><th>N1</th><th>N2</th><th>Média</th></tr></thead><tbody>
+{% for grade in grades %}<tr><td>{{ grade.discipline }}</td><td>{{ grade.n1 }}</td><td>{{ grade.n2 }}</td><td>{{ ((grade.n1 + grade.n2)/2)|round(1) }}</td></tr>
+{% else %}<tr><td colspan="4">Nenhuma nota registrada.</td></tr>{% endfor %}
+</tbody></table>
+{% elif record.document_type == 'ficha' %}
+<dl><dt>Turma</dt><dd>{{ student.turma if student and student.turma else 'Não informada' }}</dd><dt>Chamadas registradas</dt><dd>{{ attendance|length }}</dd><dt>Disciplinas com notas registradas</dt><dd>{{ grades|length }}</dd></dl>
+{% endif %}
+<p>Protocolo {{ record.protocol }}. Finalidade: {{ record.purpose or 'não especificada' }}.</p>
+<p class="ops-document__seal">Identificador interno: <strong>{{ record.verification_code }}</strong><br>FaeHub+ · Secretaria digital</p>
+</article>
+<button class="ops-btn ops-btn--primary ops-print" onclick="window.print()">Imprimir / salvar PDF</button>
+{% endblock %}

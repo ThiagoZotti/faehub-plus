@@ -13,3 +13,5 @@ faehub.db
 static/campus-arrival-cinematic-v2.png
 static/campus-lobby-v1.png
 static/campus-hero.png
+
+.run_dependencies/

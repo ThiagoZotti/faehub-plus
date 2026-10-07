@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='academic.css') }}"><link rel="stylesheet" href="{{ url_for('static',filename='unified-sections.css') }}">{% endblock %}
+{% block content %}
+<main class="academic unified-page">
+  <header class="unified-hero">
+    <div><span class="unified-kicker">Agenda acadêmica</span><h1>Seu mês em uma só leitura.</h1><p>Presenças registradas e acontecimentos da escola dividem o mesmo calendário, sem obrigar você a procurar em módulos diferentes.</p></div>
+    <div class="unified-stats" aria-label="Resumo da agenda"><div><strong>{{ d.frequencia }}%</strong><span>frequência</span></div><div><strong>{{ cal.rows|length }}</strong><span>chamadas no mês</span></div><div><strong>{{ events|length }}</strong><span>eventos visíveis</span></div></div>
+  </header>
+  <section class="unified-grid">
+    <article class="unified-panel">
+      <header class="unified-panel__head"><div><span class="unified-kicker">Presenças</span><h2>{{ cal.title }}</h2><p>{{ cal.present }} presenças · {{ cal.absent }} faltas</p></div><form class="unified-month-form" method="get" novalidate><label for="month">Consultar mês<input type="month" id="month" name="month" min="1901-01" max="2099-12" value="{{ cal.month }}" required></label><button class="unified-action" type="submit">Atualizar</button></form></header>
+      <div class="record-calendar" aria-label="Calendário de presenças"><div class="record-weekdays">{% for day in ['SEG','TER','QUA','QUI','SEX','SÁB','DOM'] %}<span>{{ day }}</span>{% endfor %}</div>{% for week in cal.weeks %}<div class="record-week">{% for day in week %}{% if day %}<button type="button" class="record-day {{ day.status }} {{ 'today' if day.today else '' }}" data-record-date="{{ day.date }}" data-record-status="{{ day.status }}" aria-label="{{ day.date }}: {{ 'Presença' if day.status == 'presente' else ('Falta' if day.status == 'ausente' else 'Sem registro') }}" aria-pressed="false"><span>{{ day.day }}</span><small>{{ '✓' if day.status == 'presente' else ('−' if day.status == 'ausente' else '·') }}</small></button>{% else %}<span class="record-blank"></span>{% endif %}{% endfor %}</div>{% endfor %}</div>
+      <div class="record-legend"><span><i></i>Presença</span><span><i class="absent"></i>Falta</span><span><i class="unknown"></i>Sem registro</span></div><p id="recordStatus" aria-live="polite">Selecione um dia para consultar o registro.</p>
+    </article>
+    <aside class="unified-panel"><header class="unified-panel__head"><div><span class="unified-kicker">Eventos escolares</span><h2>O que vem pela frente</h2><p>Agenda publicada para sua turma.</p></div></header><div class="unified-events">{% for event in events %}<article class="unified-event"><time>{{ event.starts_at|local_datetime('%d/%m · %Hh%M') }}</time><h3>{{ event.title }}</h3><p>{{ event.description or 'Sem detalhes adicionais.' }}</p><p>{{ event.location or 'Local a confirmar' }} · {{ event_types.get(event.event_type,event.event_type) }}</p></article>{% else %}<p class="unified-empty">Nenhum evento escolar publicado para sua turma.</p>{% endfor %}</div></aside>
+  </section>
+</main>
+<script src="{{ url_for('static',filename='academic.js') }}"></script>
+{% endblock %}

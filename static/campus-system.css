@@ -5,11 +5,11 @@
  */
 :root {
   --font-body: "Segoe UI Variable Text", "Segoe UI", Arial, sans-serif;
-  --font-display: Bahnschrift, "Arial Narrow", "Segoe UI", sans-serif;
+  --font-display: "Segoe UI Variable Display", "Segoe UI", Arial, sans-serif;
   --font-mono: "Cascadia Code", "Cascadia Mono", Consolas, monospace;
-  --campus-ink: #061225;
-  --campus-panel: #0d2037;
-  --campus-panel-strong: #102943;
+  --campus-ink: #091522;
+  --campus-panel: #112438;
+  --campus-panel-strong: #172e43;
   --campus-line: rgba(155, 201, 226, .22);
   --campus-text: #f3f8ff;
   --campus-muted: #b4c8dc;
@@ -18,7 +18,7 @@
   --campus-warm: #ffd19a;
   --campus-danger: #ffb798;
   --campus-radius: 16px;
-  --campus-shadow: 0 24px 70px rgba(0, 8, 24, .32);
+  --campus-shadow: 0 12px 32px rgba(0, 8, 24, .16);
   --campus-ease: cubic-bezier(.22, .8, .24, 1);
   --campus-nav-height: 76px;
 }
@@ -59,10 +59,8 @@ body { font-family: var(--font-body); text-rendering: optimizeLegibility; overfl
   color: var(--campus-text);
 }
 .campus-shell::before {
-  background:
-    linear-gradient(90deg, rgba(3, 13, 30, .91), rgba(5, 19, 40, .67) 47%, rgba(3, 13, 30, .92)),
-    url("campus-lobby-v1.webp") center / cover;
-  filter: saturate(.8) contrast(1.04);
+  background: linear-gradient(180deg, #112438, var(--campus-ink) 480px);
+  filter: none;
 }
 .dashboard {
   background-image:
@@ -76,19 +74,13 @@ body { font-family: var(--font-body); text-rendering: optimizeLegibility; overfl
     linear-gradient(90deg, #07152b55, transparent 50%, #07152b55),
     url("campus-lobby-v1.webp");
 }
-.identity-stage {
-  background-image:
-    radial-gradient(ellipse at 50% 55%, #6bcbb32b, transparent 55%),
-    linear-gradient(#071b3266, #081b35e6),
-    url("campus-lobby-v1.webp");
-}
 .campus-shell .app::after {
   content: "";
   position: fixed;
   z-index: 0;
   inset: var(--campus-nav-height) 0 0;
   pointer-events: none;
-  opacity: .52;
+  opacity: .12;
   background:
     radial-gradient(circle at 52% 38%, color-mix(in srgb, var(--campus-accent) 16%, transparent), transparent 26%),
     linear-gradient(180deg, transparent 58%, rgba(3, 12, 27, .86));
@@ -110,18 +102,19 @@ body { font-family: var(--font-body); text-rendering: optimizeLegibility; overfl
 .campus-tabs {
   height: 100%;
   gap: 0;
-  scrollbar-width: none;
+  scrollbar-width: thin; scrollbar-color: #55768e var(--campus-ink);
   overscroll-behavior-inline: contain;
 }
-.campus-tabs::-webkit-scrollbar { display: none; }
+.campus-tabs::-webkit-scrollbar { height: 4px; }
+.campus-tabs::-webkit-scrollbar-thumb { background: #55768e; border-radius: 4px; }
 .campus-tabs a {
   position: relative;
   min-height: 48px;
   padding: 0 clamp(10px, 1vw, 16px);
   border-radius: 0;
   color: #aebfd4;
-  font-size: 12px;
-  letter-spacing: -.01em;
+  font-size: 14px;
+  letter-spacing: 0;
 }
 .campus-tabs a::after {
   content: "";
@@ -407,13 +400,6 @@ body { font-family: var(--font-body); text-rendering: optimizeLegibility; overfl
 .director-dialog,
 .agenda-dialog { border-radius: 12px; }
 
-/* Avatar: cenário e bancada; controles deixam de parecer cards soltos. */
-.identity-layout { align-items: stretch; }
-.identity-stage { border-radius: 12px; border-color: var(--campus-line); }
-.identity-controls { border-radius: 12px; border-top: 3px solid var(--campus-accent); }
-.atelier-tabs { border-radius: 6px; }
-.identity-field { border-top-color: var(--campus-line); }
-
 /* Professor: o painel vira uma mesa de trabalho, com menos caixas isoladas. */
 .campus-shell.role-professor::before { filter: saturate(.65) hue-rotate(-8deg); }
 .teacher-campus {
@@ -564,10 +550,17 @@ body.campus-fallback-arrival .app__content { animation: campus-fallback-arrival 
   .campus-header { gap: 8px; }
   .campus-brand { font-size: 16px; }
   .campus-brand img { width: 34px; height: 34px; }
-  .campus-brand small { font-size: 7px; }
+  .campus-brand small { display: none; }
+  .campus-brand { min-width: 0; gap: 6px; }
+  .campus-account { max-width: 75px; padding-left: 6px; }
+  .campus-account strong { display: block; font-size: 11px; }
+  .campus-account small { font-size: 9px; }
+  .campus-more { margin-left: auto; }
+  .campus-more > summary { padding-inline: 4px; min-height: 44px; }
+  .campus-exit { display: flex; align-items: center; min-height: 44px; }
   .campus-profile { width: 44px; height: 44px; margin-left: auto; }
   .campus-exit { padding-inline: 3px; font-size: 11px; }
-  .campus-tabs a { padding-inline: 12px; font-size: 11px; }
+  .campus-tabs a { padding-inline: 12px; font-size: 13px; }
   .campus-tabs a svg { display: block; }
   .campus-pager { bottom: max(7px, env(safe-area-inset-bottom)); }
   .campus-pager a { font-size: 11px; padding-inline: 8px; }

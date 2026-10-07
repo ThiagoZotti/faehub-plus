@@ -1,0 +1,98 @@
+.core-route ol {
+  counter-reset: core-step;
+}
+
+.core-route li {
+  counter-increment: core-step;
+}
+
+.core-route li::before {
+  content: counter(core-step, decimal-leading-zero);
+}
+
+.core-search {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1.25rem 1.6rem 0.5rem;
+}
+
+.core-search > div {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.core-search input {
+  flex: 1;
+}
+
+.core-search a,
+.core-pagination a {
+  color: var(--core-aqua);
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.core-action {
+  display: inline-flex;
+  min-height: 2.4rem;
+  align-items: center;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid rgba(140, 201, 255, 0.35);
+  border-radius: 0.65rem;
+  color: #d9e9f6;
+  background: rgba(140, 201, 255, 0.08);
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.core-action:hover,
+.core-action:focus-visible {
+  background: rgba(140, 201, 255, 0.17);
+}
+
+.core-search a:hover,
+.core-search a:focus-visible,
+.core-pagination a:hover,
+.core-pagination a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+}
+
+.core-results {
+  margin: 0;
+  padding: 0.35rem 1.6rem 1rem;
+  color: var(--core-muted);
+  font-size: 0.82rem;
+}
+
+.core-pagination {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.6rem;
+  border-top: 1px solid var(--core-line);
+  color: var(--core-muted);
+  font-size: 0.82rem;
+}
+
+.core-pagination > :last-child {
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  .core-search > div {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .core-search button,
+  .core-search a {
+    text-align: center;
+  }
+
+  .core-pagination {
+    padding-inline: 1rem;
+  }
+}
