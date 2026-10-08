@@ -188,7 +188,11 @@ def connection():
         )
     try:
         yield conn
-        conn.commit()
+        # A request reuses one connection. Committing every small repository
+        # helper added an extra network round-trip to Supabase after every
+        # SELECT. The request teardown now closes the transaction once.
+        if not request_owned:
+            conn.commit()
     except Exception:
         conn.rollback()
         raise
@@ -203,6 +207,12 @@ def connection():
 def close_request_connection(error=None):
     conn = g.pop("faehub_connection", None)
     lease = g.pop("faehub_connection_lease", None)
+    if conn is not None:
+        try:
+            conn.rollback() if error is not None else conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
     if lease is not None:
         lease.__exit__(None, None, None)
     elif conn is not None:

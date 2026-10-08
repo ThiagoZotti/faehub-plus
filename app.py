@@ -3,8 +3,6 @@
 
 import os
 import secrets
-import json
-import time
 import database as db
 from io import BytesIO
 from dashboard import student_summary
@@ -14,8 +12,8 @@ from database import mark_message_read
 from datetime import date, datetime, timedelta, timezone
 from functools import wraps
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-from flask import (Flask, Response, g, render_template, request, redirect, url_for,
-                   session, flash, send_file, stream_with_context)
+from flask import (Flask, g, jsonify, render_template, request, redirect, url_for,
+                   session, flash, send_file, has_request_context)
 from database import (authenticate, archive_internship, create_exercise, create_user, get_exercises,
                       get_messages, get_submissions, init_db, list_users,
                       load_attendance, load_grades, log_action, recent_logs,
@@ -29,7 +27,7 @@ from school_roster import KNOWN_IDS, ROSTER, ROSTER_NAMES
 app = Flask(__name__)
 app.secret_key = os.getenv("FAEHUB_SECRET_KEY") or secrets.token_hex(32)
 app.config.update(SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax")
-app.config['SEND_FILE_MAX_AGE_DEFAULT']=3600
+app.config['SEND_FILE_MAX_AGE_DEFAULT']=31536000
 app.config['MAX_CONTENT_LENGTH']=6 * 1024 * 1024
 try:
     CAMPUS_TIMEZONE = ZoneInfo("America/Sao_Paulo")
@@ -65,6 +63,8 @@ def protect_response(response):
     )
     if request.endpoint != "static":
         response.headers["Cache-Control"] = "no-store"
+    elif request.args.get("v"):
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
     return response
 
 
@@ -94,7 +94,7 @@ from teacher_dashboard import teacher_overview
 from teacher_workflow import scoped_roster, validated_grades, validated_attendance
 from database import save_attendance_batch
 from teacher_studio import studio, student_notices
-from director import manage as manage_director, init_director, valid_account, access_version
+from director import manage as manage_director, init_director, account_access, access_version
 init_director()
 
 def director_section(section):
@@ -260,14 +260,17 @@ def initials(nome):
 
 def current_aluno():
     """Retorna o perfil completo do aluno logado nesta sessão."""
+    cached = getattr(g, "student_profile", None) if has_request_context() else None
+    if cached is not None:
+        return cached
     sid=canonical_student_id(session['aluno_id'])
-    roster=live_roster()
-    student=next((s for s in roster if s['id']==sid),None)
     name=session.get('display_name','Aluno')
     if sid in ALUNOS_DB:
         result=dict(ALUNOS_DB[sid])
         result['grades']=[dict(grade) for grade in ALUNOS_DB[sid]['grades']]
     else:
+        roster=live_roster()
+        student=next((s for s in roster if s['id']==sid),None)
         if not student:
             student=next((s for s in roster if s['nome'].casefold()==name.casefold()),None)
         grades=[]
@@ -279,15 +282,30 @@ def current_aluno():
         result=dict(nome=name,matricula=sid,turma=student['turma'] if student else '',grades=grades,
                     frequencia=0,faltas=0,aulas_dadas=0)
 
-    records=student_attendance(sid)
+    records=current_student_attendance(sid)
     if records:
         absent=sum(record['status']=='ausente' for record in records)
         result.update(frequencia=round((len(records)-absent)*100/len(records)),
                       faltas=absent,aulas_dadas=len(records))
+    if has_request_context():
+        g.student_profile = result
     return result
 
 
+def current_student_attendance(student_id):
+    """Load a student's attendance once during the current request."""
+    student_id = canonical_student_id(student_id)
+    cache = getattr(g, "student_attendance", {}) if has_request_context() else {}
+    if student_id not in cache:
+        cache[student_id] = student_attendance(student_id)
+        if has_request_context():
+            g.student_attendance = cache
+    return cache[student_id]
+
+
 def apply_persisted_grades():
+    if has_request_context() and getattr(g, "persisted_grades_applied", False):
+        return
     for saved in load_grades():
         aluno = ALUNOS_DB.get(saved["student_id"])
         if not aluno:
@@ -299,6 +317,8 @@ def apply_persisted_grades():
                 grade.update(n1=saved["n1"], n2=saved["n2"])
                 grade["media"] = round((saved["n1"] + saved["n2"]) / 2, 2)
                 grade["situacao"] = _situacao(grade["media"])
+    if has_request_context():
+        g.persisted_grades_applied = True
 
 
 apply_persisted_grades()
@@ -313,7 +333,7 @@ def inject_shell():
     if not role:
         return {}
     nome = current_aluno()["nome"] if role == "aluno" else session.get("display_name", PROFILE_FALLBACKS[role])
-    shell_notifications = operations.list_notifications(session["username"], role)
+    shell_notifications = request_notifications(session["username"], role)
     notification_unread = sum(
         not item["is_read"] and not (role == "aluno" and item.get("category") == "mensagem")
         for item in shell_notifications
@@ -338,6 +358,16 @@ def inject_shell():
     }
 
 
+def request_notifications(username, role):
+    """Reuse notification data when a page and its shell need the same rows."""
+    key = (username, role)
+    cache = getattr(g, "notification_cache", {})
+    if key not in cache:
+        cache[key] = operations.list_notifications(username, role)
+        g.notification_cache = cache
+    return cache[key]
+
+
 def login_required(view_name_map):
     """Garante sessão ativa e que o perfil logado tem acesso a esta rota."""
     def decorator(fn):
@@ -346,7 +376,10 @@ def login_required(view_name_map):
             role = session.get("role")
             if not role:
                 return redirect(url_for("login"))
-            if not valid_account(session.get("username"),role) or session.get("auth_version",0)!=access_version(session.get("username")):
+            access = account_access(session.get("username"))
+            expected_role = "diretor" if role == "admin" else role
+            if (not access or not access["active"] or access["role"] != expected_role
+                    or session.get("auth_version", 0) != access["auth_version"]):
                 session.clear()
                 return redirect(url_for("login"))
             g.current_view = view_name_map
@@ -414,7 +447,8 @@ def painel():
     role = session["role"]
     if role == "aluno":
         apply_persisted_grades()
-        d = dict(current_aluno(), avisos=student_notices(current_aluno()['turma'],AVISOS_3110))
+        aluno = current_aluno()
+        d = dict(aluno, avisos=student_notices(aluno['turma'],AVISOS_3110))
         media_geral = round(sum(g["media"] for g in d["grades"]) / len(d["grades"]), 1) if d['grades'] else 0
         recuperacoes = sum(1 for g in d["grades"] if g["situacao"] == "Recuperação")
         return render_template("aluno_painel.html", d=d, media_geral=media_geral, recuperacoes=recuperacoes,
@@ -476,7 +510,7 @@ def frequencia():
         return redirect(url_for("painel"))
     d = current_aluno()
     presencas = d["aulas_dadas"] - d["faltas"]
-    calendar_data = attendance_calendar(student_attendance(session['aluno_id']), request.args.get('month'))
+    calendar_data = attendance_calendar(current_student_attendance(session['aluno_id']), request.args.get('month'))
     return render_template("aluno_frequencia.html", d=d, presencas=presencas, cal=calendar_data)
 
 
@@ -487,7 +521,7 @@ def agenda():
     if session.get("role") != "aluno":
         return redirect(url_for("calendario"))
     d = current_aluno()
-    records = student_attendance(session["aluno_id"])
+    records = current_student_attendance(session["aluno_id"])
     calendar_data = attendance_calendar(records, request.args.get("month"))
     events = operations.list_calendar_events("aluno", d["turma"])
     return render_template(
@@ -531,7 +565,7 @@ def comunicados():
     username = session["username"]
     notices = student_notices(current_aluno()["turma"], AVISOS_3110)
     notifications = [
-        item for item in operations.list_notifications(username, "aluno")
+        item for item in request_notifications(username, "aluno")
         if item.get("category") != "mensagem"
     ]
     if request.method == "POST":
@@ -1122,7 +1156,7 @@ def notificacoes():
             return redirect(url_for("notificacoes"))
         except ValueError as exc:
             error = str(exc)
-    items = operations.list_notifications(session["username"], role)
+    items = request_notifications(session["username"], role)
     return render_template(
         "p1/notificacoes.html", notifications=items, unread=sum(not row["is_read"] for row in items),
         token=p1_token(), error=error,
@@ -1390,32 +1424,12 @@ def mensagens():
                            users=[u for u in list_users() if u["username"] != session["username"] and u["active"]])
 
 
-@app.get("/api/mensagens/eventos")
+@app.get("/api/mensagens/estado")
 @login_required("mensagens")
-def message_events():
-    """Authenticated server-sent events without exposing database credentials."""
+def message_state():
+    """Small authenticated snapshot polled without holding a web worker open."""
     username = session["username"]
-    db.mark_messages_delivered(username)
-
-    @stream_with_context
-    def events():
-        initial = db.message_sync_state(username)
-        previous = (initial["latest_id"], initial["latest_change"], initial["unread"])
-        yield f"event: ready\ndata: {json.dumps(initial)}\n\n"
-        for _ in range(120):
-            state = db.message_sync_state(username)
-            signature = (state["latest_id"], state["latest_change"], state["unread"])
-            if signature != previous:
-                yield f"event: messages\ndata: {json.dumps(state)}\n\n"
-                previous = signature
-            else:
-                yield ": heartbeat\n\n"
-            time.sleep(1.5)
-
-    response = Response(events(), mimetype="text/event-stream")
-    response.headers["Cache-Control"] = "no-cache, no-transform"
-    response.headers["X-Accel-Buffering"] = "no"
-    return response
+    return jsonify(db.message_sync_state(username))
 
 
 @app.route("/estagios", methods=["GET", "POST"])

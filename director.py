@@ -32,6 +32,18 @@ def access_version(username):
     return row['version'] if row else 0
 
 
+def account_access(username):
+    """Return all request-auth state in one database round-trip."""
+    with db.connection() as conn:
+        row=conn.execute('''SELECT u.active,COALESCE(ar.role,u.role) role,
+                                   COALESCE(av.version,0) auth_version
+                            FROM users u
+                            LEFT JOIN account_roles ar ON ar.username=u.username
+                            LEFT JOIN auth_versions av ON av.username=u.username
+                            WHERE u.username=?''',(username,)).fetchone()
+    return dict(row) if row else None
+
+
 def valid_account(username, role):
     with db.connection() as conn:
         row=conn.execute('''SELECT u.active,COALESCE(ar.role,u.role) role FROM users u

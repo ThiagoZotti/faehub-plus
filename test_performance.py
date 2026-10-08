@@ -18,10 +18,14 @@ class PerformanceTests(unittest.TestCase):
         self.assertFalse(any('FROM attendance' in sql or 'FROM grades' in sql or 'FROM activity_log' in sql for sql in statements))
 
     def test_static_cache_and_version(self):
-        response=app.test_client().get('/static/performance.css')
+        response=app.test_client().get('/static/performance.css?v=1')
         self.assertEqual(response.status_code,200)
-        self.assertIn('max-age=3600',response.headers['Cache-Control'])
+        self.assertIn('max-age=31536000',response.headers['Cache-Control'])
+        self.assertIn('immutable',response.headers['Cache-Control'])
         response.close()
+        unversioned=app.test_client().get('/static/performance.css')
+        self.assertNotIn('immutable',unversioned.headers['Cache-Control'])
+        unversioned.close()
         from flask import url_for
         with app.test_request_context():self.assertIn('?v=',url_for('static',filename='performance.css'))
 

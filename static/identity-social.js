@@ -247,15 +247,37 @@
 
   const liveNotice = root.querySelector('[data-live-notice]');
   liveNotice?.addEventListener('click', () => location.reload());
-  if ('EventSource' in window) {
-    const source = new EventSource('/api/mensagens/eventos');
-    source.addEventListener('messages', event => {
-      const isWriting = Boolean(composerBody?.value.trim()) || Boolean(replyField?.value);
-      if (document.visibilityState === 'visible' && !isWriting) location.reload();
-      else if (liveNotice) liveNotice.hidden = false;
-    });
-    window.addEventListener('pagehide', () => source.close(), { once: true });
-  }
+  let syncSignature = '';
+  let syncTimer;
+  let pageActive = true;
+  const pollMessages = async () => {
+    if (!pageActive) return;
+    if (document.visibilityState === 'visible') {
+      try {
+        const response = await fetch('/api/mensagens/estado', {
+          credentials: 'same-origin', cache: 'no-store', headers: { Accept: 'application/json' }
+        });
+        if (response.ok) {
+          const state = await response.json();
+          const nextSignature = `${state.latest_id}|${state.latest_change}|${state.unread}`;
+          if (syncSignature && nextSignature !== syncSignature) {
+            const isWriting = Boolean(composerBody?.value.trim()) || Boolean(replyField?.value);
+            if (!isWriting) location.reload();
+            else if (liveNotice) liveNotice.hidden = false;
+          }
+          syncSignature = nextSignature;
+        }
+      } catch (_) {
+        // A temporary network failure should not interrupt the conversation.
+      }
+    }
+    syncTimer = window.setTimeout(pollMessages, 8000);
+  };
+  pollMessages();
+  window.addEventListener('pagehide', () => {
+    pageActive = false;
+    window.clearTimeout(syncTimer);
+  }, { once: true });
 
   filterThreads();
   if (stream) stream.scrollTop = stream.scrollHeight;
