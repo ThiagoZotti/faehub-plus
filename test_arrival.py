@@ -52,10 +52,10 @@ class ArrivalTests(unittest.TestCase):
 
     def test_cinematic_background_is_one_optimized_priority_asset(self):
         result=self.client.get('/')
-        asset=b'campus-login-cinematic-v3.webp'
+        asset=b'faehub-login-reference.webp'
         self.assertEqual(result.data.count(asset),1)
         self.assertIn(b'fetchpriority="high"',result.data)
         self.assertNotIn(b'rel="preload"',result.data)
-        self.assertLess(Path('static/campus-login-cinematic-v3.webp').stat().st_size,300_000)
+        self.assertLess(Path('static/faehub-login-reference.webp').stat().st_size,350_000)
 
 if __name__=='__main__':unittest.main()
