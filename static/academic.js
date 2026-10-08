@@ -12,15 +12,16 @@
   const first = document.getElementById('simN1'), second = document.getElementById('simN2');
   function simulate() {
     const mean = (Number(first.value) + Number(second.value)) / 2;
-    document.getElementById('simOut1').textContent = Number(first.value).toFixed(1);
-    document.getElementById('simOut2').textContent = Number(second.value).toFixed(1);
-    document.getElementById('simMean').textContent = mean.toFixed(1);
+    const format = value => Number(value).toLocaleString('pt-BR', {minimumFractionDigits:1, maximumFractionDigits:1});
+    document.getElementById('simOut1').textContent = format(first.value);
+    document.getElementById('simOut2').textContent = format(second.value);
+    document.getElementById('simMean').textContent = format(mean);
     document.getElementById('simStatus').textContent = mean >= 6 ? 'Dentro da referência de 6,0.' : 'Abaixo da referência de 6,0.';
   }
   if (first) [first, second].forEach(input => input.addEventListener('input', simulate));
   let beforePrint;
-  window.addEventListener('beforeprint', () => { beforePrint = entries.map(e => [e.open, e.hidden]); entries.forEach(e => {e.open = true; e.hidden = false;}); });
-  window.addEventListener('afterprint', () => { if (beforePrint) entries.forEach((e,i) => { [e.open,e.hidden] = beforePrint[i]; }); });
+  window.addEventListener('beforeprint', () => { beforePrint = entries.map(e => [e.open, e.hidden]); entries.forEach(e => {if (e.tagName === 'DETAILS') e.open = true; e.hidden = false;}); });
+  window.addEventListener('afterprint', () => { if (beforePrint) entries.forEach((e,i) => { if (e.tagName === 'DETAILS') e.open = beforePrint[i][0]; e.hidden = beforePrint[i][1]; }); });
   root.querySelector('.print-report')?.addEventListener('click', () => window.print());
   root.querySelectorAll('[data-record-date]').forEach(button => button.addEventListener('click', () => {
     root.querySelectorAll('[data-record-date]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));

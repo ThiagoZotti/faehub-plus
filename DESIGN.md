@@ -1,20 +1,20 @@
 ---
 version: "1.0"
-name: "FaeHub+ Campus Vivo"
-description: "Um campus digital escolar inspirado na sinalização de uma escola técnica ao entardecer."
+name: "FaeHub+ Campus em Movimento"
+description: "Um campus digital escolar claro, orientado por conteúdo e pela fotografia da escola."
 colors:
-  primary: "#70E4DC"
-  on-primary: "#06252C"
-  primary-tint: "#9CEEF2"
-  secondary: "#8CC9FF"
-  tertiary: "#B7EBD0"
-  tertiary-container: "#FFD19A"
-  error: "#FFB798"
-  surface: "#112438"
-  surface-bright: "#172E43"
-  background: "#091522"
-  on-background: "#F3F8FF"
-  outline: "#B4C8DC"
+  primary: "#216BE4"
+  on-primary: "#FFFFFF"
+  primary-tint: "#EAF3FF"
+  secondary: "#336BDD"
+  tertiary: "#51C4EC"
+  tertiary-container: "#FFF0E7"
+  error: "#B63145"
+  surface: "#FFFFFF"
+  surface-bright: "#EEF5FF"
+  background: "#F6F9FE"
+  on-background: "#142744"
+  outline: "#DCE6F2"
 typography:
   sans:
     fontFamily: "Segoe UI Variable Text, Segoe UI, Arial, sans-serif"
@@ -49,7 +49,7 @@ components:
     rounded: "{rounded.lg}"
     width: "46rem"
   input:
-    backgroundColor: "{colors.background}"
+    backgroundColor: "{colors.surface}"
     textColor: "{colors.on-background}"
     rounded: "{rounded.md}"
     height: "2.75rem"
@@ -61,7 +61,7 @@ components:
 
 ### Creative North Star
 
-A sinalização de um campus técnico ao entardecer: orientação clara, superfícies azul-marinho, luzes funcionais e detalhes luminosos que indicam caminho e estado. A expressão visual vem do cenário do campus e de uma única metáfora por módulo, não de ornamentos aleatórios.
+Um campus em movimento: fotografia escolar reconhecível, luz natural, conteúdo acadêmico sobre superfícies claras e orientação em azul cobalto. A identidade vem da escola e da clareza das decisões, não de efeitos escuros ou cartões empilhados.
 
 ### Product context and register
 
@@ -70,18 +70,18 @@ A sinalização de um campus técnico ao entardecer: orientação clara, superf�
 - **Locale(s) and language policy:** português do Brasil em toda a interface; textos institucionais devem ser revisados pelo responsável pelo projeto.
 - **Usage scene:** uso recorrente em computador e celular, muitas vezes entre aulas; decisões principais precisam ser identificáveis rapidamente.
 - **Register:** híbrido. Login e painel têm expressão de marca; formulários, listas, notas e frequência priorizam familiaridade de produto.
-- **Memorable signature:** o campus é tratado como um lugar navegável; cada módulo recebe uma peça de sinalização ou instrumento próprio. O painel do aluno usa um radar do dia — agenda, desempenho e prioridade — no lugar de personagens. Na P0, a estrutura acadêmica é um mapa vivo com percurso numerado, inventário e linha do tempo do estudante. Na P1, operações escolares usam a linguagem de uma mesa de controle: trilhas, protocolos, linhas do tempo e estados luminosos.
+- **Memorable signature:** o campus é tratado como um lugar navegável; a fotografia aparece no login e como faixa contextual no painel. O painel do aluno usa um radar do dia — agenda, desempenho e prioridade — no lugar de personagens. A estrutura acadêmica mantém percurso e linha do tempo; operações escolares preservam protocolos e estados claros.
 - **Restraint:** CRUD, campos, confirmação, busca e estados de erro permanecem previsíveis, legíveis e sem gestos escondidos.
-- **Anti-references:** não imitar kits genéricos de SaaS, interfaces proprietárias de jogos, excesso de vidro/neon ou mosaicos de cartões sem hierarquia.
-- **Token ownership/runtime mapping:** este documento espelha os tokens canônicos de `static/campus-system.css` e `static/academic.css`; a P0 deriva esses tokens em `static/p0/academic-core.css`. Mudanças visuais compartilhadas devem alterar primeiro os arquivos canônicos e depois atualizar este contrato.
+- **Anti-references:** não imitar kits genéricos de SaaS, interfaces proprietárias de jogos, excesso de vidro/neon, fundo escuro em toda a aplicação ou mosaicos de cartões sem hierarquia.
+- **Token ownership/runtime mapping:** este documento espelha a camada de migração `static/campus-bright.css`, carregada após `static/campus-system.css` para preservar compatibilidade com módulos existentes. `static/arrival-bright.css` é o owner do login claro; `static/dashboard-v2.css` e `static/academic.css` mantêm estrutura e comportamento. O objetivo de manutenção é absorver a camada clara nos módulos conforme cada fluxo for verificado, sem criar novas cores avulsas.
 
 ## Colors
 
-`background` é o fundo estrutural; `surface` e `surface-bright` criam profundidade tonal; `on-background` e `outline` formam a hierarquia de leitura. `primary` representa ações e estados positivos do aluno, `tertiary` identifica o espaço docente, `tertiary-container` sinaliza prazo/atenção e `error` fica reservado a falha ou ação de risco. `primary-tint` desenha foco visível. A experiência autenticada é escura; impressão converte módulos acadêmicos para fundo claro.
+`background` é o fundo estrutural claro; `surface` e `surface-bright` distinguem painéis e ênfase sem vidro. `on-background` e `outline` sustentam leitura e separação. `primary` representa ações, foco e seleção em todos os perfis; identidade de perfil pode aparecer em pequenos acentos secundários. `tertiary-container` sinaliza prazo/atenção e `error` fica reservado a falha ou ação de risco. A fotografia não fica atrás de tabelas ou formulários. Impressão mantém fundo branco.
 
 ## Typography
 
-Segoe UI Variable é a fonte de leitura e controles. Bahnschrift cria títulos compactos e institucionais. Cascadia Code identifica horários, números, códigos e pequenos rótulos técnicos. Títulos usam peso alto e espaçamento negativo moderado; parágrafos mantêm altura de linha entre 1.5 e 1.8. Evitar caixa alta em frases longas.
+Segoe UI Variable Text é a fonte de leitura e controles; Segoe UI Variable Display cria títulos claros de peso 650–750. Cascadia Code identifica horários, códigos e pequenos rótulos técnicos dos módulos existentes. Títulos usam espaçamento negativo moderado; parágrafos mantêm altura de linha entre 1.5 e 1.8. Evitar caixa alta em frases longas.
 
 ## Layout
 
@@ -89,7 +89,7 @@ A navegação tem altura de `4.75rem`. Páginas internas usam espaçamento later
 
 ## Elevation & Depth
 
-Profundidade vem de tons, bordas translúcidas e uma sombra ampla apenas nos elementos principais. Blur é permitido em superfícies sobre o cenário do campus, mas não em tabelas densas nem em cada item de lista. Estado ativo deve ser comunicado também por borda, texto ou ícone.
+Profundidade vem de branco sobre gelo, bordas azul-acinzentadas e sombra discreta apenas nos elementos principais. Blur fica restrito à navegação sobre conteúdo; tabelas densas e itens de lista permanecem opacos. Estado ativo deve ser comunicado também por borda, texto ou ícone.
 
 ## Shapes
 
@@ -103,7 +103,7 @@ Todo controle tem default, hover, foco visível, ativo, desabilitado e ocupado. 
 
 ### Buttons and actions
 
-Ação primária recebe preenchimento com o acento do perfil. Ações secundárias usam borda e fundo tonal. Arquivar/restaurar permanece secundário e exige confirmação própria do app. Botões com ícone também têm rótulo textual quando executam uma ação de negócio.
+Ação primária recebe preenchimento cobalto e texto branco em todos os perfis. Ações secundárias usam borda e fundo tonal. Arquivar/restaurar permanece secundário e exige confirmação própria do app. Botões com ícone também têm rótulo textual quando executam uma ação de negócio.
 
 ### Navigation and data display
 
@@ -136,6 +136,16 @@ A voz é direta, encorajadora e escolar, sem mencionar IA, mockup ou implementa�
 - **Don't:** transformar cada informação em um cartão de vidro independente.
 - **Don't:** esconder operações essenciais em hover, gesto ou ícone sem nome.
 
-## Refinamento Campus moderno
+## Direção aprovada: Campus em movimento
 
-A entrada preserva a fotografia escolar, com título editorial moderado e formulário sóbrio. O shell usa fundo azul sólido; a fotografia fica concentrada na recepção do aluno. Superfícies, bordas e tipografia vêm do owner existente `static/campus-system.css`. A agenda usa uma lista cronológica legível, sem radar animado. Textos operacionais usam 12–16 px e ações mantêm pelo menos 44 px. `static/arrival.css` é o owner público e `static/dashboard-v2.css` o owner do resumo do aluno.
+O login usa uma divisão aproximadamente 60/40: fotografia clara da escola à esquerda e autenticação em superfície gelo à direita. O passo explícito **Entrar no campus** continua obrigatório após validar credenciais. O shell autenticado é claro em todos os perfis, com navegação branca e sublinhado cobalto. O carrossel inferior permanece no computador; até 600px, três destinos frequentes e o menu **Mais** formam a barra inferior. O painel concentra faixa da escola, boas-vindas, próximo movimento e ritmo acadêmico; pendências são um atalho contextual. O boletim apresenta as duas notas, média e situação em tabela, com filtros e simulador recolhido. Em celular, a tabela mantém comparação e rolagem horizontal explícita. Os módulos operacionais usam adaptadores claros no mesmo owner; suas estruturas permanecem compatíveis.
+
+### Registro da migração visual
+
+| Superfície | Owner | Compatibilidade preservada | Verificação |
+| --- | --- | --- | --- |
+| Login e confirmação | `static/arrival-bright.css` | credenciais, perfis, demo e entrada explícita | navegador e `test_arrival.py` |
+| Shell e celular | `static/campus-bright.css` | destinos e autorização por perfil | navegador e `test_navigation_compaction.py` |
+| Painel | `templates/aluno_painel.html` + tokens claros | grade, frequência, notas e trabalhos reais | navegador e `test_dashboard.py` |
+| Boletim | `templates/aluno_boletim.html` + tokens claros | filtros, notas, simulação e impressão | navegador e suíte acadêmica |
+| Demais perfis e operações | adaptadores em `static/campus-bright.css` | CRUD, comunicação e permissões | amostras no navegador e suíte existente |

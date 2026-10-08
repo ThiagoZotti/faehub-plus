@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#071327" />
-<meta name="color-scheme" content="dark" />
+<meta name="theme-color" content="#f6f9fe" />
+<meta name="color-scheme" content="light" />
 <meta name="description" content="FaeHub+, o campus digital da ETESC/FAETEC Santa Cruz." />
 <title>{{ view_title }} · FaeHub+</title>
 <link rel="icon" href="{{ url_for('static', filename='logo.svg') }}" type="image/svg+xml" />
@@ -15,9 +15,10 @@
 {% if role in ['aluno', 'professor', 'admin', 'responsavel'] %}
 <link rel="stylesheet" href="{{ url_for('static', filename='performance.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='campus-system.css', v=2) }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='campus-bright.css') }}">
 {% endif %}
 </head>
-<body class="role-{{ role }}{{ ' campus-shell dark-mode' if role in ['aluno', 'professor', 'admin', 'responsavel'] else '' }}{{ (' view-' ~ current_view) if current_view else '' }}">
+<body class="role-{{ role }}{{ ' campus-shell' if role in ['aluno', 'professor', 'admin', 'responsavel'] else '' }}{{ (' view-' ~ current_view) if current_view else '' }}">
 <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
 <div class="app" data-view="{{ current_view }}">
   <div class="app-aurora app-aurora--one"></div><div class="app-aurora app-aurora--two"></div>
@@ -68,6 +69,11 @@
     <span class="campus-account" aria-label="Conta de {{ profile_nome }}"><strong>{{ profile_nome }}</strong><small>{{ ('Turma ' ~ (profile_turma or '3110')) if role == 'aluno' else role_label }}</small></span>
     <a class="campus-exit" href="{{ url_for('sair') }}" aria-label="Sair da conta de {{ profile_nome }}">Sair</a>
   </header>
+  {% set mobile_primary = nav_primary[:3] %}{% set mobile_ids = mobile_primary|map(attribute=0)|list %}
+  <nav class="campus-mobile-nav" aria-label="Navegação no celular">
+    {% for view_id, label, icon in mobile_primary %}<a href="{{ url_for(view_id) }}" {% if current_view == view_id %}aria-current="page"{% endif %}>{{ icons[icon]|safe }}<span>{{ label }}</span></a>{% endfor %}
+    <details class="campus-mobile-more"{% if current_view not in mobile_ids %} data-current="true"{% endif %}><summary aria-label="Mais módulos">{{ icons['layers']|safe }}<span>Mais</span></summary><div>{% for view_id, label, icon in nav_items %}{% if view_id not in mobile_ids %}<a href="{{ url_for(view_id) }}" {% if current_view == view_id %}aria-current="page"{% endif %}>{{ icons[icon]|safe }}<span>{{ label }}</span></a>{% endif %}{% endfor %}</div></details>
+  </nav>
   <nav class="campus-pager" aria-label="Percorrer módulos">
     {% for view_id, label, icon in nav_items %}{% if current_view == view_id %}
     {% set previous = nav_items[(loop.index0 - 1) % (nav_items|length)] %}{% set next = nav_items[(loop.index0 + 1) % (nav_items|length)] %}

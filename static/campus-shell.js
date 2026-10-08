@@ -18,6 +18,14 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    const overflowMenus = [...document.querySelectorAll('.campus-more, .campus-mobile-more')];
+    document.addEventListener('click', event => overflowMenus.forEach(menu => {
+      if (!menu.contains(event.target) || event.target.closest('a[href]')) menu.open = false;
+    }));
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Escape') return;
+      overflowMenus.filter(menu => menu.open).forEach(menu => { menu.open = false; menu.querySelector('summary').focus(); });
+    });
     const tabs = [...document.querySelectorAll('.campus-tabs a')];
     const active = tabs.findIndex(link => link.hasAttribute('aria-current'));
     const destinations = new Map(tabs.map((link, index) => {

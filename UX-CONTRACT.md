@@ -6,7 +6,7 @@
 - Locale: `pt-BR`; fuso: `America/Sao_Paulo`; calendário gregoriano.
 - Meta de acessibilidade: WCAG 2.2 AA.
 - Fontes de verdade: `ROADMAP.md`, autorização em `app.py`/`director.py`, dados em `database.py`/`p1_operations.py` e migrações em `supabase/migrations/`.
-- Direção visual canônica: `DESIGN.md`; tokens do shell e superfícies acadêmicas em `static/campus-system.css`, `static/academic.css` e `static/p1/operations.css`.
+- Direção visual canônica: `DESIGN.md`; tokens claros do shell e adaptadores de superfícies em `static/campus-bright.css`. `static/arrival-bright.css` define o login; os módulos existentes mantêm estrutura em `static/campus-system.css`, `static/academic.css` e `static/p1/operations.css`.
 
 ## Modelo de permissão
 
@@ -87,6 +87,8 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 - No espaço do aluno, `Agenda` reúne frequência e calendário escolar; `Comunicados` reúne avisos docentes e notificações persistentes; `Secretaria` reúne documentos e histórico acadêmico.
 - A identificação da conta é textual. Não existe rota, personalização ou persistência de avatar.
 - Rotas antigas continuam válidas para compatibilidade, mas não duplicam destinos na navegação principal.
+- Até 600px, a barra inferior expõe os três primeiros destinos frequentes do perfil e **Mais**, que contém todos os demais módulos autorizados. No computador, permanecem a barra superior e o carrossel. Os menus fecham ao navegar, clicar fora ou pressionar Escape; Escape devolve o foco ao acionador.
+- O boletim exibe Nota 1, Nota 2, Média e Situação diretamente em tabela. Os filtros preservam os valores e a impressão inclui todas as disciplinas; em telas estreitas a tabela possui rolagem horizontal com acesso por teclado. A simulação é um disclosure separado e não altera registros.
 - Conteúdo P1 colapsa para uma coluna abaixo de 980 px.
 - Listas densas viram blocos; rótulos não desaparecem. Conteúdo completo não depende de tooltip.
 - Datas usam controles nativos quando a aparência do popup não é requisito de marca.

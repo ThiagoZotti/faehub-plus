@@ -51,7 +51,7 @@ class NavigationCompactionTests(unittest.TestCase):
         self.login("thiago.zotti", "aluno", "23081")
         response = self.client.get("/painel")
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Radar do dia".encode(), response.data)
+        self.assertIn("Campus em movimento".encode(), response.data)
         self.assertIn("Bem-vindo,".encode(), response.data)
         self.assertIn("Seu próximo movimento".encode(), response.data)
         self.assertIn("Seu ritmo acadêmico".encode(), response.data)

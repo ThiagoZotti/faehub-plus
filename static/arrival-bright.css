@@ -1,0 +1,545 @@
+/* Campus em movimento — acesso claro, foto da escola como protagonista. */
+html {
+  background: #f7faff;
+  color-scheme: light;
+}
+body {
+  background: #f7faff;
+  color: #142744;
+  --accent: #2878f8;
+  --font-body: "Segoe UI", Arial, sans-serif;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+  outline-color: #2878f8;
+}
+.arrival-scene {
+  right: 40%;
+  background: #dceafa;
+}
+.arrival-campus {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-position: center;
+  filter: saturate(1.08) contrast(1.02) brightness(1.08);
+  transform: translate3d(var(--scene-x), var(--scene-y), 0) scale(1.02);
+}
+.arrival-atmosphere {
+  background:
+    linear-gradient(0deg, rgba(3, 28, 65, 0.78), transparent 42%),
+    linear-gradient(90deg, rgba(5, 37, 75, 0.14), transparent 68%);
+}
+.arrival-clouds,
+.arrival-light,
+.arrival-reflection,
+.arrival-grain {
+  display: none;
+}
+.arrival-header {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 5;
+  height: 104px;
+  padding: 24px clamp(26px, 3.5vw, 64px);
+  pointer-events: none;
+}
+.arrival-header > * {
+  pointer-events: auto;
+}
+.arrival-brand {
+  align-self: start;
+  padding: 10px 14px;
+  border: 1px solid #ffffff88;
+  border-radius: 14px;
+  background: #0a2b51d9;
+  color: #fff;
+  text-shadow: none;
+  box-shadow: 0 12px 32px #0b315733;
+}
+.arrival-brand img {
+  width: 38px;
+  height: 38px;
+  filter: none;
+}
+.arrival-brand em {
+  color: #5fb0ff;
+}
+.arrival-brand small {
+  color: #d2e7ff;
+}
+.arrival-location {
+  display: none;
+}
+.arrival-options {
+  margin-left: auto;
+}
+.arrival-options button {
+  color: #315472;
+  background: #fff;
+  border-color: #d5e3f2;
+  backdrop-filter: none;
+}
+.arrival-options button:hover,
+.arrival-options button[aria-pressed="true"] {
+  color: #1258b7;
+  border-color: #a8c7ef;
+  background: #eaf3ff;
+}
+.arrival-options button span {
+  color: #2878f8;
+}
+.arrival-main {
+  display: grid;
+  grid-template-columns: minmax(0, 60%) minmax(360px, 40%);
+  align-items: stretch;
+  gap: 0;
+  min-height: 100dvh;
+  padding: 0;
+}
+.arrival-story {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  max-width: none;
+  min-height: 100dvh;
+  padding: 150px clamp(32px, 5vw, 84px) 70px;
+  color: #fff;
+}
+.arrival-eyebrow {
+  color: #cce6ff;
+}
+.arrival-eyebrow i {
+  background: #5bb7ff;
+}
+.arrival-story h1 {
+  max-width: 700px;
+  margin: 18px 0;
+  font-size: clamp(48px, 5.4vw, 84px);
+  font-weight: 750;
+  line-height: 1.03;
+  text-shadow: 0 8px 28px #0b244f55;
+}
+.arrival-story h1 em {
+  background: none;
+  -webkit-text-fill-color: #fff;
+  color: #fff;
+}
+.arrival-story > p {
+  max-width: 540px;
+  color: #e8f4ff;
+  font-size: 17px;
+  text-shadow: 0 2px 12px #0b244f88;
+}
+.arrival-pulse,
+.arrival-track {
+  display: none;
+}
+.credential-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 100dvh;
+  padding: 115px clamp(28px, 3.3vw, 64px) 50px;
+  perspective: none;
+  animation: rise-in 0.5s ease both;
+  background: #f7faff;
+}
+.credential {
+  width: min(100%, 520px);
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  transform: none;
+}
+.credential::before,
+.credential-glint {
+  display: none;
+}
+.credential-header {
+  display: none;
+}
+.credential-heading {
+  margin: 0 0 30px;
+}
+.credential-heading > span {
+  color: #246bd0;
+  font: 800 11px var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.credential-heading h3 {
+  margin: 8px 0 9px;
+  color: #132744;
+  font-size: clamp(32px, 2.8vw, 46px);
+  line-height: 1.12;
+  letter-spacing: -0.05em;
+}
+.credential-heading p {
+  color: #657d96;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.credential-tabs {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+  margin-bottom: 14px;
+  padding: 4px;
+  border: 1px solid #d9e5f3;
+  border-radius: 14px;
+  background: #edf4fd;
+}
+.credential-tabs button {
+  gap: 4px;
+  min-height: 48px;
+  padding: 6px 3px;
+  color: #60758d;
+  font-size: 12px;
+}
+.credential-tabs button:hover {
+  background: #fff;
+  color: #1b61be;
+}
+.credential-tabs button[aria-pressed="true"] {
+  background: #fff;
+  color: #1661c8;
+  box-shadow: 0 4px 14px #1e57951a;
+  font-weight: 800;
+}
+.credential-tabs button span {
+  font-size: 14px;
+}
+.credential-profile-hint {
+  margin: 8px 2px 20px;
+  color: #617a94;
+}
+.credential-profile-hint i {
+  background: #2878f8;
+}
+.credential form label {
+  margin: 16px 2px 8px;
+  color: #213a58;
+  font-size: 13px;
+  font-weight: 750;
+}
+.field-shell {
+  height: 54px;
+  border: 1px solid #c4d8ef;
+  border-radius: 11px;
+  background: #fff;
+  box-shadow: 0 1px 3px #24508009;
+}
+.field-shell:focus-within {
+  border-color: #2878f8;
+  box-shadow: 0 0 0 3px #2878f824;
+}
+.field-shell > span {
+  color: #6685a8;
+}
+.field-shell input {
+  color: #142744;
+  font-size: 15px;
+}
+.field-shell input::placeholder {
+  color: #8599ae;
+}
+.password-wrap button {
+  color: #2e6dc1;
+}
+.arrival-primary {
+  min-height: 56px;
+  margin-top: 10px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 11px;
+  background: linear-gradient(105deg, #205fe5, #278ff4);
+  color: #fff;
+  font-size: 14px;
+  box-shadow: 0 12px 24px #1b6dd42a;
+}
+.arrival-primary:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+.arrival-error {
+  color: #a8233a;
+}
+.arrival-error:not(:empty) {
+  background: #ffebed;
+  border-color: #cc4251;
+}
+.credential-recovery {
+  color: #216ad0;
+}
+.arrival-demo {
+  color: #657b91;
+}
+.arrival-demo > div {
+  gap: 8px;
+}
+.arrival-demo button {
+  color: #235997;
+  background: #fff;
+  border-color: #cbdcf0;
+}
+.arrival-demo button:hover {
+  color: #1557af;
+  border-color: #2878f8;
+  background: #eaf3ff;
+}
+.credential-footer {
+  color: #8b9db0;
+  border-color: #dbe6f3;
+}
+.credential-footer i {
+  background: #2583d5;
+}
+.credential-confirmed {
+  padding: 30px 0;
+}
+.credential-confirmed small {
+  color: #176ad1;
+}
+.credential-confirmed h3 {
+  color: #132744;
+}
+.credential-confirmed p {
+  color: #607892;
+}
+.credential.is-confirmed {
+  border: 0;
+  box-shadow: none;
+}
+.confirm-icon {
+  background: #e3f7ed;
+  color: #127750;
+  box-shadow: none;
+}
+.arrival-footer {
+  position: absolute;
+  left: 0;
+  right: 40%;
+  bottom: 0;
+  color: #e0efff;
+  text-shadow: 0 2px 8px #12355b;
+}
+.departing .arrival-campus {
+  filter: brightness(0.85) saturate(1.1);
+}
+.departing .arrival-atmosphere {
+  background: #052b54a6;
+}
+.light-mode .credential {
+  background: transparent;
+}
+.light-mode .arrival-campus {
+  filter: saturate(1.08) contrast(1.02) brightness(1.08);
+}
+@media (max-width: 960px) {
+  .arrival-scene {
+    right: 46%;
+  }
+  .arrival-main {
+    grid-template-columns: minmax(0, 54%) minmax(360px, 46%);
+  }
+  .arrival-story {
+    padding-inline: 34px;
+  }
+  .arrival-story h1 {
+    font-size: clamp(46px, 5vw, 65px);
+  }
+  .credential-wrap {
+    padding-inline: 30px;
+  }
+  .arrival-footer {
+    right: 46%;
+  }
+}
+@media (max-width: 760px) {
+  .arrival-scene {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 340px;
+  }
+  .arrival-atmosphere {
+    background: linear-gradient(0deg, #133d6cad, transparent 65%);
+  }
+  .arrival-header {
+    height: 76px;
+    padding: 15px 18px;
+  }
+  .arrival-brand {
+    font-size: 19px;
+    padding: 7px 10px;
+  }
+  .arrival-brand img {
+    width: 31px;
+    height: 31px;
+  }
+  .arrival-options button {
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  .arrival-main {
+    display: block;
+    padding: 0;
+  }
+  .arrival-story {
+    min-height: 340px;
+    padding: 130px 22px 28px;
+  }
+  .arrival-story h1 {
+    margin: 9px 0;
+    font-size: 44px;
+  }
+  .arrival-story > p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .credential-wrap {
+    min-height: 0;
+    padding: 32px 22px 64px;
+    background: #f7faff;
+  }
+  .credential {
+    max-width: 520px;
+    padding: 0;
+    border-radius: 0;
+  }
+  .arrival-footer {
+    display: none;
+  }
+}
+@media (max-width: 420px) {
+  .arrival-story h1 {
+    font-size: 39px;
+  }
+  .credential-heading h3 {
+    font-size: 34px;
+  }
+  .credential-tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .credential-tabs button {
+    font-size: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arrival-campus,
+  .credential-wrap {
+    transform: none !important;
+    animation: none !important;
+  }
+}
+.arrival-scene {
+  z-index: 0;
+}
+.arrival-main {
+  position: relative;
+  z-index: 1;
+}
+.arrival-brand {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  font-size: 30px;
+  letter-spacing: -0.06em;
+}
+.arrival-brand img,
+.arrival-brand small {
+  display: none;
+}
+.arrival-brand em {
+  background: linear-gradient(100deg, #14c8ef, #9260ff);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.arrival-story h1 em {
+  background: linear-gradient(100deg, #35c8f3, #af75ff);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.arrival-eyebrow {
+  display: none;
+}
+.arrival-story > p {
+  letter-spacing: 0.13em;
+  font-size: 13px;
+}
+.login-wordmark {
+  display: inline-block;
+  color: #142744;
+  font-size: 1.35em;
+  letter-spacing: -0.055em;
+}
+.login-wordmark em {
+  font-style: normal;
+  background: linear-gradient(100deg, #2878f8, #8954f6);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.credential-heading h3 {
+  font-size: clamp(32px, 2.8vw, 44px);
+}
+@media (min-width: 761px) and (max-height: 780px) {
+  .credential-wrap {
+    padding-top: 88px;
+    padding-bottom: 28px;
+  }
+  .credential-heading {
+    margin-bottom: 18px;
+  }
+  .credential-heading h3 {
+    font-size: 34px;
+  }
+  .credential-heading p {
+    font-size: 13px;
+  }
+  .credential-profile-hint {
+    margin-bottom: 10px;
+  }
+  .credential form label {
+    margin-top: 12px;
+  }
+  .field-shell {
+    height: 50px;
+  }
+  .arrival-primary {
+    min-height: 50px;
+  }
+  .credential-footer {
+    margin-top: 8px;
+    padding-top: 12px;
+  }
+  .arrival-demo {
+    margin-top: 4px;
+  }
+}
+.arrival-brand {
+  color: #132e52;
+  background: #ffffffea;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 27px;
+}
+.arrival-primary {
+  background: linear-gradient(105deg, #2462de, #7650e5);
+}
+.credential-heading p,
+.credential-profile-hint,
+.arrival-demo {
+  color: #5f748d;
+}
+.field-shell input::placeholder {
+  color: #60758c;
+}
