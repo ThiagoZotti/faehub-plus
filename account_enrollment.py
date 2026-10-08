@@ -126,6 +126,10 @@ def authorize_invitation_actor(actor, action, *, username=None, email=None, invi
                 raise ValueError('Convite não encontrado.')
             username, email = row['username'], row['email']
         allowed = os.getenv('FAEHUB_BOOTSTRAP_ADMIN_EMAIL', '').strip().lower()
+        if not allowed:
+            # Owner-provisioned private configuration; no frontend route can edit this key.
+            bootstrap = conn.execute("SELECT value FROM enrollment_settings WHERE key='bootstrap_admin_email'").fetchone()
+            allowed = bootstrap['value'].strip().lower() if bootstrap else ''
         if not allowed or username != actor or (email or '').strip().lower() != allowed:
             raise ValueError('Ative primeiro sua conta de diretor pelo e-mail autorizado na configuração privada do servidor. A direção demo não pode criar contas reais para outras pessoas.')
         # A validated address is still confirmed only by receiving the mailed bearer.

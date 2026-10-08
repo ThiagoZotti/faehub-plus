@@ -212,5 +212,18 @@ class EnrollmentTests(unittest.TestCase):
         operations.use_recovery_code(username,code,'a new secure recovered phrase')
         self.assertIsNotNone(db.authenticate('teacher@example.com','a new secure recovered phrase'))
 
+    def test_owner_provisioned_bootstrap_stays_private_and_cannot_grant_other_accounts(self):
+        with db.connection() as conn:
+            conn.execute("INSERT INTO enrollment_settings(key,value) VALUES('bootstrap_admin_email','owner@example.com')")
+        with patch.dict(os.environ,{'FAEHUB_BOOTSTRAP_ADMIN_EMAIL':''}):
+            enrollment.authorize_invitation_actor('gilberto','invite',username='gilberto',email='owner@example.com')
+            with self.assertRaises(ValueError):
+                enrollment.authorize_invitation_actor('gilberto','invite',username='new.director',email='owner@example.com')
+            with self.assertRaises(ValueError):
+                enrollment.authorize_invitation_actor('gilberto','invite',username='gilberto',email='attacker@example.com')
+        with patch.dict(os.environ,{'FAEHUB_BOOTSTRAP_ADMIN_EMAIL':'configured@example.com'}):
+            with self.assertRaises(ValueError):
+                enrollment.authorize_invitation_actor('gilberto','invite',username='gilberto',email='owner@example.com')
+
 
 if __name__=='__main__':unittest.main()

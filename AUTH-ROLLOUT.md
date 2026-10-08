@@ -35,6 +35,8 @@ Não cole chaves neste documento, no GitHub ou em mensagens públicas. Não habi
 
 **Proteção de bootstrap:** o dono do servidor define `FAEHUB_BOOTSTRAP_ADMIN_EMAIL` em ambiente privado. Uma direção não ativada só pode convidar a própria conta para esse endereço, nunca criar outras identidades. A senha pública da demonstração não é autoridade suficiente para distribuir acessos reais. Não configure um e-mail escolhido por um visitante do app. Após ativar, a direção verificada pode emitir os demais convites.
 
+Alternativamente, o proprietário pode provisionar `bootstrap_admin_email` na tabela privada `enrollment_settings`, por conexão administrativa. Não existe formulário público ou administrativo do app que possa editar essa chave; a variável de ambiente, quando preenchida, tem precedência. O endereço administrativo autorizado pelo proprietário é vinculado ao perfil de direção existente, preservando sua identificação escolar, e fica apenas na configuração privada/banco, nunca fixado no código público. O vínculo fica pendente até a confirmação por convite e definição da senha. O FaeNet não é alterado nesta etapa.
+
 1. Entrar com o acesso atual da direção.
 2. Em Usuários, gerenciar a própria conta e abrir **Migrar para acesso por e-mail**. Perfil e registros permanecem iguais.
 3. Informar o e-mail legítimo do diretor e confirmar a senha atual.
