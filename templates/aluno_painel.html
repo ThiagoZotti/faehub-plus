@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='dashboard-v2.css',v=8) }}">{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='dashboard-v2.css') }}">{% endblock %}
 {% block content %}
 <main class="student-dashboard" id="dashboard">
-  <div class="campus-banner" aria-label="Campus em movimento"><div><span>Campus em<br>movimento</span><p>Mais aprendizado<br>para o seu amanhã.</p></div></div>
+  <div class="campus-banner" role="img" aria-label="Campus em movimento. Mais aprendizado para o seu amanhã."><img class="campus-banner-art" src="{{ url_for('static', filename='campus-approved-mockup.png') }}" alt="" width="1672" height="941" fetchpriority="high" decoding="async"></div>
   <header class="dashboard-hero">
     <div class="dashboard-hero__copy">
       <span class="dashboard-context">{{ summary.date_label }} · Turma {{ d.turma }}</span>
@@ -15,20 +15,22 @@
   <section class="dashboard-layout">
     <article class="dashboard-panel day-radar">
       <header class="dashboard-panel__head"><h2><span class="dashboard-title-icon" aria-hidden="true">{{ icons['calendar']|safe }}</span>Seu próximo movimento</h2><a href="{{ url_for('horario') }}">Ver horário <span aria-hidden="true">→</span></a></header>
+      <div class="dashboard-panel__body">
       {% if summary.lessons %}{% set lesson=summary.lessons[0] %}
-      <div class="radar-focus"><div class="radar-subject"><span>Próxima aula</span><h3>{{ lesson.subject }}</h3><small>Turma {{ d.turma }} · {{ lesson.day }}, {{ lesson.date }}</small></div><div class="radar-time"><span>Horário</span><strong>{{ lesson.time }}</strong><p class="lesson-countdown" data-lesson-at="{{ lesson.iso }}"></p></div></div>
+      <div class="radar-focus"><div class="radar-subject"><span>Próxima aula</span><h3>{{ lesson.subject }}</h3><small>{{ icons['calendar']|safe }}Turma {{ d.turma }} · {{ lesson.day }}, {{ lesson.date }}</small></div><div class="radar-time"><span>Horário</span><strong>{{ lesson.time }}</strong></div></div>
       <h3 class="day-route-title">Próximas aulas</h3>
       <ol class="day-route" aria-label="Próximas aulas">{% for item in summary.lessons[:4] %}<li class="{{ 'is-next' if loop.first }}"><time>{{ item.time }}</time><span><strong>{{ item.subject }}</strong><small>{{ item.day }} · {{ item.date }}</small></span></li>{% endfor %}</ol>
       {% else %}<div class="dashboard-empty"><strong>Nenhuma aula prevista.</strong><p>Seu próximo horário aparecerá aqui quando houver aula na grade.</p></div>{% endif %}
+      </div>
     </article>
 
     <aside class="dashboard-right">
       <article class="dashboard-panel performance-panel">
         <header class="dashboard-panel__head"><h2><span class="dashboard-title-icon" aria-hidden="true">{{ icons['chart']|safe }}</span>Seu ritmo acadêmico</h2><a href="{{ url_for('boletim') }}">Ver boletim <span aria-hidden="true">→</span></a></header>
-        <div class="performance-pair" aria-label="Resumo acadêmico"><div><span>Média geral</span><strong>{{ ('%.1f'|format(media_geral)).replace('.', ',') }}</strong><small>{{ 'Bom desempenho. Continue assim.' if media_geral >= 8 else ('Seu aprendizado está em evolução.' if media_geral >= 6 else 'Vale conversar com seus professores.') }}</small></div><div><span>Frequência</span><strong>{{ d.frequencia }}%</strong><small>{{ 'Sua presença faz a diferença.' if d.frequencia >= 75 else 'Acompanhe suas presenças na agenda.' }}</small></div></div>
-        {% if recuperacoes %}<a class="performance-attention" href="{{ url_for('boletim') }}">{{ recuperacoes }} {{ 'disciplina em recuperação' if recuperacoes == 1 else 'disciplinas em recuperação' }} <span aria-hidden="true">→</span></a>{% endif %}
+        <div class="performance-pair" aria-label="Resumo acadêmico"><div><span>Média geral</span><strong>{{ ('%.1f'|format(media_geral)).replace('.', ',') }}</strong><small>{{ icons['chart']|safe }}<span>{{ 'Bom desempenho!' if media_geral >= 6 else 'Atenção às notas.' }}</span></small></div><div><span>Frequência</span><strong>{{ d.frequencia }}%</strong><small>{{ icons['users']|safe }}<span>{{ 'Ótima presença nas aulas.' if d.frequencia >= 75 else 'Acompanhe suas presenças.' }}</span></small></div></div>
+        {% if recuperacoes %}<a class="performance-attention" href="{{ url_for('boletim') }}">{{ icons['document']|safe }}<span>{{ recuperacoes }} {{ 'disciplina em recuperação' if recuperacoes == 1 else 'disciplinas em recuperação' }}</span><span aria-hidden="true">→</span></a>{% endif %}
       </article>
-      <article class="dashboard-panel pending-panel"><header class="dashboard-panel__head"><h2><span class="dashboard-title-icon" aria-hidden="true">{{ icons['layers']|safe }}</span>Pendências</h2></header><a class="dashboard-pending" href="{{ url_for('exercicios', status='pending') }}"><span><strong>{{ summary.pending_count }} {{ 'trabalho para entregar' if summary.pending_count == 1 else 'trabalhos para entregar' }}</strong><small>Ver trabalhos pendentes</small></span><b aria-hidden="true">→</b></a></article>
+      <article class="dashboard-panel pending-panel"><header class="dashboard-panel__head"><h2><span class="dashboard-title-icon" aria-hidden="true">{{ icons['document']|safe }}</span>Pendências</h2></header><a class="dashboard-pending" href="{{ url_for('exercicios', status='pending') }}"><span class="dashboard-pending__icon" aria-hidden="true">{{ icons['document']|safe }}</span><span><strong>{{ summary.pending_count }} {{ 'trabalho para entregar' if summary.pending_count == 1 else 'trabalhos para entregar' }}</strong><small>Ver trabalhos pendentes →</small></span><b aria-hidden="true">›</b></a></article>
     </aside>
 
   </section>

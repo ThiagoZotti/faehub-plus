@@ -11,10 +11,10 @@ colors:
   tertiary-container: "#FFF0E7"
   error: "#B63145"
   surface: "#FFFFFF"
-  surface-bright: "#EEF5FF"
-  background: "#F6F9FE"
+  surface-bright: "#EAF1FA"
+  background: "#D9E4F1"
   on-background: "#142744"
-  outline: "#DCE6F2"
+  outline: "#B5C8DF"
 typography:
   sans:
     fontFamily: "Segoe UI Variable Text, Segoe UI, Arial, sans-serif"
@@ -30,7 +30,7 @@ rounded:
 spacing:
   section-gap: "1.875rem"
   page-inline: "clamp(1.25rem, 4vw, 5rem)"
-  nav-height: "4.75rem"
+  nav-height: "5rem"
 components:
   button:
     backgroundColor: "{colors.primary}"
@@ -85,11 +85,11 @@ Segoe UI Variable Text é a fonte de leitura e controles; Segoe UI Variable Disp
 
 ## Layout
 
-A navegação tem altura de `4.75rem`. Páginas internas usam espaçamento lateral fluido entre `1.25rem` e `5rem`, sem largura máxima artificial para operações densas. A hierarquia padrão é cabeçalho, faixa de contexto, ferramentas e conteúdo. Em telas estreitas, duas colunas tornam-se uma, ações quebram linha e alvos permanecem com no mínimo 44px. Reservar espaço para estados de carregamento e mensagens evita deslocamentos.
+A navegação tem altura de `5rem` no computador. Páginas internas usam espaçamento lateral fluido entre `1.25rem` e `5rem`, sem largura máxima artificial para operações densas. A hierarquia padrão é cabeçalho, faixa de contexto, ferramentas e conteúdo. Em telas estreitas, duas colunas tornam-se uma, ações quebram linha e alvos permanecem com no mínimo 44px. Reservar espaço para estados de carregamento e mensagens evita deslocamentos.
 
 ## Elevation & Depth
 
-Profundidade vem de branco sobre gelo, bordas azul-acinzentadas e sombra discreta apenas nos elementos principais. Blur fica restrito à navegação sobre conteúdo; tabelas densas e itens de lista permanecem opacos. Estado ativo deve ser comunicado também por borda, texto ou ícone.
+Profundidade vem de cards brancos sobre fundo azul-acinzentado `#D9E4F1`, bordas definidas `#B5C8DF` e sombras discretas. Cabeçalhos do painel são faixas azuladas `#EAF1FA`, separadas do conteúdo branco. Tabelas densas e itens de lista permanecem opacos. Estado ativo deve ser comunicado também por borda, texto ou ícone.
 
 ## Shapes
 
@@ -109,7 +109,7 @@ Ação primária recebe preenchimento cobalto e texto branco em todos os perfis.
 
 A barra superior é sinalização de campus, com sublinhado ativo e carrossel inferior. Ela expõe no máximo sete destinos frequentes; módulos secundários permanecem no disclosure compartilhado “Mais”. Para alunos, a arquitetura agrupa presença e eventos em **Agenda**, avisos e notificações em **Comunicados**, e documentos e histórico em **Secretaria**. Listas de operação devem ter título, estado, metadados essenciais e uma ação principal clara. Etiquetas informam modalidade, prazo e arquivo; não substituem títulos.
 
-O sistema não utiliza avatares ou personalização de personagem. A identificação da conta é textual e o painel resume o dia acadêmico com a mesma estrutura de página dos demais módulos.
+O sistema não utiliza personagens ou personalização de avatar. A identificação da conta mantém nome e turma, acompanhados por uma fotografia circular opcional. Sem fotografia, são exibidas iniciais; não se atribui uma pessoa fictícia à conta. O menu de conta reúne envio/troca da fotografia, remoção confirmada e saída.
 
 O painel do aluno é deliberadamente enxuto: boas-vindas, **Seu próximo movimento** e **Seu ritmo acadêmico** são os únicos blocos editoriais. As pendências do resumo são uma navegação direta para a lista de atividades já filtrada. Mensagens usam a metáfora de conversa direta — pessoas, histórico em balões e compositor contextual — em vez de caixa de e-mail. O compositor apresenta anexo como ação nomeada, mostra prévia antes do envio e mantém fotos dentro do fluxo da conversa; exclusão usa confirmação própria e estado restaurável.
 
@@ -141,6 +141,8 @@ A voz é direta, encorajadora e escolar, sem mencionar IA, mockup ou implementa�
 O login usa uma divisão aproximadamente 60/40: fotografia clara da escola à esquerda e autenticação em superfície gelo à direita. O passo explícito **Entrar no campus** continua obrigatório após validar credenciais. O shell autenticado é claro em todos os perfis, com navegação branca e sublinhado cobalto. O carrossel inferior permanece no computador; até 600px, três destinos frequentes e o menu **Mais** formam a barra inferior. O painel concentra faixa da escola, boas-vindas, próximo movimento e ritmo acadêmico; pendências são um atalho contextual. O boletim apresenta as duas notas, média e situação em tabela, com filtros e simulador recolhido. Em celular, a tabela mantém comparação e rolagem horizontal explícita. Os módulos operacionais usam adaptadores claros no mesmo owner; suas estruturas permanecem compatíveis.
 
 ### Registro da migração visual
+
+O refinamento aprovado em 08/10/2026 segue `exec-07dbf8f9-0d8a-4eda-be9b-9f01047430a7.png`: wordmark simples, seis destinos frequentes do aluno, menu **Mais** e perfil com foto à direita. O pager inferior é uma cápsula contínua com anterior, contador/módulo atual e próximo na mesma linha. A faixa do campus reutiliza a imagem original do mockup em `static/campus-approved-mockup.png`, recortada por CSS, preservando a arte aprovada. Dados acadêmicos continuam dinâmicos e o usuário mantém acesso a todos os módulos autorizados.
 
 | Superfície | Owner | Compatibilidade preservada | Verificação |
 | --- | --- | --- | --- |

@@ -85,7 +85,7 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 - Título: `{{ view_title }} · FaeHub+`; módulo ativo usa `aria-current="page"`.
 - O shell superior mostra no máximo sete destinos frequentes. Itens secundários usam o disclosure canônico “Mais”, com rótulos e links completos acessíveis por teclado.
 - No espaço do aluno, `Agenda` reúne frequência e calendário escolar; `Comunicados` reúne avisos docentes e notificações persistentes; `Secretaria` reúne documentos e histórico acadêmico.
-- A identificação da conta é textual. Não existe rota, personalização ou persistência de avatar.
+- A identificação da conta inclui nome/turma e uma foto circular opcional; sem foto, aparecem iniciais. Não existe sistema de personagens. O menu da conta abre envio de JPG/PNG, remoção confirmada e saída. No aluno, a Secretaria permanece acessível em **Mais**, mantendo seis destinos na barra principal.
 - Rotas antigas continuam válidas para compatibilidade, mas não duplicam destinos na navegação principal.
 - Até 600px, a barra inferior expõe os três primeiros destinos frequentes do perfil e **Mais**, que contém todos os demais módulos autorizados. No computador, permanecem a barra superior e o carrossel. Os menus fecham ao navegar, clicar fora ou pressionar Escape; Escape devolve o foco ao acionador.
 - O boletim exibe Nota 1, Nota 2, Média e Situação diretamente em tabela. Os filtros preservam os valores e a impressão inclui todas as disciplinas; em telas estreitas a tabela possui rolagem horizontal com acesso por teclado. A simulação é um disclosure separado e não altera registros.
@@ -114,7 +114,9 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 - A aplicação usa conexão PostgreSQL direta no servidor Flask.
 - RLS está ativo e os papéis públicos `anon` e `authenticated` não recebem acesso às tabelas; portanto, não há políticas públicas nesta fase.
 - O acesso deve migrar para políticas por usuário somente quando Supabase Auth for adotado conscientemente.
-- SQLite permanece fallback de demonstração e executa o mesmo contrato funcional.
+- SQLite existe somente para testes isolados; o aplicativo usa Supabase, sem fallback de produção.
+- Fotografias são normalizadas para JPEG de 320×320px, até 192 KB, sem metadados da imagem original. Originais são aceitos em JPG/PNG até 5 MB; imagens inválidas ou excessivas são rejeitadas antes de alterar a foto salva.
+- A tabela `profile_photos` tem RLS ativo e não é acessível pela Data API pública. Leitura, alteração e remoção usam exclusivamente a conta da sessão Flask; o cliente não pode escolher outro usuário. O cache HTTP é privado e varia pelo cookie. A revisão da foto é consultada no máximo a cada cinco minutos durante a navegação, sem baixar os bytes nos templates.
 
 ## Verificação obrigatória
 

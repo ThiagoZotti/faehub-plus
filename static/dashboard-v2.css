@@ -1,7 +1,7 @@
 /* Student overview: restrained campus identity and readable academic data. */
 .student-dashboard{display:grid;gap:24px;color:var(--campus-text)}
 .dashboard-hero{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,.9fr);align-items:center;gap:32px;overflow:hidden;min-height:250px;padding:36px 40px;border:1px solid var(--campus-line);border-radius:16px;background:var(--campus-panel)}
-.dashboard-hero::before{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,#102337 12%,#102337ec 43%,#10233780),url("campus-plaza-v2.webp") center 46%/cover no-repeat}
+.dashboard-hero::before{content:none}
 .dashboard-context{color:var(--campus-accent);font:650 12px/1.5 var(--font-body);letter-spacing:.04em}
 .dashboard-hero h1{margin:12px 0;font:650 clamp(34px,3.5vw,52px)/1.12 var(--font-display);letter-spacing:-.035em}
 .dashboard-hero__copy>p{margin:0;color:var(--campus-muted);font-size:16px;line-height:1.6}

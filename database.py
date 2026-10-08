@@ -304,6 +304,12 @@ def init_db():
                 student_id TEXT,
                 active INTEGER NOT NULL DEFAULT 1
             );
+            CREATE TABLE IF NOT EXISTS profile_photos (
+                username TEXT PRIMARY KEY REFERENCES users(username) ON DELETE CASCADE,
+                content BLOB NOT NULL CHECK(length(content) BETWEEN 1 AND 196608),
+                revision TEXT NOT NULL,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
             CREATE TABLE IF NOT EXISTS grades (
                 student_id TEXT NOT NULL,
                 discipline TEXT NOT NULL,

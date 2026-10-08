@@ -18,7 +18,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    const overflowMenus = [...document.querySelectorAll('.campus-more, .campus-mobile-more')];
+    const overflowMenus = [...document.querySelectorAll('.campus-more, .campus-mobile-more, .campus-account-menu')];
     document.addEventListener('click', event => overflowMenus.forEach(menu => {
       if (!menu.contains(event.target) || event.target.closest('a[href]')) menu.open = false;
     }));

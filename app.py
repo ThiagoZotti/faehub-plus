@@ -22,6 +22,7 @@ from database import (authenticate, archive_internship, create_exercise, create_
                       save_internship)
 from internships import MODALITIES, present_internship, validate_internship
 import p1_operations as operations
+import profile_photos
 from school_roster import KNOWN_IDS, ROSTER, ROSTER_NAMES
 
 app = Flask(__name__)
@@ -57,14 +58,16 @@ def protect_response(response):
     response.headers.setdefault("Permissions-Policy", "camera=(), geolocation=(), microphone=()")
     response.headers.setdefault(
         "Content-Security-Policy",
-        "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
+        "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; "
         "script-src 'self'; connect-src 'self'; font-src 'self'; base-uri 'self'; "
         "form-action 'self'; frame-ancestors 'none'",
     )
-    if request.endpoint != "static":
+    if request.endpoint not in {"static", "foto_perfil"}:
         response.headers["Cache-Control"] = "no-store"
-    elif request.args.get("v"):
+    elif request.endpoint == "static" and request.args.get("v"):
         response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    elif request.endpoint == "foto_perfil" and response.status_code not in {200, 304}:
+        response.headers["Cache-Control"] = "no-store"
     return response
 
 
@@ -339,9 +342,16 @@ def inject_shell():
         for item in shell_notifications
     )
     nav_items = NAV.get(role, [])
-    primary_limit = 7 if role in {"aluno", "professor", "admin"} else len(nav_items)
+    primary_limit = 6 if role == "aluno" else (7 if role in {"professor", "admin"} else len(nav_items))
     nav_primary, nav_more = nav_items[:primary_limit], nav_items[primary_limit:]
     current_view = getattr(g, "current_view", "")
+    # Small metadata is cached in the signed session; navigating never downloads
+    # photograph bytes or adds a database round-trip for every module.
+    checked_at = datetime.now(timezone.utc).timestamp()
+    if "profile_photo_revision" not in session or checked_at - session.get("profile_photo_checked", 0) > 300:
+        session["profile_photo_revision"] = profile_photos.photo_revision(session["username"])
+        session["profile_photo_checked"] = checked_at
+    session.setdefault("profile_token", secrets.token_hex(24))
     return {
         "icons": ICONS,
         "role": role,
@@ -352,6 +362,9 @@ def inject_shell():
         "nav_more_current": any(item[0] == current_view for item in nav_more),
         "profile_nome": nome,
         "profile_iniciais": initials(nome),
+        "profile_turma": current_aluno()["turma"] if role == "aluno" else "",
+        "profile_photo_url": url_for("foto_perfil", v=session["profile_photo_revision"]) if session["profile_photo_revision"] else "",
+        "profile_token": session["profile_token"],
         "current_view": current_view,
         "view_title": getattr(g, "view_title", ""),
         "notification_unread": notification_unread,
@@ -436,6 +449,43 @@ def entrar():
 def sair():
     session.clear()
     return redirect(url_for("login"))
+
+
+@app.get("/perfil/foto")
+@login_required("painel")
+def foto_perfil():
+    photo = profile_photos.get_photo(session["username"])
+    if not photo:
+        return "", 404, {"Cache-Control": "no-store"}
+    response = send_file(BytesIO(photo["content"]), mimetype="image/jpeg", max_age=300,
+                         etag=photo["revision"], download_name="foto-de-perfil.jpg")
+    response.headers["Cache-Control"] = "private, max-age=300"
+    response.vary.add("Cookie")
+    return response
+
+
+@app.post("/perfil/foto")
+@login_required("painel")
+def alterar_foto_perfil():
+    if not session.get("profile_token") or not secrets.compare_digest(
+            session["profile_token"], request.form.get("token", "")):
+        return {"error": "Sessão expirada. Atualize a página e tente novamente."}, 400
+    action = request.form.get("action", "upload")
+    if action not in {"upload", "remove"}:
+        return {"error": "Ação inválida."}, 400
+    try:
+        if action == "remove":
+            profile_photos.remove_photo(session["username"])
+            revision = ""
+        else:
+            content = profile_photos.normalize_photo(request.files.get("photo"))
+            revision = profile_photos.save_photo(session["username"], content)
+    except ValueError as exc:
+        return {"error": str(exc)}, 422
+    session["profile_photo_revision"] = revision
+    session["profile_photo_checked"] = datetime.now(timezone.utc).timestamp()
+    return {"url": url_for("foto_perfil", v=revision) if revision else "", "revision": revision,
+            "message": "Foto de perfil atualizada." if revision else "Foto de perfil removida."}
 
 
 # ==========================================================================
