@@ -27,6 +27,7 @@ except ImportError:
     pass
 
 DEFAULT_SQLITE_PATH = BASE_DIR / "faehub.db"
+DUMMY_PASSWORD_HASH = generate_password_hash('invalid-account-' + os.urandom(32).hex())
 DB_PATH = Path(os.getenv("FAEHUB_DATABASE", DEFAULT_SQLITE_PATH))
 DATABASE_URL = os.getenv("FAEHUB_DATABASE_URL") or os.getenv("DATABASE_URL")
 _postgres_pool = None
@@ -479,6 +480,9 @@ def init_db():
         # O antigo módulo de avatar foi retirado; apaga apenas suas preferências legadas.
         db.execute("DROP TABLE IF EXISTS avatar_styles")
         db.execute("DROP TABLE IF EXISTS avatar_profiles")
+        from account_enrollment import init_enrollment, demos_enabled
+        init_enrollment(db)
+        seed_demos = demos_enabled(db)
         accounts = [
             ("gilberto", "direcao@123", "Gilberto", "diretor", None),
             ("aline", "professora@123", "Profa. Aline", "professor", None),
@@ -487,7 +491,7 @@ def init_db():
             ("pablo.sousa", "aluno@123", "Pablo Sousa", "aluno", "23104"),
             ("marlon.eduardo", "aluno@123", "Marlon Eduardo", "aluno", "23117"),
         ]
-        for username, password, name, role, student_id in accounts:
+        for username, password, name, role, student_id in (accounts if seed_demos else []):
             if db.execute('SELECT 1 FROM users WHERE username=?', (username,)).fetchone():
                 continue
             db.execute(
@@ -499,13 +503,15 @@ def init_db():
         group = db.execute(
             "SELECT id FROM message_groups WHERE class_name='3110' ORDER BY id LIMIT 1"
         ).fetchone()
-        if not group:
+        if not group and seed_demos:
             group = db.execute(
                 """INSERT INTO message_groups(name,class_name,created_by)
                    VALUES('Turma 3110','3110','aline') RETURNING id"""
             ).fetchone()
-        group_id = group["id"]
+        group_id = group["id"] if group else None
         for username in ('aline','gilberto','thiago.zotti','jonathan.samuel','pablo.sousa','marlon.eduardo'):
+            if not group_id or not db.execute('SELECT 1 FROM users WHERE username=?', (username,)).fetchone():
+                continue
             db.execute(
                 "INSERT OR IGNORE INTO message_group_members(group_id,username) VALUES(?,?)",
                 (group_id, username),
@@ -532,7 +538,7 @@ def init_db():
 
         _migrate_legacy_student_ids(db)
         count = db.execute("SELECT COUNT(*) total FROM exercises").fetchone()["total"]
-        if not count:
+        if not count and seed_demos:
             db.execute("""INSERT INTO exercises(teacher,title,description,discipline,class_name,due_date)
                           VALUES('aline','API de Biblioteca','Crie uma API Flask com rotas para cadastrar, listar e remover livros. Entregue o link do repositório.','LP3','3110','2026-09-18')""")
             db.execute("""INSERT INTO exercises(teacher,title,description,discipline,class_name,due_date)
@@ -552,9 +558,12 @@ def authenticate(username, password):
         row = db.execute(
             """SELECT u.*,COALESCE(ar.role,u.role) AS effective_role FROM users u
                LEFT JOIN account_roles ar ON ar.username=u.username
-               WHERE u.username = ? AND u.active = TRUE""", (username,)
+               LEFT JOIN account_identities ai ON ai.username=u.username
+               WHERE (u.username = ? OR (ai.email=? AND ai.verified_at IS NOT NULL))
+                 AND u.active = TRUE""", (username, username)
         ).fetchone()
-    if not row or not check_password_hash(row["password_hash"], password):
+    valid_password = check_password_hash(row["password_hash"] if row else DUMMY_PASSWORD_HASH, password)
+    if not row or not valid_password:
         return None
     account = dict(row)
     account["role"] = account.pop("effective_role")

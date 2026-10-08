@@ -1,0 +1,75 @@
+{% set status_labels={'draft':'Aguardando envio','sending':'Enviando','sent':'Convite enviado','expired':'Convite expirado','failed':'Falha no envio','used':'Conta ativada','revoked':'Convite cancelado'} %}
+<section class="director-panel">
+  <h2>Acesso autorizado, senha pessoal.</h2>
+  <p>A direção define o perfil e os vínculos. O titular confirma o e-mail e cria sua senha pelo convite, sem compartilhá-la com a escola.</p>
+  {% if not identities.get(session.username) or not identities[session.username].verified_at %}<p>Primeiro, ative sua própria conta de diretor. O e-mail inicial precisa ser autorizado na configuração privada do servidor; a conta demo não pode convidar outras pessoas.</p>{% endif %}
+  {% if not mail_configured %}<p role="status">Envio de e-mails ainda não configurado. Você pode preparar cadastros, mas nenhum convite será enviado nem liberado para ativação.</p>{% endif %}
+</section>
+<div class="director-toolbar">
+  <label for="directorySearch">Buscar pessoa<input id="directorySearch" type="search" data-directory-search placeholder="Nome, usuário, perfil ou matrícula…"></label>
+  <button class="director-secondary" type="button" data-directory-clear hidden aria-label="Limpar busca">Limpar</button>
+  <label for="directoryRole">Perfil<select id="directoryRole" data-directory-role><option value="">Todos os perfis</option><option value="aluno">Aluno</option><option value="professor">Professor</option><option value="diretor">Diretor</option><option value="responsavel">Responsável</option></select></label>
+  <button class="director-primary" type="button" data-open-director="newIdentity" aria-haspopup="dialog" aria-controls="newIdentity">＋ Preparar convite</button>
+</div>
+<p data-directory-count aria-live="polite">{{ users|length }} contas</p>
+<section class="director-panel director-directory">
+  {% for u in users %}{% set identity=identities.get(u.username) %}
+  <article class="director-person" data-directory-item="{{ (u.name ~ ' ' ~ u.username ~ ' ' ~ u.role ~ ' ' ~ (u.student_id or '') ~ ' ' ~ (identity.email if identity else ''))|lower }}" data-role="{{ u.role }}">
+    <span class="director-avatar">{{ u.name[:1] }}</span>
+    <div><h3>{{ u.name }}</h3><small>{{ u.username }} · {{ u.student_id or 'Equipe institucional' }}</small>{% if identity %}<small>{{ identity.email }} · {{ 'E-mail confirmado' if identity.verified_at else status_labels.get(identity.status,'Primeiro acesso pendente') }}{% if identity.status=='sent' and identity.expires_at %} · confira a validade no convite{% endif %}</small>{% endif %}</div>
+    <span class="director-tag">{{ u.role|title }}</span><span class="director-status {{ 'inactive' if not u.active }}">{{ 'Ativo' if u.active else 'Acesso bloqueado' }}</span>
+    <button class="director-secondary" type="button" data-open-director="identity{{ loop.index }}" aria-haspopup="dialog" aria-controls="identity{{ loop.index }}">Gerenciar ↗</button>
+  </article>
+  <dialog class="director-dialog" id="identity{{ loop.index }}" aria-label="Gerenciar {{ u.name }}">
+    <header><div><span class="academic-kicker">{{ u.username }} / {{ u.role|upper }}</span><h2>{{ u.name }}</h2></div><button type="button" data-close-director aria-label="Fechar gerenciamento">×</button></header>
+    <form method="post" novalidate>{{ hidden('update') }}<input type="hidden" name="username" value="{{ u.username }}"><label>Nome de exibição<input name="name" value="{{ u.name }}" maxlength="160" required></label><button class="director-primary" type="submit">Salvar nome</button></form>
+    {% if identity and identity.verified_at %}
+      <p>E-mail confirmado: <strong>{{ identity.email }}</strong>. Somente o titular define a senha; a recuperação permanece disponível no login.</p>
+    {% else %}
+      <details><summary>{{ 'Revisar e-mail do convite' if identity else 'Migrar para acesso por e-mail' }}</summary>
+        <form method="post" novalidate>{{ hidden('invite') }}<input type="hidden" name="username" value="{{ u.username }}">
+          <label>E-mail do titular<input type="email" name="email" autocomplete="off" maxlength="254" value="{{ identity.email if identity else '' }}" required></label>
+          <label>Sua senha atual<input type="password" name="current_password" autocomplete="current-password" maxlength="128" required></label>
+          <p>O titular recebe o convite neste endereço. Perfil e vínculos existentes serão preservados. Convites anteriores serão invalidados.</p>
+          <button class="director-primary" type="submit">Preparar convite</button>
+        </form>
+      </details>
+      {% if identity and identity.id and identity.status!='used' %}
+        <form method="post" novalidate>{{ hidden('send_invite') }}<input type="hidden" name="invitation_id" value="{{ identity.id }}"><p>Convite: {{ status_labels.get(identity.status,identity.status) }}. Validade de 48 horas após envio. Reenviar invalida o link anterior.</p><button class="director-secondary" type="submit" {{ 'disabled' if not mail_configured or identity.status in ['revoked','sending'] }}>Enviar novo convite</button></form>
+        {% if identity.status!='revoked' %}<form method="post" novalidate data-director-confirm="Cancelar o convite de {{ u.name }}? O link deixará de funcionar, sem apagar o cadastro.">{{ hidden('cancel_invite') }}<input type="hidden" name="invitation_id" value="{{ identity.id }}"><button class="director-secondary" type="submit">Cancelar convite</button></form>{% endif %}
+      {% endif %}
+    {% endif %}
+    <form class="director-danger-zone" method="post" novalidate data-director-confirm="{{ 'Desativar o acesso desta pessoa? Os registros serão preservados e convites pendentes serão cancelados.' if u.active else 'Reativar esta conta?' }}">
+      {{ hidden('status') }}<input type="hidden" name="username" value="{{ u.username }}"><input type="hidden" name="active" value="{{ 0 if u.active else 1 }}">
+      <p>Desativar bloqueia o acesso sem apagar notas, mensagens ou entregas. Cadastros pendentes só são ativados pelo titular.</p>
+      <button class="director-secondary" type="submit" {{ 'disabled' if u.username==session.username or (not u.active and identity and not identity.verified_at) }}>{{ 'Desativar conta' if u.active else 'Reativar conta' }}</button>
+    </form>
+  </dialog>
+  {% endfor %}
+  <p class="director-empty" data-directory-empty hidden>Nenhuma conta encontrada.</p>
+</section>
+<dialog class="director-dialog" id="newIdentity" aria-label="Preparar convite">
+  <form method="post" novalidate>
+    <header><div><span class="academic-kicker">NOVA IDENTIDADE</span><h2>Convide para o campus.</h2></div><button type="button" data-close-director aria-label="Fechar criação">×</button></header>
+    {{ hidden('invite') }}
+    <label>Nome completo<input name="name" maxlength="160" autocomplete="name" required></label>
+    <label>Identificação interna<input name="username" pattern="[a-z0-9_.\-]{3,50}" maxlength="50" required autocomplete="off"></label>
+    <p>Use uma identificação estável, como nome.sobrenome. O titular poderá entrar com o e-mail confirmado.</p>
+    <label>E-mail do titular<input name="email" type="email" maxlength="254" autocomplete="off" required></label>
+    <label for="identityRole">Perfil</label><select name="role" id="identityRole"><option value="aluno">Aluno</option><option value="professor">Professor</option><option value="diretor">Diretor</option><option value="responsavel">Responsável</option></select>
+    <div id="studentLink"><label for="invitationStudent">Aluno da lista</label><select name="student_id" id="invitationStudent"><option value="">Selecione a matrícula</option>{% for s in roster %}<option value="{{ s.id }}">{{ s.nome }} · {{ s.id }} · {{ s.turma }}</option>{% endfor %}</select></div>
+    <label>Sua senha atual<input name="current_password" type="password" maxlength="128" autocomplete="current-password" required></label>
+    <p>A conta ficará bloqueada até a ativação. Para responsáveis, selecione somente o aluno cujo vínculo foi confirmado pela escola.</p>
+    <button class="director-primary" type="submit">Preparar convite</button>
+  </form>
+</dialog>
+{% if demos_enabled %}
+<section class="director-panel">
+  <h2>Encerrar as demonstrações</h2>
+  <p>Faça isso somente depois de ativar seu acesso de diretor por e-mail. Contas que já foram ativadas serão mantidas; as demais contas demo serão bloqueadas sem apagar registros escolares.</p>
+  <form method="post" novalidate data-director-confirm="Encerrar os acessos de demonstração não ativados? Contas reais e registros escolares serão preservados.">
+    {{ hidden('retire_demos') }}<label>Sua senha atual<input type="password" name="current_password" autocomplete="current-password" maxlength="128" required></label>
+    <button class="director-secondary" type="submit">Encerrar contas de demonstração</button>
+  </form>
+</section>
+{% endif %}

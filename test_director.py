@@ -5,6 +5,7 @@ from unittest.mock import patch
 import database as db
 from app import app, ROSTER
 from director import init_director, access_version
+import account_enrollment as enrollment
 
 class DirectorTests(unittest.TestCase):
     @classmethod
@@ -18,6 +19,8 @@ class DirectorTests(unittest.TestCase):
 
     def setUp(self):
         self.client=app.test_client();self.login()
+        self.authorized=patch.object(enrollment,'authorize_invitation_actor');self.authorized.start()
+        self.addCleanup(self.authorized.stop)
 
     def login(self,user='gilberto',role='admin'):
         with self.client.session_transaction() as s:
@@ -28,7 +31,8 @@ class DirectorTests(unittest.TestCase):
             response=self.client.get('/'+page)
             self.assertEqual(response.status_code,200,page)
             self.assertIn('CAMPUS DIREÇÃO'.encode(),response.data)
-        self.assertNotIn(b'812',self.client.get('/painel').data)
+        # Check visible metrics, not incidental digits inside static cache hashes.
+        self.assertNotIn(b'<strong>812</strong>',self.client.get('/painel').data)
 
     def test_denies_other_roles_and_csrf(self):
         self.assertEqual(self.client.post('/usuarios',data=dict(action='create')).status_code,400)
@@ -38,8 +42,17 @@ class DirectorTests(unittest.TestCase):
 
     def test_create_student_and_login_pages(self):
         sid=ROSTER[0]['id']
-        response=self.client.post('/usuarios',data=dict(token='token',action='create',username='new.student',name='Novo Aluno',role='aluno',student_id=sid,password='strong-pass123'))
+        # This test exercises enrollment with a director already authorized;
+        # bootstrap constraints have their own dedicated test.
+        with patch.object(enrollment,'mail_configured',return_value=False), patch.object(enrollment,'authorize_invitation_actor'):
+            response=self.client.post('/usuarios',data=dict(token='token',action='invite',username='new.student',name='Novo Aluno',role='aluno',student_id=sid,email='novo@example.com',current_password='direcao@123'))
         self.assertEqual(response.status_code,302)
+        self.assertIsNone(db.authenticate('new.student','strong-pass123'))
+        invitation_id=enrollment.invitation_directory()['new.student']['id']
+        with patch.object(enrollment,'mail_configured',return_value=True), patch.object(enrollment,'send_invitation_email') as sender:
+            enrollment.deliver_invitation('gilberto',invitation_id)
+        import hashlib
+        enrollment.complete_invitation(hashlib.sha256(sender.call_args.args[1].encode()).hexdigest(),'a strong new passphrase','a strong new passphrase')
         self.login('new.student','aluno')
         with self.client.session_transaction() as s:s['aluno_id']=sid
         for page in ('painel','boletim','agenda','horario','exercicios','mensagens'):

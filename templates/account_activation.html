@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer"><meta name="color-scheme" content="light">
+  <title>Ativar minha conta · FaeHub+</title>
+  <link rel="icon" href="{{ url_for('static',filename='logo.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static',filename='p1/operations.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static',filename='campus-system.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static',filename='campus-bright.css') }}">
+</head>
+<body class="enrollment-page">
+  <main class="ops enrollment-card">
+    <a class="enrollment-brand" href="{{ url_for('login') }}"><img src="{{ url_for('static',filename='logo.svg') }}" width="38" height="38" alt="">FaeHub+</a>
+    <section class="ops-card">
+      <span class="ops-kicker">PRIMEIRO ACESSO</span>
+      <h1>{{ 'Olá, ' ~ invitation.name ~ '.' if invitation else 'Seu lugar no campus.' }}</h1>
+      {% if error %}<p class="ops-error" id="activationError" role="alert" tabindex="-1">{{ error }}</p>{% endif %}
+      {% if invitation %}
+      <p>A escola autorizou seu acesso como <strong>{{ {'aluno':'Aluno','professor':'Professor','diretor':'Diretor','responsavel':'Responsável'}.get(invitation.role,invitation.role) }}</strong>. Seus vínculos escolares não são alterados neste cadastro.</p>
+      <form method="post" novalidate data-activation-form aria-describedby="passwordHelp">
+        <input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="action" value="complete">
+        <label for="activationEmail">E-mail autorizado pela escola</label>
+        <input id="activationEmail" type="email" value="{{ invitation.email }}" readonly autocomplete="email">
+        <p>Ao concluir usando o convite recebido neste e-mail, você confirma este endereço. Se ele estiver errado, peça um novo convite à escola.</p>
+        <label for="activationPassword">Crie sua senha</label>
+        <div class="enrollment-password"><input id="activationPassword" name="password" type="password" autocomplete="new-password" minlength="15" maxlength="128" required aria-invalid="{{ 'true' if field_error=='password' else 'false' }}" aria-describedby="passwordHelp activationClientError{{ ' activationError' if error else '' }}"><button type="button" data-reveal="activationPassword" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div>
+        <p id="passwordHelp">Use de 15 a 128 caracteres. Prefira uma frase longa e exclusiva; espaços são permitidos.</p>
+        <label for="activationConfirmation">Repita sua senha</label>
+        <div class="enrollment-password"><input id="activationConfirmation" name="confirmation" type="password" autocomplete="new-password" minlength="15" maxlength="128" required aria-invalid="{{ 'true' if field_error=='confirmation' else 'false' }}" aria-describedby="activationClientError{{ ' activationError' if error else '' }}"><button type="button" data-reveal="activationConfirmation" aria-label="Mostrar confirmação de senha" aria-pressed="false">Mostrar</button></div>
+        <p id="activationClientError" class="ops-error" role="alert" hidden></p>
+        <button class="ops-btn ops-btn--primary" type="submit">Confirmar e-mail e ativar conta</button>
+      </form>
+      {% else %}
+      <p>O cadastro é autorizado pela escola. Abra o convite recebido no seu e-mail para confirmar o endereço e criar sua senha.</p>
+      <form method="post" novalidate id="openInvitation">
+        <input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="action" value="open">
+        <input type="hidden" name="invitation" id="invitationValue">
+        <p id="invitationReady" hidden>Convite recebido. Continue para configurar seu acesso.</p>
+        <button class="ops-btn ops-btn--primary" type="submit" id="openInvitationButton" disabled>Continuar com meu convite</button>
+      </form>
+      {% endif %}
+      <p><a href="{{ url_for('login') }}">Voltar ao login</a></p>
+    </section>
+  </main>
+  <script src="{{ url_for('static',filename='account-activation.js') }}"></script>
+</body>
+</html>

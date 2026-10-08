@@ -3,6 +3,7 @@
 
 import os
 import secrets
+import hashlib
 import database as db
 from io import BytesIO
 from dashboard import student_summary
@@ -23,11 +24,13 @@ from database import (authenticate, archive_internship, create_exercise, create_
 from internships import MODALITIES, present_internship, validate_internship
 import p1_operations as operations
 import profile_photos
+import account_enrollment as enrollment
 from school_roster import KNOWN_IDS, ROSTER, ROSTER_NAMES
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FAEHUB_SECRET_KEY") or secrets.token_hex(32)
-app.config.update(SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax")
+app.config.update(SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax",
+                  SESSION_COOKIE_SECURE=bool(os.getenv('RENDER')))
 app.config['SEND_FILE_MAX_AGE_DEFAULT']=31536000
 app.config['MAX_CONTENT_LENGTH']=6 * 1024 * 1024
 try:
@@ -410,7 +413,8 @@ def login():
     # Visiting the entrance never skips the user's explicit action.
     import secrets
     session.setdefault('login_token', secrets.token_hex(24))
-    return render_template("login.html", token=session['login_token'], username='', error=None)
+    return render_template("login.html", token=session['login_token'], username='', error=None,
+                           demos_enabled=enrollment.demos_enabled())
 
 
 @app.route("/entrar", methods=["POST"])
@@ -424,16 +428,18 @@ def entrar():
         return redirect(url_for('login'))
     usuario = request.form.get("usuario", "").strip().lower()
     senha = request.form.get("senha", "")
-    conta = authenticate(usuario, senha)
+    permitted = enrollment.consume_rate_limit('login', enrollment.login_identifier(usuario[:254]), limit=20)
+    conta = authenticate(usuario, senha) if permitted and len(usuario) <= 254 and len(senha) <= 128 else None
 
     if not conta:
         if wants_json:
             return {'error': 'Usuário ou senha inválidos.'}, 401
         return render_template('login.html', token=session['login_token'], username=usuario,
-                               error='Usuário ou senha inválidos.'), 401
+                               error='Usuário ou senha inválidos.', demos_enabled=enrollment.demos_enabled()), 401
 
     session.clear()
     session["role"] = "admin" if conta["role"] == "diretor" else conta["role"]
+    usuario = conta['username']  # E-mail is an alias; academic records use the immutable school ID.
     session["username"] = usuario
     session["display_name"] = conta["name"]
     session["auth_version"] = access_version(usuario)
@@ -443,6 +449,50 @@ def entrar():
     if wants_json:
         return {'name': conta['name'], 'role': conta['role'], 'destination': url_for('painel')}
     return redirect(url_for("painel"))
+
+
+@app.route('/ativar', methods=['GET', 'POST'])
+def ativar_conta():
+    session.setdefault('enrollment_token', secrets.token_hex(24))
+    error = None
+    if request.method == 'POST':
+        if not secrets.compare_digest(session['enrollment_token'], request.form.get('token', '')):
+            return render_template('account_activation.html', invitation=None, token=session['enrollment_token'],
+                                   error='Sessão expirada. Reabra o convite recebido no e-mail.', field_error=None), 400, {'Referrer-Policy':'no-referrer'}
+        try:
+            action = request.form.get('action')
+            if action == 'open':
+                if not enrollment.consume_rate_limit('invitation', request.remote_addr or '', limit=80):
+                    raise ValueError('Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.')
+                raw = request.form.get('invitation', '')
+                digest = hashlib.sha256(raw.encode()).hexdigest()
+                if not 40 <= len(raw) <= 100 or not enrollment.invitation_by_digest(digest):
+                    raise ValueError('Convite inválido, expirado ou cancelado. Peça um novo convite à escola.')
+                session['invitation_digest'] = digest
+                return redirect(url_for('ativar_conta'))
+            elif action == 'complete':
+                if not enrollment.consume_rate_limit('activation', request.remote_addr or '', limit=80):
+                    raise ValueError('Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.')
+                enrollment.complete_invitation(session.get('invitation_digest', ''),
+                                                request.form.get('password', ''), request.form.get('confirmation', ''))
+                session.clear()
+                flash('Conta ativada e e-mail confirmado. Entre com seu e-mail e sua nova senha.')
+                return redirect(url_for('login'))
+            else:
+                raise ValueError('Ação inválida.')
+        except ValueError as exc:
+            error = str(exc)
+    invitation = enrollment.invitation_by_digest(session.get('invitation_digest', '')) if session.get('invitation_digest') else None
+    field_error = None
+    if error and request.form.get('action') == 'complete' and invitation:
+        if not 15 <= len(request.form.get('password','')) <= 128:
+            field_error = 'password'
+        elif request.form.get('password') != request.form.get('confirmation'):
+            field_error = 'confirmation'
+    response = app.make_response((render_template('account_activation.html', invitation=invitation,
+                  token=session['enrollment_token'], error=error, field_error=field_error), 422 if error else 200))
+    response.headers['Referrer-Policy'] = 'no-referrer'
+    return response
 
 
 @app.route("/sair")
@@ -1223,14 +1273,14 @@ def recuperar_senha():
         action = request.form.get("action", "request")
         try:
             if action == "request":
-                operations.request_password_recovery(request.form.get("username", "").strip().lower())
+                operations.request_password_recovery(enrollment.login_identifier(request.form.get("username", "")[:254]))
                 message = "Se a conta estiver ativa, a secretaria recebeu a solicitação. O código é entregue após confirmação de identidade."
             elif action == "reset":
                 new_password = request.form.get("new_password", "")
                 if new_password != request.form.get("confirm_password", ""):
                     raise ValueError("As novas senhas não coincidem.")
                 operations.use_recovery_code(
-                    request.form.get("username", ""), request.form.get("code", ""), new_password
+                    enrollment.login_identifier(request.form.get("username", "")[:254]), request.form.get("code", ""), new_password
                 )
                 flash("Senha redefinida. Entre novamente com a nova senha.")
                 return redirect(url_for("login"))

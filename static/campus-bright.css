@@ -2781,6 +2781,82 @@ body.campus-shell {
   background: #216be4;
   color: #fff;
 }
+.enrollment-page {
+  margin: 0;
+  background: var(--campus-ink);
+  color: var(--campus-text);
+  font-family: "Segoe UI Variable Text", "Segoe UI", Arial, sans-serif;
+}
+.enrollment-card {
+  width: min(100%, 660px);
+  margin: auto;
+  padding: 32px 20px;
+}
+.enrollment-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--campus-text);
+  font-size: 26px;
+  font-weight: 800;
+  text-decoration: none;
+  margin-bottom: 22px;
+}
+.enrollment-card h1 {
+  font-size: clamp(26px, 5vw, 36px);
+  line-height: 1.2;
+}
+.enrollment-card label {
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.enrollment-card input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--campus-line);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--campus-panel);
+  color: var(--campus-text);
+  font: inherit;
+  box-sizing: border-box;
+}
+.enrollment-password {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.enrollment-password input {
+  min-width: 0;
+}
+.enrollment-password button {
+  min-height: 44px;
+  padding: 8px 12px;
+  background: var(--campus-panel-strong);
+  border: 1px solid var(--campus-line);
+  border-radius: 12px;
+  color: var(--campus-text);
+}
+.enrollment-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.enrollment-card button:not(:disabled) {
+  cursor: pointer;
+}
+.enrollment-card button:not(:disabled):hover {
+  filter: brightness(0.95);
+}
+.enrollment-card :focus-visible {
+  outline: 3px solid var(--campus-accent);
+  outline-offset: 3px;
+}
+.enrollment-card p {
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
 .profile-photo-dialog button:disabled {
   opacity: 0.55;
   cursor: not-allowed;

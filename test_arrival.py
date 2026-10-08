@@ -17,7 +17,7 @@ class ArrivalTests(unittest.TestCase):
             client=app.test_client()
             client.get('/')
             with client.session_transaction() as session: token=session['login_token']
-            authenticate.return_value={'role':role,'name':'Pessoa Teste','student_id':'23081'}
+            authenticate.return_value={'username':'teste','role':role,'name':'Pessoa Teste','student_id':'23081'}
             result=client.post('/entrar',data={'token':token,'usuario':'teste','senha':'test','role':'diretor'},
                                headers={'X-Campus-Login':'1'})
             self.assertEqual(result.status_code,200)

@@ -207,7 +207,8 @@ def init_operations():
                        VALUES(?,?,?,?,?,?)""",
                     (year["id"], name, number, starts_on, ends_on, status),
                 )
-        if not conn.execute("SELECT 1 FROM users WHERE username='responsavel.thiago'").fetchone():
+        from account_enrollment import demos_enabled
+        if demos_enabled(conn) and not conn.execute("SELECT 1 FROM users WHERE username='responsavel.thiago'").fetchone():
             conn.execute(
                 """INSERT INTO users(username,password_hash,name,role,student_id,active)
                    VALUES(?,?,?,?,?,TRUE)""",
@@ -220,12 +221,12 @@ def init_operations():
                 ),
             )
         conn.execute(
-            """INSERT INTO account_roles(username,role) VALUES('responsavel.thiago','responsavel')
+            """INSERT INTO account_roles(username,role) SELECT username,'responsavel' FROM users WHERE username='responsavel.thiago'
                ON CONFLICT(username) DO NOTHING"""
         )
         conn.execute(
             """INSERT INTO guardian_links
-               (guardian_username,student_id,relationship) VALUES('responsavel.thiago','23081','Responsável legal')
+               (guardian_username,student_id,relationship) SELECT username,'23081','Responsável legal' FROM users WHERE username='responsavel.thiago'
                ON CONFLICT(guardian_username,student_id) DO NOTHING"""
         )
 
@@ -573,6 +574,10 @@ def use_recovery_code(username: str, code: str, new_password: str):
         ).fetchone()
         if not row:
             raise ValueError("Código inválido ou expirado.")
+        identity = conn.execute('SELECT verified_at FROM account_identities WHERE username=?',
+                                (username.strip().lower(),)).fetchone()
+        if identity and identity['verified_at'] and len(new_password) < 15:
+            raise ValueError('Use uma senha entre 15 e 128 caracteres para sua conta ativada.')
         consumed = conn.execute(
             "UPDATE password_recovery_requests SET status='used',used_at=CURRENT_TIMESTAMP WHERE id=? AND status='issued'",
             (row["id"],),

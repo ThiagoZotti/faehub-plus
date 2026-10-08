@@ -120,6 +120,19 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 
 ## Verificação obrigatória
 
+### Primeiro acesso por convite
+
+- Política de autorização e rollout: `AUTH-ROLLOUT.md`; operação canônica em `account_enrollment.py`.
+- Direção prepara cadastro e confirma sua senha; sem configuração de e-mail, a interface anuncia cadastro pendente, nunca envio fictício.
+- A direção demo não pode criar contas reais arbitrárias. O primeiro diretor só migra a própria conta para o e-mail autorizado em `FAEHUB_BOOTSTRAP_ADMIN_EMAIL`; a configuração pertence ao dono do servidor. Os demais convites requerem direção verificada.
+- Convites só são ativáveis após aceitação pelo serviço de envio, valem 48h e são consumidos uma vez. Reenvio/cancelamento invalida o link anterior.
+- O titular confirma o endereço autorizado recebendo o convite e define sua senha; perfil e vínculos permanecem sob controle da escola.
+- Ativação conclui no login, sem entrada automática. O e-mail confirmado funciona como alias da identificação escolar.
+- Atalhos públicos com senhas demo não são exibidos. Encerramento das contas demo requer diretor ativado e confirmação da senha; dados escolares não são apagados.
+- Recuperação segue mediada pela secretaria até a próxima etapa. Autenticador/SMS não são anunciados como funcionalidades prontas.
+- Formulários públicos usam CSRF, erros textuais, botão de revelar senha, bloqueio de submit duplicado e tokens fora da URL HTTP. Confirmações da direção usam diálogo do app, não confirmação nativa.
+- Owner visual das novas superfícies: adaptador compartilhado `static/campus-bright.css`; controles administrativos permanecem em `director.js`/`account_directory.html`.
+
 - `python -m unittest discover -v`.
 - Testes P1: perfis autorizados, diário, documento, notificação, anexo e código de recuperação.
 - Verificar desktop 1440 px, tablet 900 px, celular 390 px, teclado, foco, alto contraste e movimento reduzido.

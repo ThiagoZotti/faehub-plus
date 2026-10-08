@@ -117,6 +117,8 @@ O painel do aluno é deliberadamente enxuto: boas-vindas, **Seu próximo movimen
 
 Campos têm rótulos persistentes. Seleção e data usam controles nativos aceitos pelo contrato de UX. Diálogos têm título, fechamento explícito, fundo modal e foco gerenciado pelo navegador. A confirmação de arquivamento nunca usa `window.confirm`.
 
+Primeiro acesso é uma superfície operacional compacta, sem novo cenário ou redesign do login: logo original, card branco, títulos claros e ações cobalto usam o owner `static/campus-bright.css`. Cadastro administrativo por convite reutiliza os diálogos e controles da direção; a confirmação passa a ser um diálogo próprio do app. Os estados “aguardando envio”, “convite enviado” e “conta ativada” são escritos por extenso, sem indicadores fictícios.
+
 ### Iconography
 
 Ícones SVG de linha são mantidos no mapa `ICONS` de `app.py`, normalmente em 18–22px. Usar `currentColor`, terminação arredondada e alinhamento óptico. Ícones não substituem rótulos de navegação.

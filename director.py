@@ -1,13 +1,13 @@
 """Institution management backed by the configured FaeHub+ database."""
 import csv
 import io
-import re
 import secrets
 from datetime import date
 from flask import request, session, render_template, redirect, url_for, flash, Response
 from werkzeug.security import generate_password_hash
 import database as db
 import p1_operations as operations
+import account_enrollment as enrollment
 
 
 def init_director():
@@ -73,39 +73,65 @@ def manage(section, roster, subjects):
         if not secrets.compare_digest(token,request.form.get('token','')):return 'Sessão expirada. Atualize a página.',400
         try:
             action=request.form.get('action','')
-            allowed={'usuarios':{'create','update','status','password'},'turmas':{'class','assign','unassign'},'configuracoes':{'settings'}}
+            allowed={'usuarios':{'invite','send_invite','cancel_invite','retire_demos','update','status','password'},'turmas':{'class','assign','unassign'},'configuracoes':{'settings'}}
             if action not in allowed.get(section,set()):raise ValueError('Ação inválida para esta seção.')
+            if section == 'usuarios' and action not in {'invite','send_invite','cancel_invite','retire_demos'}:
+                enrollment.authorize_invitation_actor(session['username'],action)
+            if section == 'usuarios' and action in {'invite','send_invite','cancel_invite','retire_demos'}:
+                if action != 'retire_demos':
+                    enrollment.authorize_invitation_actor(session['username'],action,
+                        username=request.form.get('username','').strip().lower(),email=request.form.get('email',''),
+                        invitation_id=request.form.get('invitation_id'))
+                if action == 'invite':
+                    if not enrollment.consume_rate_limit('reauth_invite',session['username'],limit=20):
+                        raise ValueError('Muitas tentativas de confirmação. Aguarde alguns minutos.')
+                    if not db.authenticate(session['username'], request.form.get('current_password', '')):
+                        raise ValueError('Confirme sua senha atual para autorizar este acesso.')
+                    invitation_id = enrollment.create_invitation(session['username'], field('username',50), field('email',254),
+                        name=request.form.get('name'), role=request.form.get('role'), student_id=request.form.get('student_id'), roster=roster)
+                    if enrollment.mail_configured():
+                        enrollment.deliver_invitation(session['username'], invitation_id)
+                        flash('Convite aceito pelo serviço de e-mail. O titular poderá criar sua própria senha.')
+                    else:
+                        flash('Cadastro salvo. O convite aguarda a configuração do serviço de e-mail; nenhum e-mail foi enviado.')
+                elif action == 'send_invite':
+                    if not enrollment.consume_rate_limit('invite_send',session['username'],limit=20):
+                        raise ValueError('Limite de envios atingido. Aguarde alguns minutos.')
+                    enrollment.deliver_invitation(session['username'],field('invitation_id',32))
+                    flash('Novo convite aceito pelo serviço de e-mail. O link anterior foi invalidado.')
+                elif action == 'cancel_invite':
+                    enrollment.cancel_invitation(session['username'],field('invitation_id',32))
+                    flash('Convite cancelado. O link não pode mais ser utilizado.')
+                else:
+                    enrollment.retire_demos(session['username'],request.form.get('current_password',''))
+                    flash('Demonstrações encerradas. Contas ativadas e registros escolares foram preservados.')
+                return redirect(url_for(section))
             with db.connection() as conn:
                 if section=='usuarios':
                     username=field('username',50).lower()
                     existing=conn.execute('SELECT * FROM users WHERE username=?',(username,)).fetchone()
-                    if action=='create':
-                        if not re.fullmatch(r'[a-z0-9_.-]{3,50}',username):raise ValueError('Usuário: 3 a 50 letras sem acento, números, ponto, hífen ou sublinhado.')
-                        role=request.form.get('role')
-                        if role not in ('aluno','professor','diretor','responsavel'):raise ValueError('Perfil inválido.')
-                        sid=request.form.get('student_id','') if role in ('aluno','responsavel') else None
-                        if role in ('aluno','responsavel'):
-                            if sid not in {s['id'] for s in roster}:raise ValueError('Selecione um aluno da lista cadastrada.')
-                            if role=='aluno' and conn.execute('SELECT 1 FROM users WHERE student_id=?',(sid,)).fetchone():raise ValueError('Já existe uma conta para esta matrícula.')
-                        stored_role='aluno' if role=='responsavel' else role
-                        conn.execute('INSERT INTO users(username,password_hash,name,role,student_id) VALUES(?,?,?,?,?)',
-                                     (username,password(),field('name'),stored_role,sid if role=='aluno' else None))
-                        if role=='responsavel':
-                            conn.execute('INSERT INTO account_roles(username,role) VALUES(?,?)',(username,role))
-                            conn.execute('''INSERT INTO guardian_links(guardian_username,student_id,relationship)
-                                            VALUES(?,?,?)''',(username,sid,'Responsável legal'))
-                    else:
-                        if not existing:raise ValueError('Conta não encontrada.')
-                        if action=='update':conn.execute('UPDATE users SET name=? WHERE username=?',(field('name'),username))
-                        elif action=='status':
-                            if username==session['username']:raise ValueError('Você não pode desativar sua própria conta.')
-                            active=request.form.get('active')
-                            if active not in ('0','1'):raise ValueError('Status inválido.')
-                            if active=='0' and existing['role']=='diretor' and conn.execute("SELECT COUNT(*) AS total FROM users WHERE role='diretor' AND active=TRUE").fetchone()['total']<=1:raise ValueError('Mantenha ao menos um diretor ativo.')
-                            conn.execute('UPDATE users SET active=? WHERE username=?',(active=='1',username))
-                        elif action=='password':conn.execute('UPDATE users SET password_hash=? WHERE username=?',(password(),username))
-                        if action in ('status','password'):
-                            conn.execute('INSERT INTO auth_versions(username,version) VALUES(?,1) ON CONFLICT(username) DO UPDATE SET version=version+1',(username,))
+                    if not existing:raise ValueError('Conta não encontrada.')
+                    if action=='update':conn.execute('UPDATE users SET name=? WHERE username=?',(field('name'),username))
+                    elif action=='status':
+                        if username==session['username']:raise ValueError('Você não pode desativar sua própria conta.')
+                        active=request.form.get('active')
+                        if active not in ('0','1'):raise ValueError('Status inválido.')
+                        identity=conn.execute('SELECT verified_at FROM account_identities WHERE username=?',(username,)).fetchone()
+                        if active=='1' and username in enrollment.DEMO_USERS and not enrollment.demos_enabled(conn) and not (identity and identity['verified_at']):
+                            raise ValueError('As demonstrações foram encerradas. Use um convite para ativar esta conta como acesso real.')
+                        if active=='1' and identity and not identity['verified_at']:
+                            raise ValueError('O titular precisa ativar esta conta pelo convite antes de acessar o campus.')
+                        if active=='0' and existing['role']=='diretor' and conn.execute("SELECT COUNT(*) AS total FROM users WHERE role='diretor' AND active=TRUE").fetchone()['total']<=1:raise ValueError('Mantenha ao menos um diretor ativo.')
+                        conn.execute('UPDATE users SET active=? WHERE username=?',(active=='1',username))
+                        if active=='0':
+                            conn.execute("UPDATE account_invitations SET status='revoked',token_hash=NULL WHERE username=? AND status!='used'",(username,))
+                    elif action=='password':
+                        identity=conn.execute('SELECT verified_at FROM account_identities WHERE username=?',(username,)).fetchone()
+                        if identity and identity['verified_at']:
+                            raise ValueError('O titular deve usar a recuperação de senha. A direção não define a senha de contas ativadas.')
+                        conn.execute('UPDATE users SET password_hash=? WHERE username=?',(password(),username))
+                    if action in ('status','password'):
+                        conn.execute('INSERT INTO auth_versions(username,version) VALUES(?,1) ON CONFLICT(username) DO UPDATE SET version=version+1',(username,))
                 elif section=='turmas':
                     class_name=field('class_name')
                     if class_name not in classes:raise ValueError('Turma não cadastrada.')
@@ -182,4 +208,6 @@ def manage(section, roster, subjects):
                            classes=class_rows,assignments=assignments,subjects=subjects,stats=stats,settings=settings(),
                            logs=db.recent_logs(50) if section=='relatorios' else [],records=records,grades=grades,start=start,end=end,
                            p1_metrics=operations.p1_metrics() if section in ('painel','relatorios') else {},
-                           retry={k:v for k,v in request.form.items() if k not in ('password','token')} if error else None),422 if error else 200
+                           identities=enrollment.invitation_directory() if section=='usuarios' else {},
+                           mail_configured=enrollment.mail_configured(), demos_enabled=enrollment.demos_enabled(),
+                           retry={k:v for k,v in request.form.items() if k not in ('password','current_password','token')} if error else None),422 if error else 200

@@ -36,6 +36,10 @@ Requisitos: Windows com Python 3.10 ou superior e acesso à internet apenas na p
 
 O perfil visual escolhido na entrada não altera permissões: a conta autenticada define o espaço correto.
 
+## Primeiro acesso real
+
+A direção prepara convites em **Usuários**, sem escolher a senha do titular. O usuário recebe um link de uso único, confirma o e-mail e cria uma senha pessoal. Enquanto o envio não estiver configurado, cadastros permanecem pendentes e sem acesso. Consulte [AUTH-ROLLOUT.md](AUTH-ROLLOUT.md) para configurar envio HTTPS, migrar a direção e encerrar contas demo sem apagar registros. Autenticador e telefone são etapas futuras.
+
 ## Roteiro curto de demonstração
 
 1. Abra a chegada, clique em **Entrar no campus** e use Thiago.
