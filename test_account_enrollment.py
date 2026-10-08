@@ -46,6 +46,23 @@ class EnrollmentTests(unittest.TestCase):
         row=enrollment.invitation_directory()['draft.teacher'];self.assertEqual(row['status'],'draft');self.assertFalse(row['verified_at'])
         self.assertEqual(self.admin.post('/usuarios',data=dict(token='admin-csrf',action='status',username='draft.teacher',active='1')).status_code,422)
 
+    def test_users_database_failure_renders_error_without_more_database_queries(self):
+        from psycopg import OperationalError
+        with patch('app.account_access', side_effect=OperationalError('simulated connection lost')), patch('app.request_notifications') as notifications:
+            response=self.admin.get('/usuarios')
+        self.assertEqual(response.status_code, 500)
+        self.assertIn('Algo saiu do lugar'.encode(), response.data)
+        self.assertNotIn(b'OperationalError', response.data)
+        notifications.assert_not_called()
+
+    def test_users_page_handles_reserved_cancelled_initial_admin(self):
+        invitation_id=self.draft('gilberto', 'owner@example.com')
+        enrollment.cancel_invitation('gilberto', invitation_id)
+        response=self.admin.get('/usuarios')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'owner@example.com', response.data)
+        self.assertIn('Convite cancelado'.encode(), response.data)
+
     def test_full_activation_email_login_and_school_role_locked(self):
         _,token,digest=self.delivered();csrf=self.csrf()
         self.assertEqual(self.client.post('/ativar',data=dict(token=csrf,action='open',invitation=token)).status_code,302)

@@ -335,6 +335,10 @@ apply_persisted_grades()
 # ==========================================================================
 @app.context_processor
 def inject_shell():
+    if getattr(g, "rendering_error", False):
+        # The standalone error template needs no account/notification queries.
+        # Reusing a failed database connection here hides the original error.
+        return {}
     role = session.get("role")
     if not role:
         return {}
@@ -1676,6 +1680,7 @@ def not_found(_error):
 
 @app.errorhandler(500)
 def internal_error(_error):
+    g.rendering_error = True
     return render_template(
         "error.html", status=500, title="Algo saiu do lugar",
         message="Não foi possível concluir esta ação. Seus dados anteriores continuam preservados.",

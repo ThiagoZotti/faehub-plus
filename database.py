@@ -7,6 +7,7 @@ suíte de testes; nunca é usado como fallback da aplicação.
 import os
 import re
 import sqlite3
+import sys
 from contextlib import contextmanager
 from datetime import date, datetime
 from decimal import Decimal
@@ -152,15 +153,31 @@ def _pool():
         conninfo=DATABASE_URL,
         min_size=1,
         max_size=pool_size,
+        check=ConnectionPool.check_connection,
+        timeout=10,
         kwargs={
             "autocommit": False,
             "row_factory": dict_row,
             "prepare_threshold": None,
             "sslmode": sslmode,
+            "connect_timeout": 10,
         },
         open=True,
     )
     return _postgres_pool
+
+
+def _rollback_quietly(conn):
+    """Preserve the original failure if a disconnected socket cannot roll back."""
+    try:
+        conn.rollback()
+    except Exception:
+        # A failed rollback must never return a potentially dirty connection.
+        # Closing also lets the pool discard it and establish a replacement.
+        try:
+            conn.raw.close() if isinstance(conn, PostgresConnection) else conn.close()
+        except Exception:
+            pass
 
 
 @contextmanager
@@ -195,12 +212,12 @@ def connection():
         if not request_owned:
             conn.commit()
     except Exception:
-        conn.rollback()
+        _rollback_quietly(conn)
         raise
     finally:
         if not request_owned:
             if lease is not None:
-                lease.__exit__(None, None, None)
+                lease.__exit__(*sys.exc_info())
             else:
                 conn.close()
 
@@ -208,16 +225,20 @@ def connection():
 def close_request_connection(error=None):
     conn = g.pop("faehub_connection", None)
     lease = g.pop("faehub_connection_lease", None)
-    if conn is not None:
-        try:
+    try:
+        if conn is not None:
             conn.rollback() if error is not None else conn.commit()
-        except Exception:
-            conn.rollback()
+    except Exception:
+        _rollback_quietly(conn)
+        if error is None:
             raise
-    if lease is not None:
-        lease.__exit__(None, None, None)
-    elif conn is not None:
-        conn.close()
+    finally:
+        # Return the lease even when commit/rollback failed; otherwise each
+        # disconnect permanently removes a slot from the pool.
+        if lease is not None:
+            lease.__exit__(*sys.exc_info())
+        elif conn is not None:
+            conn.close()
 
 
 def _migrate_legacy_student_ids(db):
