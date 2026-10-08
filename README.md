@@ -81,6 +81,8 @@ python scripts/migrate_sqlite_to_supabase.py --apply
 python scripts/check_database.py
 ```
 
+No Windows, o mesmo processo pode ser concluído com dois cliques em `migrate_to_supabase.bat`.
+
 Depois da validação, `python app.py` inicia exclusivamente no Supabase. O SQLite legado pode ser guardado fora da pasta como cópia de contingência até a restauração do Supabase ser testada; ele não é mais lido pela aplicação.
 
 ### Segurança
