@@ -871,7 +871,12 @@ body.campus-shell {
   font-weight: 800;
   letter-spacing: -0.055em;
 }
-.campus-brand img,
+.campus-brand img {
+  display: block;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+}
 .campus-brand small {
   display: none;
 }
@@ -2858,6 +2863,10 @@ body.campus-shell {
   .campus-brand {
     flex-basis: auto;
     font-size: 26px;
+  }
+  .campus-brand img {
+    width: 32px;
+    height: 32px;
   }
   .campus-account-menu {
     margin-left: auto;

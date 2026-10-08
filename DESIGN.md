@@ -144,6 +144,8 @@ O login usa uma divisão aproximadamente 60/40: fotografia clara da escola à es
 
 O refinamento aprovado em 08/10/2026 segue `exec-07dbf8f9-0d8a-4eda-be9b-9f01047430a7.png`: wordmark simples, seis destinos frequentes do aluno, menu **Mais** e perfil com foto à direita. O pager inferior é uma cápsula contínua com anterior, contador/módulo atual e próximo na mesma linha. A faixa do campus reutiliza a imagem original do mockup em `static/campus-approved-mockup.png`, recortada por CSS, preservando a arte aprovada. Dados acadêmicos continuam dinâmicos e o usuário mantém acesso a todos os módulos autorizados.
 
+A pedido do usuário, o símbolo original `static/logo.svg` volta a acompanhar o wordmark no cabeçalho compartilhado, com tamanho reservado de 38px (32px no celular). O restante do refinamento aprovado permanece inalterado.
+
 | Superfície | Owner | Compatibilidade preservada | Verificação |
 | --- | --- | --- | --- |
 | Login e confirmação | `static/arrival-bright.css` | credenciais, perfis, demo e entrada explícita | navegador e `test_arrival.py` |
