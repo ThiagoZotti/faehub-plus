@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#f6f9fe" />
-<meta name="color-scheme" content="light" />
+<meta name="theme-color" content="{{ '#070d24' if role == 'aluno' else '#f6f9fe' }}" />
+<meta name="color-scheme" content="{{ 'dark' if role == 'aluno' else 'light' }}" />
 <meta name="description" content="FaeHub+, o campus digital da ETESC/FAETEC Santa Cruz." />
 <title>{{ view_title }} · FaeHub+</title>
-<link rel="icon" href="{{ url_for('static', filename='logo.svg') }}" type="image/svg+xml" />
+<link rel="icon" href="{{ url_for('static', filename='logo-faehub.webp') }}" type="image/webp" />
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 {% if role in ['aluno', 'professor', 'admin', 'responsavel'] %}<link rel="stylesheet" href="{{ url_for('static', filename='campus-shell.css') }}">{% endif %}
 {% if role in ['aluno', 'professor', 'admin', 'responsavel'] %}<link rel="stylesheet" href="{{ url_for('static', filename='p1/shell-p1.css') }}">{% endif %}
@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='performance.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='campus-system.css', v=2) }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='campus-bright.css') }}">
+{% if role == 'aluno' %}<link rel="stylesheet" href="{{ url_for('static', filename='campus-electric.css') }}">{% endif %}
 {% endif %}
 </head>
 <body class="role-{{ role }}{{ ' campus-shell' if role in ['aluno', 'professor', 'admin', 'responsavel'] else '' }}{{ (' view-' ~ current_view) if current_view else '' }}">
@@ -31,7 +32,7 @@
   <aside id="sidebar" class="sidebar">
     <div class="sidebar__top">
       <span class="brand-mark brand-mark--sm" aria-hidden="true">
-        <img src="{{ url_for('static', filename='logo.svg') }}" alt="FaeHub+" />
+        <img src="{{ url_for('static', filename='logo-faehub.webp') }}" alt="FaeHub+" />
       </span>
       <span class="brand-name brand-name--sm">FaeHub<span>+</span></span>
       <span class="brand-edition">CAMPUS OS</span>
@@ -61,13 +62,17 @@
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
   {% else %}
   <header class="campus-header">
-    <a class="campus-brand" href="{{ url_for('painel') }}" aria-label="{{ 'Campus Direção' if role == 'admin' else ('Campus Docente' if role == 'professor' else ('Campus Família' if role == 'responsavel' else 'Campus Lobby')) }}"><img src="{{ url_for('static', filename='logo.svg') }}" alt=""><span>Fae<span class="campus-brand-hub">Hub</span><em>+</em><small>{{ 'CAMPUS DIREÇÃO' if role == 'admin' else ('CAMPUS DOCENTE' if role == 'professor' else ('CAMPUS FAMÍLIA' if role == 'responsavel' else ('CONHECIMENTO TRANSFORMA AMANHÃ' if current_view == 'painel' else 'CAMPUS LOBBY'))) }}</small></span></a>
+    <a class="campus-brand" href="{{ url_for('painel') }}" aria-label="{{ 'Campus Direção' if role == 'admin' else ('Campus Docente' if role == 'professor' else ('Campus Família' if role == 'responsavel' else 'Campus Lobby')) }}"><img src="{{ url_for('static', filename='logo-faehub.webp') }}" alt="" width="42" height="42"><span>Fae<span class="campus-brand-hub">Hub</span><em>+</em><small>{{ 'CAMPUS DIREÇÃO' if role == 'admin' else ('CAMPUS DOCENTE' if role == 'professor' else ('CAMPUS FAMÍLIA' if role == 'responsavel' else ('CONHECIMENTO TRANSFORMA AMANHÃ' if current_view == 'painel' else 'CAMPUS LOBBY'))) }}</small></span></a>
     <nav class="campus-tabs" aria-label="Módulos do campus">
       {% for view_id, label, icon in nav_primary %}<a href="{{ url_for(view_id) }}" {% if current_view == view_id %}aria-current="page"{% endif %}>{{ icons[icon]|safe }}<span>{{ label }}</span>{% if view_id in ['notificacoes','comunicados'] and notification_unread %}<b class="campus-nav-badge" aria-label="{{ notification_unread }} não lidas">{{ notification_unread }}</b>{% endif %}</a>{% endfor %}
     </nav>
     {% if nav_more %}<details class="campus-more"{% if nav_more_current %} data-current="true"{% endif %}><summary aria-label="Abrir mais módulos"><span>Mais</span><b aria-hidden="true">⌄</b></summary><div>{% for view_id, label, icon in nav_more %}<a href="{{ url_for(view_id) }}" {% if current_view == view_id %}aria-current="page"{% endif %}>{{ icons[icon]|safe }}<span>{{ label }}</span>{% if view_id=='notificacoes' and notification_unread %}<b class="campus-nav-badge" aria-label="{{ notification_unread }} não lidas">{{ notification_unread }}</b>{% endif %}</a>{% endfor %}</div></details>{% endif %}
+    {% if role == 'aluno' %}<div class="electric-header-context"><span>SEU CAMPUS</span><strong>{{ view_title }}</strong></div><div class="electric-header-actions"><a href="{{ url_for('mensagens') }}" aria-label="Abrir mensagens" title="Mensagens">{{ icons['users']|safe }}</a><a href="{{ url_for('comunicados') }}" aria-label="Abrir comunicados{% if notification_unread %}, {{ notification_unread }} não lidos{% endif %}" title="Comunicados">{{ icons['bell']|safe }}{% if notification_unread %}<b>{{ notification_unread }}</b>{% endif %}</a></div>{% endif %}
     <details class="campus-account-menu"><summary class="campus-account" aria-label="Abrir conta de {{ profile_nome }}"><span class="campus-account-photo" aria-hidden="true"><img data-profile-photo {% if profile_photo_url %}src="{{ profile_photo_url }}"{% else %}hidden{% endif %} alt="" width="42" height="42"><span data-profile-initials {% if profile_photo_url %}hidden{% endif %}>{{ profile_iniciais }}</span></span><span class="campus-account-copy"><strong>{{ profile_nome }}</strong><small>{{ ('Turma ' ~ profile_turma) if role == 'aluno' else role_label }}</small></span><span class="campus-account-chevron" aria-hidden="true">⌄</span></summary><div class="campus-account-popover"><span>Minha conta</span><button type="button" data-open-profile>Alterar foto de perfil</button><button type="button" data-remove-profile {% if not profile_photo_url %}hidden{% endif %}>Remover foto</button><a href="{{ url_for('sair') }}" aria-label="Sair da conta de {{ profile_nome }}">Sair da conta</a></div></details>
   </header>
+  {% if role == 'aluno' %}
+  <aside class="electric-sidebar" aria-label="Seu espaço no campus"><span class="electric-nav-label">VIDA ESCOLAR</span><nav aria-label="Navegação principal">{% for view_id, label, icon in nav_items %}<a href="{{ url_for(view_id) }}" {% if current_view == view_id %}aria-current="page"{% endif %}>{{ icons[icon]|safe }}<span>{{ label }}</span>{% if view_id == 'comunicados' and notification_unread %}<b class="campus-nav-badge">{{ notification_unread }}</b>{% endif %}</a>{% endfor %}</nav><footer><strong>A escola que se<br><span>move com você.</span></strong><small>ETESC / FAETEC Santa Cruz</small></footer></aside>
+  {% endif %}
   {% set mobile_primary = nav_primary[:3] %}{% set mobile_ids = mobile_primary|map(attribute=0)|list %}
   <nav class="campus-mobile-nav" aria-label="Navegação no celular">
     {% for view_id, label, icon in mobile_primary %}<a href="{{ url_for(view_id) }}" {% if current_view == view_id %}aria-current="page"{% endif %}>{{ icons[icon]|safe }}<span>{{ label }}</span></a>{% endfor %}

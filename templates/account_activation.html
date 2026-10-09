@@ -4,14 +4,14 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="referrer" content="no-referrer"><meta name="color-scheme" content="light">
   <title>Ativar minha conta · FaeHub+</title>
-  <link rel="icon" href="{{ url_for('static',filename='logo.svg') }}" type="image/svg+xml">
+  <link rel="icon" href="{{ url_for('static',filename='logo-faehub.webp') }}" type="image/webp">
   <link rel="stylesheet" href="{{ url_for('static',filename='p1/operations.css') }}">
   <link rel="stylesheet" href="{{ url_for('static',filename='campus-system.css') }}">
   <link rel="stylesheet" href="{{ url_for('static',filename='campus-bright.css') }}">
 </head>
 <body class="enrollment-page">
   <main class="ops enrollment-card">
-    <a class="enrollment-brand" href="{{ url_for('login') }}"><img src="{{ url_for('static',filename='logo.svg') }}" width="38" height="38" alt="">FaeHub+</a>
+    <a class="enrollment-brand" href="{{ url_for('login') }}"><img src="{{ url_for('static',filename='logo-faehub.webp') }}" width="38" height="38" alt="">FaeHub+</a>
     <section class="ops-card">
       <span class="ops-kicker">PRIMEIRO ACESSO</span>
       <h1>{{ 'Olá, ' ~ invitation.name ~ '.' if invitation else 'Seu lugar no campus.' }}</h1>

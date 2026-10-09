@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f6f9fe">
   <meta name="color-scheme" content="light">
   <title>{{ status }} · {{ title }} · FaeHub+</title>
-  <link rel="icon" href="{{ url_for('static', filename='logo.svg') }}" type="image/svg+xml">
+  <link rel="icon" href="{{ url_for('static', filename='logo-faehub.webp') }}" type="image/webp">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='campus-system.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='campus-bright.css') }}">
@@ -14,7 +14,7 @@
 <body class="error-page">
   <main>
     <a class="error-brand" href="{{ url_for('painel') if session.get('role') else url_for('login') }}">
-      <img src="{{ url_for('static', filename='logo.svg') }}" alt="">
+      <img src="{{ url_for('static', filename='logo-faehub.webp') }}" alt="">
       <span>FaeHub<em>+</em></span>
     </a>
     <p class="error-code">{{ status }}</p>

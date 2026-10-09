@@ -69,6 +69,36 @@ class NavigationCompactionTests(unittest.TestCase):
         self.assertIn(b'data-initial-exercise-filter="pending"', response.data)
         self.assertIn(b'data-exercise-filter="pending" aria-pressed="true"', response.data)
 
+    def test_electric_student_theme_has_accessible_sidebar_and_live_clock(self):
+        self.login("thiago.zotti", "aluno", "23081")
+        html = self.client.get("/painel").get_data(as_text=True)
+        self.assertIn('campus-electric.css', html)
+        self.assertIn('class="electric-sidebar"', html)
+        self.assertIn('aria-label="Navegação principal"', html)
+        self.assertIn('logo-faehub.webp', html)
+        self.assertIn('class="performance-ring"', html)
+        self.assertIn('data-lesson-at=', html)
+        self.assertNotIn('campus-approved-mockup.png', html)
+        self.assertIn('class="campus-mobile-more"', html)
+
+    def test_electric_rollout_does_not_restyle_director_workspace(self):
+        self.login("gilberto", "admin")
+        html = self.client.get("/painel").get_data(as_text=True)
+        self.assertNotIn('campus-electric.css', html)
+        self.assertNotIn('class="electric-sidebar"', html)
+        self.assertIn('logo-faehub.webp', html)
+
+    def test_electric_dashboard_keeps_empty_lesson_state_honest(self):
+        self.login("thiago.zotti", "aluno", "23081")
+        summary = dict(date_label="Hoje", unread_count=0, lessons=[], pending_count=0)
+        with patch("app.student_summary", return_value=summary):
+            response = self.client.get("/painel")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn("Nenhuma aula prevista.", html)
+        self.assertNotIn('data-lesson-at=', html)
+        self.assertIn("0 trabalhos para entregar", html)
+
     def test_agenda_combines_attendance_and_school_events(self):
         self.login("thiago.zotti", "aluno", "23081")
         response = self.client.get("/agenda")

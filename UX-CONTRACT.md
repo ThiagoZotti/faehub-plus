@@ -6,7 +6,7 @@
 - Locale: `pt-BR`; fuso: `America/Sao_Paulo`; calendário gregoriano.
 - Meta de acessibilidade: WCAG 2.2 AA.
 - Fontes de verdade: `ROADMAP.md`, autorização em `app.py`/`director.py`, dados em `database.py`/`p1_operations.py` e migrações em `supabase/migrations/`.
-- Direção visual canônica: `DESIGN.md`; tokens claros do shell e adaptadores de superfícies em `static/campus-bright.css`. `static/arrival-bright.css` define o login; os módulos existentes mantêm estrutura em `static/campus-system.css`, `static/academic.css` e `static/p1/operations.css`.
+- Direção visual canônica: `DESIGN.md`; `static/campus-electric.css` define o tema forte do aluno, sobre a estrutura existente. Demais perfis mantêm os adaptadores em `static/campus-bright.css`; `static/arrival-bright.css` define o login nesta migração. A logo aprovada é `static/logo-faehub.webp`.
 
 ## Modelo de permissão
 
@@ -83,11 +83,11 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 ## Navegação e responsividade
 
 - Título: `{{ view_title }} · FaeHub+`; módulo ativo usa `aria-current="page"`.
-- O shell superior mostra no máximo sete destinos frequentes. Itens secundários usam o disclosure canônico “Mais”, com rótulos e links completos acessíveis por teclado.
+- O shell dos perfis ainda não migrados mostra no máximo sete destinos frequentes; secundários usam o disclosure canônico Mais. No aluno, a sidebar mostra todos os destinos no desktop e o Mais reúne os secundários no celular, com rótulos e links completos acessíveis por teclado.
 - No espaço do aluno, `Agenda` reúne frequência e calendário escolar; `Comunicados` reúne avisos docentes e notificações persistentes; `Secretaria` reúne documentos e histórico acadêmico.
-- A identificação da conta inclui nome/turma e uma foto circular opcional; sem foto, aparecem iniciais. Não existe sistema de personagens. O menu da conta abre envio de JPG/PNG, remoção confirmada e saída. No aluno, a Secretaria permanece acessível em **Mais**, mantendo seis destinos na barra principal.
+- A identificação da conta inclui nome/turma e foto circular opcional; sem foto, aparecem iniciais. Não existe sistema de personagens. Menu da conta abre envio de JPG/PNG, remoção confirmada e saída. No aluno, Secretaria está na sidebar do desktop e em Mais no celular.
 - Rotas antigas continuam válidas para compatibilidade, mas não duplicam destinos na navegação principal.
-- Até 600px, a barra inferior expõe os três primeiros destinos frequentes do perfil e **Mais**, que contém todos os demais módulos autorizados. No computador, permanecem a barra superior e o carrossel. Os menus fecham ao navegar, clicar fora ou pressionar Escape; Escape devolve o foco ao acionador.
+- No aluno, abaixo de 760px a barra inferior expõe os três primeiros destinos e **Mais**, que contém os demais módulos autorizados; no computador, todos os destinos estão na sidebar persistente. Demais perfis preservam barra superior/carrossel e breakpoint de 600px. Menus fecham ao navegar, clicar fora ou pressionar Escape; Escape devolve foco ao acionador. Foto/conta permanece no cabeçalho.
 - O boletim exibe Nota 1, Nota 2, Média e Situação diretamente em tabela. Os filtros preservam os valores e a impressão inclui todas as disciplinas; em telas estreitas a tabela possui rolagem horizontal com acesso por teclado. A simulação é um disclosure separado e não altera registros.
 - Conteúdo P1 colapsa para uma coluna abaixo de 980 px.
 - Listas densas viram blocos; rótulos não desaparecem. Conteúdo completo não depende de tooltip.

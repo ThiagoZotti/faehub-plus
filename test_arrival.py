@@ -58,10 +58,10 @@ class ArrivalTests(unittest.TestCase):
         self.assertNotIn(b'rel="preload"',result.data)
         self.assertLess(Path('static/faehub-login-reference.webp').stat().st_size,350_000)
 
-    def test_original_logo_is_present_in_login_panel(self):
+    def test_approved_logo_is_present_in_login_panel(self):
         html=self.client.get('/').get_data(as_text=True)
         self.assertIn('class="login-brand-symbol"',html)
-        self.assertRegex(html, r'class="login-brand-symbol"[^>]+src="[^"]*logo\.svg')
+        self.assertRegex(html, r'class="login-brand-symbol"[^>]+src="[^"]*logo-faehub\.webp')
         self.assertIn('height="52" alt="FaeHub+"></span></h3>',html)
         self.assertNotIn('<span>FaeHub<em>+</em></span></span></h3>',html)
         css=Path('static/arrival-bright.css').read_text(encoding='utf-8')

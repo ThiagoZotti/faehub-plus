@@ -1,25 +1,25 @@
 ---
 version: "1.0"
-name: "FaeHub+ Campus em Movimento"
-description: "Um campus digital escolar claro, orientado por conteúdo e pela fotografia da escola."
+name: "FaeHub+ Campus em Movimento — Electric"
+description: "Um campus digital forte e jovial: azul profundo, cor elétrica e fotografia escolar."
 colors:
-  primary: "#216BE4"
+  primary: "#144BFF"
   on-primary: "#FFFFFF"
-  primary-tint: "#EAF3FF"
-  secondary: "#336BDD"
-  tertiary: "#51C4EC"
-  tertiary-container: "#FFF0E7"
-  error: "#B63145"
-  surface: "#FFFFFF"
-  surface-bright: "#EAF1FA"
-  background: "#D9E4F1"
-  on-background: "#142744"
-  outline: "#B5C8DF"
+  primary-tint: "#172747"
+  secondary: "#23CEFF"
+  tertiary: "#A890FF"
+  tertiary-container: "#302349"
+  error: "#FF6F85"
+  surface: "#111B36"
+  surface-bright: "#172747"
+  background: "#070D24"
+  on-background: "#F5F7FF"
+  outline: "#2B3C63"
 typography:
   sans:
-    fontFamily: "Segoe UI Variable Text, Segoe UI, Arial, sans-serif"
+    fontFamily: "Plus Jakarta Sans, Segoe UI, Arial, sans-serif"
   display:
-    fontFamily: "Segoe UI Variable Display, Segoe UI, Arial, sans-serif"
+    fontFamily: "Plus Jakarta Sans, Segoe UI, Arial, sans-serif"
   mono:
     fontFamily: "Cascadia Code, Cascadia Mono, Consolas, monospace"
 rounded:
@@ -30,7 +30,7 @@ rounded:
 spacing:
   section-gap: "1.875rem"
   page-inline: "clamp(1.25rem, 4vw, 5rem)"
-  nav-height: "5rem"
+  nav-height: "4.75rem"
 components:
   button:
     backgroundColor: "{colors.primary}"
@@ -61,7 +61,7 @@ components:
 
 ### Creative North Star
 
-Um campus em movimento: fotografia escolar reconhecível, luz natural, conteúdo acadêmico sobre superfícies claras e orientação em azul cobalto. A identidade vem da escola e da clareza das decisões, não de efeitos escuros ou cartões empilhados.
+Um campus em movimento com força e juventude: o mockup enviado em 09/10/2026 é a referência visual fiel. Azul profundo, azul elétrico, ciano, violeta e verde-lima, títulos fortes e fotografia da escola recortada em diagonal. O usuário explicitamente rejeitou suavizar essa direção para uma interface discreta. A logo aprovada é a proposta inspirada na FaeNet, não a logo fragmentada do cartaz.
 
 ### Product context and register
 
@@ -72,24 +72,24 @@ Um campus em movimento: fotografia escolar reconhecível, luz natural, conteúdo
 - **Register:** híbrido. Login e painel têm expressão de marca; formulários, listas, notas e frequência priorizam familiaridade de produto.
 - **Memorable signature:** o campus é tratado como um lugar navegável; a fotografia aparece no login e como faixa contextual no painel. O painel do aluno usa um radar do dia — agenda, desempenho e prioridade — no lugar de personagens. A estrutura acadêmica mantém percurso e linha do tempo; operações escolares preservam protocolos e estados claros.
 - **Restraint:** CRUD, campos, confirmação, busca e estados de erro permanecem previsíveis, legíveis e sem gestos escondidos.
-- **Anti-references:** não imitar kits genéricos de SaaS, interfaces proprietárias de jogos, excesso de vidro/neon, fundo escuro em toda a aplicação ou mosaicos de cartões sem hierarquia.
-- **Token ownership/runtime mapping:** este documento espelha a camada de migração `static/campus-bright.css`, carregada após `static/campus-system.css` para preservar compatibilidade com módulos existentes. `static/arrival-bright.css` é o owner do login claro; `static/dashboard-v2.css` e `static/academic.css` mantêm estrutura e comportamento. O objetivo de manutenção é absorver a camada clara nos módulos conforme cada fluxo for verificado, sem criar novas cores avulsas.
+- **Anti-references:** não reduzir o mockup a um kit claro genérico; não trocar identidade forte por neutralidade; não usar o cartaz em perspectiva como captura de interface funcional. Nenhuma marca d'água, texto ilegível ou número ilustrativo entra no produto.
+- **Token ownership/runtime mapping:** modelo B, CSS é canônico. `static/campus-electric.css` é o owner da nova identidade do aluno, adaptando módulos sobre as camadas estruturais existentes. `--electric-blue` mapeia `colors.primary`; `--campus-accent` mapeia `colors.secondary`; painel/texto/linha mapeiam `colors.surface`, `on-background`, `outline`; `--font-body`/`--font-display` usam Plus Jakarta Sans local (WOFF2, licença OFL). Migração incremental: demais perfis e login preservam `campus-bright.css`/`arrival-bright.css` nesta etapa. Autorização e autenticação permanecem iguais.
 
 ## Colors
 
-`background` é o fundo estrutural claro; `surface` e `surface-bright` distinguem painéis e ênfase sem vidro. `on-background` e `outline` sustentam leitura e separação. `primary` representa ações, foco e seleção em todos os perfis; identidade de perfil pode aparecer em pequenos acentos secundários. `tertiary-container` sinaliza prazo/atenção e `error` fica reservado a falha ou ação de risco. A fotografia não fica atrás de tabelas ou formulários. Impressão mantém fundo branco.
+Os tokens acima descrevem a nova superfície do aluno: fundo azul profundo, painel azul-noite e superfície elevada azul. Azul elétrico identifica navegação ativa; ciano orienta ações e foco; violeta e verde-lima reforçam os indicadores acadêmicos. Atalhos vermelho e verde usam gradientes saturados como no mockup, sempre com texto. Erro mantém significado próprio. Fotografia fica no hero, nunca atrás de tabelas. Impressão mantém fundo branco. Paleta clara permanece nos fluxos ainda não migrados.
 
 ## Typography
 
-Segoe UI Variable Text é a fonte de leitura e controles; Segoe UI Variable Display cria títulos claros de peso 650–750. Cascadia Code identifica horários, códigos e pequenos rótulos técnicos dos módulos existentes. Títulos usam espaçamento negativo moderado; parágrafos mantêm altura de linha entre 1.5 e 1.8. Evitar caixa alta em frases longas.
+Plus Jakarta Sans variável 400–800, auto-hospedada, conduz títulos e controles do aluno; fallback Segoe UI/Arial durante o carregamento. Títulos do painel têm peso 800 e espaçamento negativo. Cascadia Code continua disponível para códigos técnicos. Demais perfis preservam Segoe UI nesta etapa. Caixa alta é restrita a rótulos curtos.
 
 ## Layout
 
-A navegação tem altura de `5rem` no computador. Páginas internas usam espaçamento lateral fluido entre `1.25rem` e `5rem`, sem largura máxima artificial para operações densas. A hierarquia padrão é cabeçalho, faixa de contexto, ferramentas e conteúdo. Em telas estreitas, duas colunas tornam-se uma, ações quebram linha e alvos permanecem com no mínimo 44px. Reservar espaço para estados de carregamento e mensagens evita deslocamentos.
+No aluno, cabeçalho de 76px e navegação lateral persistente de 224px (190px até 1200px); abaixo de 760px, cabeçalho de 68px e barra inferior com três destinos e Mais. Painel usa hero diagonal e grade principal 1,55:1. Abaixo de 980px, os blocos se reorganizam; abaixo de 540px, ficam em coluna. Documentos longos continuam rolando na página; somente sidebar e menu limitam a própria rolagem. Demais perfis preservam navegação anterior.
 
 ## Elevation & Depth
 
-Profundidade vem de cards brancos sobre fundo azul-acinzentado `#D9E4F1`, bordas definidas `#B5C8DF` e sombras discretas. Cabeçalhos do painel são faixas azuladas `#EAF1FA`, separadas do conteúdo branco. Tabelas densas e itens de lista permanecem opacos. Estado ativo deve ser comunicado também por borda, texto ou ícone.
+Cards azul-noite sobre azul profundo, bordas definidas e brilho azul nos destaques. Próxima aula usa bloco azul saturado; índice acadêmico usa anel cromático calculado com a média real. Superfícies são opacas para leitura, sem blur contínuo de tela inteira. Estado ativo usa `aria-current`, borda e preenchimento. Movimento reduzido desativa decoração animada.
 
 ## Shapes
 
@@ -107,19 +107,19 @@ Ação primária recebe preenchimento cobalto e texto branco em todos os perfis.
 
 ### Navigation and data display
 
-A barra superior é sinalização de campus, com sublinhado ativo e carrossel inferior. Ela expõe no máximo sete destinos frequentes; módulos secundários permanecem no disclosure compartilhado “Mais”. Para alunos, a arquitetura agrupa presença e eventos em **Agenda**, avisos e notificações em **Comunicados**, e documentos e histórico em **Secretaria**. Listas de operação devem ter título, estado, metadados essenciais e uma ação principal clara. Etiquetas informam modalidade, prazo e arquivo; não substituem títulos.
+A navegação do aluno expõe todos os destinos autorizados na sidebar; no celular, secundários permanecem no disclosure compartilhado Mais. Cabeçalho mantém foto/conta e atalhos reais de mensagens e comunicados. A arquitetura segue agrupando presença/eventos em Agenda, avisos/notificações em Comunicados, documentos/histórico em Secretaria. Carrossel legado permanece nas demais áreas nesta migração.
 
 O sistema não utiliza personagens ou personalização de avatar. A identificação da conta mantém nome e turma, acompanhados por uma fotografia circular opcional. Sem fotografia, são exibidas iniciais; não se atribui uma pessoa fictícia à conta. O menu de conta reúne envio/troca da fotografia, remoção confirmada e saída.
 
-O painel do aluno é deliberadamente enxuto: boas-vindas, **Seu próximo movimento** e **Seu ritmo acadêmico** são os únicos blocos editoriais. As pendências do resumo são uma navegação direta para a lista de atividades já filtrada. Mensagens usam a metáfora de conversa direta — pessoas, histórico em balões e compositor contextual — em vez de caixa de e-mail. O compositor apresenta anexo como ação nomeada, mostra prévia antes do envio e mantém fotos dentro do fluxo da conversa; exclusão usa confirmação própria e estado restaurável.
+O painel mantém boas-vindas, Seu próximo movimento e Seu ritmo acadêmico, com atalhos coloridos de Comunicados e pendências conforme o mockup aprovado. Pendências abrem atividades já filtradas; mensagem nova aponta para conversas. Dados acadêmicos continuam no backend existente. Mensagens preservam a metáfora de conversa direta e suas confirmações canônicas.
 
 ### Forms and overlays
 
 Campos têm rótulos persistentes. Seleção e data usam controles nativos aceitos pelo contrato de UX. Diálogos têm título, fechamento explícito, fundo modal e foco gerenciado pelo navegador. A confirmação de arquivamento nunca usa `window.confirm`.
 
-Primeiro acesso é uma superfície operacional compacta, sem novo cenário ou redesign do login: logo original, card branco, títulos claros e ações cobalto usam o owner `static/campus-bright.css`. Cadastro administrativo por convite reutiliza os diálogos e controles da direção; a confirmação passa a ser um diálogo próprio do app. Os estados “aguardando envio”, “convite enviado” e “conta ativada” são escritos por extenso, sem indicadores fictícios.
+Primeiro acesso permanece compacto, com a nova logo aprovada, card branco, títulos claros e ações cobalto no owner `static/campus-bright.css`. Cadastro por convite reutiliza diálogos e controles da direção. Estados de envio e ativação continuam escritos por extenso. O redesenho do login e dos fluxos administrativos não pertence a esta primeira migração do painel.
 
-Convites por e-mail adaptam a identidade clara no template `templates/emails/invitation.html`: tabela fluida de até 560px, fundo azul-acinzentado, conteúdo branco, cabeçalho tonal e ação cobalto. Fontes do sistema e estilos inline preservam leitura sem downloads de imagens ou rastreamento. A logo original `static/logo.svg` aparece no cabeçalho e, sem wordmark ao lado, no formulário de login; dimensões reservadas evitam deslocamentos e o texto alternativo identifica a marca.
+Convites preservam o template claro `templates/emails/invitation.html`, sem downloads de imagens ou rastreamento. A logo aprovada `static/logo-faehub.webp` aparece no cabeçalho compartilhado, no login, na ativação e no erro; a imagem é reencodificação lossless da proposta aprovada, sem alteração de pixels. Dimensões reservadas evitam deslocamentos e texto alternativo identifica a marca. Nenhum envio de e-mail é alterado nesta etapa.
 
 ### Iconography
 
@@ -140,7 +140,7 @@ A voz é direta, encorajadora e escolar, sem mencionar IA, mockup ou implementa�
 - **Don't:** transformar cada informação em um cartão de vidro independente.
 - **Don't:** esconder operações essenciais em hover, gesto ou ícone sem nome.
 
-## Direção aprovada: Campus em movimento
+## Histórico: direção anterior de 08/10/2026
 
 O login usa uma divisão aproximadamente 60/40: fotografia clara da escola à esquerda e autenticação em superfície gelo à direita. O passo explícito **Entrar no campus** continua obrigatório após validar credenciais. O shell autenticado é claro em todos os perfis, com navegação branca e sublinhado cobalto. O carrossel inferior permanece no computador; até 600px, três destinos frequentes e o menu **Mais** formam a barra inferior. O painel concentra faixa da escola, boas-vindas, próximo movimento e ritmo acadêmico; pendências são um atalho contextual. O boletim apresenta as duas notas, média e situação em tabela, com filtros e simulador recolhido. Em celular, a tabela mantém comparação e rolagem horizontal explícita. Os módulos operacionais usam adaptadores claros no mesmo owner; suas estruturas permanecem compatíveis.
 
