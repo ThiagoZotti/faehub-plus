@@ -62,6 +62,8 @@ class ArrivalTests(unittest.TestCase):
         html=self.client.get('/').get_data(as_text=True)
         self.assertIn('class="login-brand-symbol"',html)
         self.assertRegex(html, r'class="login-brand-symbol"[^>]+src="[^"]*logo\.svg')
+        self.assertIn('height="52" alt="FaeHub+"></span></h3>',html)
+        self.assertNotIn('<span>FaeHub<em>+</em></span></span></h3>',html)
         css=Path('static/arrival-bright.css').read_text(encoding='utf-8')
         self.assertIn('.login-brand-symbol',css)
 

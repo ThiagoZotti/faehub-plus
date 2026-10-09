@@ -119,7 +119,7 @@ Campos têm rótulos persistentes. Seleção e data usam controles nativos aceit
 
 Primeiro acesso é uma superfície operacional compacta, sem novo cenário ou redesign do login: logo original, card branco, títulos claros e ações cobalto usam o owner `static/campus-bright.css`. Cadastro administrativo por convite reutiliza os diálogos e controles da direção; a confirmação passa a ser um diálogo próprio do app. Os estados “aguardando envio”, “convite enviado” e “conta ativada” são escritos por extenso, sem indicadores fictícios.
 
-Convites por e-mail adaptam a identidade clara no template `templates/emails/invitation.html`: tabela fluida de até 560px, fundo azul-acinzentado, conteúdo branco, cabeçalho tonal e ação cobalto. Fontes do sistema e estilos inline preservam leitura sem downloads de imagens ou rastreamento. A logo original `static/logo.svg` aparece tanto no cabeçalho quanto junto ao wordmark do formulário de login; dimensões reservadas evitam deslocamentos.
+Convites por e-mail adaptam a identidade clara no template `templates/emails/invitation.html`: tabela fluida de até 560px, fundo azul-acinzentado, conteúdo branco, cabeçalho tonal e ação cobalto. Fontes do sistema e estilos inline preservam leitura sem downloads de imagens ou rastreamento. A logo original `static/logo.svg` aparece no cabeçalho e, sem wordmark ao lado, no formulário de login; dimensões reservadas evitam deslocamentos e o texto alternativo identifica a marca.
 
 ### Iconography
 
