@@ -36,6 +36,7 @@ O Render Free bloqueia as portas SMTP 25, 465 e 587. Os transportes usam HTTPS, 
 
 1. No Google Cloud, crie/selecione projeto, habilite Gmail API e configure Google Auth Platform.
 2. Crie um cliente OAuth e autorize **somente** `https://www.googleapis.com/auth/gmail.send` pela conta `faetech.sc@gmail.com`, com acesso offline. O titular deve concluir consentimento e autenticação; não compartilhar senha.
+   Para um cliente do tipo **App para computador**, execute `scripts/authorize_gmail.py --client <JSON privado> --output-dir <pasta privada nova>` com Python. O helper grava `authorize.url` temporário para abrir no navegador, usa callback somente em loopback, state e PKCE, e aguarda até 15 minutos. Ao concluir, grava `render.env` privado, sem imprimir tokens; importe seus valores no Render e preserve o arquivo fora do Git e de pastas compartilhadas. Proteja as permissões da pasta antes de executar. Não envie o arquivo por chat.
 3. Guarde Client ID, Client Secret e refresh token somente no ambiente privado do Render em `FAEHUB_GMAIL_CLIENT_ID`, `FAEHUB_GMAIL_CLIENT_SECRET` e `FAEHUB_GMAIL_REFRESH_TOKEN`.
 4. Defina `FAEHUB_GMAIL_SENDER=faetech.sc@gmail.com` e `FAEHUB_MAIL_PROVIDER=gmail`, mantendo a origem pública HTTPS.
 5. Faça envio controlado a endereço autorizado e confirme recebimento antes de anunciar disponibilidade geral. Limites e revogação da conta Gmail continuam aplicáveis.

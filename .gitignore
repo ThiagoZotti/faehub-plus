@@ -15,3 +15,7 @@ static/campus-lobby-v1.png
 static/campus-hero.png
 
 .run_dependencies/
+.gmail-private/
+client_secret*.json
+credentials.json
+token.json
