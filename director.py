@@ -36,7 +36,7 @@ def access_version(username):
 def account_access(username):
     """Return all request-auth state in one database round-trip."""
     with db.connection() as conn:
-        row=conn.execute('''SELECT u.active,COALESCE(ar.role,u.role) role,
+        row=conn.execute('''SELECT u.active,u.name,COALESCE(ar.role,u.role) role,
                                    COALESCE(av.version,0) auth_version
                             FROM users u
                             LEFT JOIN account_roles ar ON ar.username=u.username
@@ -65,7 +65,8 @@ def field(name,limit=160):
 
 def password():
     value=request.form.get('password','')
-    if len(value)<10 or len(value)>128:raise ValueError('Use uma senha entre 10 e 128 caracteres.')
+    from account_enrollment import validate_password
+    validate_password(value, value)
     return generate_password_hash(value)
 
 

@@ -96,6 +96,7 @@ class OwnershipTests(unittest.TestCase):
         password = 'Minha propriedade segura 2026'
         enrollment.complete_invitation(digest, password, password)
         self.assertTrue(account_access('gilberto')['is_owner'])
+        self.assertEqual(db.authenticate('owner@example.com', password)['name'], 'admin')
         self.assertIsNone(db.authenticate('owner@example.com', password)['student_id'])
         self.assertEqual(self.owner.get('/usuarios').status_code, 302)
         self.owner = self.client('gilberto')

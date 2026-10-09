@@ -33,19 +33,26 @@
       if (form.matches("[data-activation-form]")) {
         const password = form.elements.password;
         const confirmation = form.elements.confirmation;
+        const name = form.elements.display_name;
         const error = document.getElementById("activationClientError");
         password.removeAttribute("aria-invalid");
         confirmation.removeAttribute("aria-invalid");
+        name?.removeAttribute("aria-invalid");
+        const displayName = name?.value.normalize("NFC").trim().replace(/\s+/g, " ");
+        const invalidName = name && (displayName.length > 160 || displayName.length < 3 ||
+          !/^[\p{L} '.-]+$/u.test(displayName) || displayName.split(" ").length < 2 ||
+          displayName.split(" ").some((part) => !/\p{L}/u.test(part)));
         const invalid =
-          password.value.length < 15 || password.value.length > 128;
+          Array.from(password.value).length < 8 || Array.from(password.value).length > 128;
         const mismatch = password.value !== confirmation.value;
-        if (invalid || mismatch) {
+        if (invalidName || invalid || mismatch) {
           event.preventDefault();
           error.hidden = false;
-          error.textContent = invalid
-            ? "Use uma senha entre 15 e 128 caracteres."
+          error.textContent = invalidName
+            ? "Informe seu nome e sobrenome, com até 160 caracteres."
+            : invalid ? "Use uma senha entre 8 e 128 caracteres."
             : "As senhas não coincidem.";
-          const target = invalid ? password : confirmation;
+          const target = invalidName ? name : invalid ? password : confirmation;
           target.setAttribute("aria-invalid", "true");
           target.focus();
           return;

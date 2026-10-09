@@ -23,11 +23,16 @@
         <label for="activationEmail">E-mail autorizado pela escola</label>
         <input id="activationEmail" type="email" value="{{ invitation.email }}" readonly autocomplete="email">
         <p>Ao concluir usando o convite recebido neste e-mail, você confirma este endereço. Se ele estiver errado, peça um novo convite à escola.</p>
+        {% if invitation.role != 'proprietario' %}
+        <label for="activationName">Nome de exibição</label>
+        <input id="activationName" name="display_name" type="text" autocomplete="name" maxlength="160" required value="{{ request.form.get('display_name', invitation.name) }}" aria-invalid="{{ 'true' if field_error=='display_name' else 'false' }}" aria-describedby="displayNameHelp activationClientError{{ ' activationError' if error else '' }}">
+        <p id="displayNameHelp">Use seu nome e sobrenome. Este nome aparece no seu perfil e nas conversas, sem alterar sua matrícula.</p>
+        {% else %}<p>Sua conta será identificada como <strong>admin</strong>.</p>{% endif %}
         <label for="activationPassword">Crie sua senha</label>
-        <div class="enrollment-password"><input id="activationPassword" name="password" type="password" autocomplete="new-password" minlength="15" maxlength="128" required aria-invalid="{{ 'true' if field_error=='password' else 'false' }}" aria-describedby="passwordHelp activationClientError{{ ' activationError' if error else '' }}"><button type="button" data-reveal="activationPassword" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div>
-        <p id="passwordHelp">Use de 15 a 128 caracteres. Prefira uma frase longa e exclusiva; espaços são permitidos.</p>
+        <div class="enrollment-password"><input id="activationPassword" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required aria-invalid="{{ 'true' if field_error=='password' else 'false' }}" aria-describedby="passwordHelp activationClientError{{ ' activationError' if error else '' }}"><button type="button" data-reveal="activationPassword" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div>
+        <p id="passwordHelp">Use de 8 a 128 caracteres. Prefira uma senha longa e exclusiva; espaços são permitidos.</p>
         <label for="activationConfirmation">Repita sua senha</label>
-        <div class="enrollment-password"><input id="activationConfirmation" name="confirmation" type="password" autocomplete="new-password" minlength="15" maxlength="128" required aria-invalid="{{ 'true' if field_error=='confirmation' else 'false' }}" aria-describedby="activationClientError{{ ' activationError' if error else '' }}"><button type="button" data-reveal="activationConfirmation" aria-label="Mostrar confirmação de senha" aria-pressed="false">Mostrar</button></div>
+        <div class="enrollment-password"><input id="activationConfirmation" name="confirmation" type="password" autocomplete="new-password" minlength="8" maxlength="128" required aria-invalid="{{ 'true' if field_error=='confirmation' else 'false' }}" aria-describedby="activationClientError{{ ' activationError' if error else '' }}"><button type="button" data-reveal="activationConfirmation" aria-label="Mostrar confirmação de senha" aria-pressed="false">Mostrar</button></div>
         <p id="activationClientError" class="ops-error" role="alert" hidden></p>
         <button class="ops-btn ops-btn--primary" type="submit">Confirmar e-mail e ativar conta</button>
       </form>

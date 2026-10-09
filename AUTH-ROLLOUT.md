@@ -7,7 +7,9 @@
 - Sem serviço de e-mail, o cadastro é salvo como **Aguardando envio**. Nenhum link utilizável é emitido nem exibido pela central.
 - Com envio configurado, o convite é encaminhado ao e-mail autorizado. A API confirma aceitação, não entrega na caixa de entrada; confira spam e o painel do provedor.
 - Link de uso único, validade de 48 horas, cancelamento e reenvio (intervalo mínimo de um minuto). Reenviar invalida o link anterior.
-- O usuário abre o link, confirma o endereço recebido e define senha de 15–128 caracteres. Perfil, matrícula e vínculos não vêm do formulário de ativação.
+- O usuário abre o link, confirma o endereço recebido e define senha de 8–128 caracteres, também na recuperação. Recomendar uma senha longa e exclusiva; não exigir composição artificial. Escolhe nome de exibição com nome e sobrenome (até 160 caracteres, letras, espaços, hífen, ponto e apóstrofo). Perfil, matrícula e vínculos não vêm do formulário de ativação. O nome escolar registrado não é alterado.
+- A conta proprietária é a exceção institucional ao nome e sobrenome: seu nome inicial é `admin`, mantendo identificação interna e permissões protegidas. Não se renomeia a chave de usuário que vincula os registros.
+- Convites incluem HTML responsivo com identidade FaeHub+, botão de ativação, validade e orientação de segurança; mantém-se a alternativa em texto simples. O link é escapado pelo template e não usa recursos remotos ou rastreamento.
 - Após ativar, entra com e-mail ou identificação interna; o botão explícito **Entrar no campus** é mantido.
 - Senhas usam o hash scrypt do Werkzeug; tokens são armazenados apenas como SHA-256. Segredos não aparecem no diretório, logs ou URL HTTP: o link usa fragmento, removido pelo script ao abrir.
 - Limites de tentativas persistem no Supabase e são compartilhados pelos processos da aplicação. Identificadores dos limites usam HMAC, não e-mail/IP em texto.

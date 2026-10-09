@@ -129,6 +129,8 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 - A direção demo não pode criar contas reais arbitrárias. O primeiro diretor só migra a própria conta para o e-mail autorizado em `FAEHUB_BOOTSTRAP_ADMIN_EMAIL`; a configuração pertence ao dono do servidor. Os demais convites requerem direção verificada.
 - Convites só são ativáveis após aceitação pelo serviço de envio, valem 48h e são consumidos uma vez. Reenvio/cancelamento invalida o link anterior.
 - O titular confirma o endereço autorizado recebendo o convite e define sua senha; perfil e vínculos permanecem sob controle da escola.
+- No primeiro acesso, o titular escolhe nome de exibição com nome e sobrenome; erros preservam esse campo, nunca a senha. O formulário e o servidor aceitam senhas de 8 a 128 caracteres; recuperação usa a mesma regra. A propriedade institucional usa o nome inicial `admin` como exceção. Matrícula e identificação interna permanecem inalteradas.
+- Convites usam o template canônico `templates/emails/invitation.html`, com tabela fluida até 560px, cores da identidade clara, fontes do sistema, CTA cobalto e alternativa textual; nenhum recurso remoto ou tracker.
 - Ativação conclui no login, sem entrada automática. O e-mail confirmado funciona como alias da identificação escolar.
 - Atalhos públicos com senhas demo não são exibidos. Encerramento das contas demo requer diretor ativado e confirmação da senha; dados escolares não são apagados.
 - Recuperação segue mediada pela secretaria até a próxima etapa. Autenticador/SMS não são anunciados como funcionalidades prontas.

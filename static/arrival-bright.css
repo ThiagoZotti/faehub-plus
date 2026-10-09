@@ -455,9 +455,25 @@ summary:focus-visible {
   font-size: 30px;
   letter-spacing: -0.06em;
 }
-.arrival-brand img,
 .arrival-brand small {
   display: none;
+}
+.arrival-brand img {
+  display: block;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+}
+.credential-heading .login-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.login-brand-symbol {
+  display: block;
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
 }
 .arrival-brand em {
   background: linear-gradient(100deg, #14c8ef, #9260ff);

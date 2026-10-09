@@ -68,10 +68,11 @@ class EnrollmentTests(unittest.TestCase):
         self.assertEqual(self.client.post('/ativar',data=dict(token=csrf,action='open',invitation=token)).status_code,302)
         self.assertIn(b'teacher@example.com',self.client.get('/ativar').data)
         password='Minha frase exclusiva 2026'
-        response=self.client.post('/ativar',data=dict(token=csrf,action='complete',password=password,confirmation=password,role='diretor',student_id='23081'))
+        response=self.client.post('/ativar',data=dict(token=csrf,action='complete',password=password,confirmation=password,display_name='Nome Escolhido',role='diretor',student_id='23081'))
         self.assertEqual(response.status_code,302)
         with self.client.session_transaction() as s:self.assertNotIn('username',s)
         account=db.authenticate('teacher@example.com',password);self.assertEqual(account['username'],'invited.teacher');self.assertEqual(account['role'],'professor')
+        self.assertEqual(account['name'], 'Nome Escolhido')
         self.client.get('/')
         with self.client.session_transaction() as s:login_token=s['login_token']
         response=self.client.post('/entrar',data=dict(token=login_token,usuario='TEACHER@EXAMPLE.COM',senha=password),headers={'X-Campus-Login':'1'})
@@ -161,13 +162,13 @@ class EnrollmentTests(unittest.TestCase):
         with patch.object(enrollment,'mail_configured',return_value=True),patch.object(enrollment,'send_invitation_email') as sender:
             enrollment.deliver_invitation('real.director',invitation_id)
         digest=hashlib.sha256(sender.call_args.args[1].encode()).hexdigest()
-        enrollment.complete_invitation(digest,'a personal teacher passphrase','a personal teacher passphrase')
+        enrollment.complete_invitation(digest,'a personal teacher passphrase','a personal teacher passphrase','Aline Professora')
         self.assertIsNone(db.authenticate('aline','professora@123'))
         self.assertEqual(db.authenticate('aline@example.com','a personal teacher passphrase')['role'],'professor')
 
     def test_existing_demo_conversion_preserves_role_and_revokes_sessions(self):
         _,_,digest=self.delivered('gilberto','gilberto@example.com')
-        password='a new director private phrase';enrollment.complete_invitation(digest,password,password)
+        password='a new director private phrase';enrollment.complete_invitation(digest,password,password,'Gilberto Diretor')
         self.assertEqual(self.admin.get('/usuarios').status_code,302)
         self.assertIsNone(db.authenticate('gilberto','direcao@123'))
         enrollment.retire_demos('gilberto',password)
@@ -184,7 +185,7 @@ class EnrollmentTests(unittest.TestCase):
     def test_https_mail_transport_and_fragment_link(self):
         values=dict(FAEHUB_PUBLIC_URL='https://school.example.com',FAEHUB_MAIL_FROM='School <access@example.com>',FAEHUB_RESEND_API_KEY='fake-test-only')
         response=MagicMock();response.__enter__.return_value.read.return_value=b'{"id":"test-message-id"}'
-        with patch.dict(os.environ,values),patch.object(enrollment,'urlopen',return_value=response) as transport:
+        with app.app_context(),patch.dict(os.environ,values),patch.object(enrollment,'urlopen',return_value=response) as transport:
             self.assertTrue(enrollment.mail_configured())
             enrollment.send_invitation_email('teacher@example.com','fake-bearer','fake-invitation')
         req=transport.call_args.args[0]
@@ -192,6 +193,9 @@ class EnrollmentTests(unittest.TestCase):
         payload=json.loads(req.data)
         self.assertEqual(payload['to'],['teacher@example.com'])
         self.assertIn('https://school.example.com/ativar#convite=fake-bearer',payload['text'])
+        self.assertIn('Ativar minha conta',payload['html'])
+        self.assertIn('https://school.example.com/ativar#convite=fake-bearer',payload['html'])
+        self.assertIn('48 horas',payload['html'])
         self.assertEqual(transport.call_args.kwargs['timeout'],10)
         with patch.dict(os.environ,{**values,'FAEHUB_PUBLIC_URL':'http://untrusted.example.com'}):
             self.assertFalse(enrollment.mail_configured())
@@ -211,7 +215,7 @@ class EnrollmentTests(unittest.TestCase):
         with patch.object(enrollment,'mail_configured',return_value=True),patch.object(enrollment,'send_invitation_email') as sender:
             enrollment.deliver_invitation('gilberto',invitation_id)
         password='a private verified director phrase'
-        enrollment.complete_invitation(hashlib.sha256(sender.call_args.args[1].encode()).hexdigest(),password,password)
+        enrollment.complete_invitation(hashlib.sha256(sender.call_args.args[1].encode()).hexdigest(),password,password,'Gilberto Diretor')
         with self.admin.session_transaction() as s:s['auth_version']=access_version('gilberto')
         data.update(username='real.newteacher',role='professor',name='Professor',email='teacher2@example.com',current_password=password)
         with patch.object(enrollment,'mail_configured',return_value=False):
@@ -225,9 +229,31 @@ class EnrollmentTests(unittest.TestCase):
         operations.request_password_recovery(username)
         request_id=operations.list_recovery_requests()[0]['id']
         code=operations.issue_recovery_code(request_id,'gilberto')
-        with self.assertRaises(ValueError):operations.use_recovery_code(username,code,'short-pass123')
-        operations.use_recovery_code(username,code,'a new secure recovered phrase')
-        self.assertIsNotNone(db.authenticate('teacher@example.com','a new secure recovered phrase'))
+        with self.assertRaises(ValueError):operations.use_recovery_code(username,code,'1234567')
+        operations.use_recovery_code(username,code,'Pass123!')
+        self.assertIsNotNone(db.authenticate('teacher@example.com','Pass123!'))
+
+    def test_password_boundaries_and_display_names(self):
+        for size in (7, 129):
+            with self.assertRaises(ValueError):enrollment.validate_password('a'*size, 'a'*size)
+        for size in (8, 128):
+            enrollment.validate_password('a'*size, 'a'*size)
+        for value in ('', 'Thiago', 'Nome 123', '<script> Nome', 'A '*81, 'Nome -'):
+            with self.subTest(value=value), self.assertRaises(ValueError):enrollment.normalize_display_name(value)
+        self.assertEqual(enrollment.normalize_display_name('  Ana   Júlia  '), 'Ana Júlia')
+        self.assertEqual(enrollment.normalize_display_name("João D'Ávila"), "João D'Ávila")
+
+    def test_invalid_name_preserves_invitation_and_form_then_eight_character_password_activates(self):
+        _,token,digest=self.delivered();csrf=self.csrf()
+        self.client.post('/ativar',data=dict(token=csrf,action='open',invitation=token))
+        response=self.client.post('/ativar',data=dict(token=csrf,action='complete',password='Pass123!',confirmation='Pass123!',display_name='SóNome'))
+        self.assertEqual(response.status_code,422)
+        self.assertIn('value="SóNome"'.encode(),response.data)
+        self.assertIn(b'aria-invalid="true"',response.data)
+        self.assertIsNotNone(enrollment.invitation_by_digest(digest))
+        response=self.client.post('/ativar',data=dict(token=csrf,action='complete',password='Pass123!',confirmation='Pass123!',display_name='Ana da Silva'))
+        self.assertEqual(response.status_code,302)
+        self.assertEqual(db.authenticate('teacher@example.com','Pass123!')['name'],'Ana da Silva')
 
     def test_owner_provisioned_bootstrap_stays_private_and_cannot_grant_other_accounts(self):
         with db.connection() as conn:

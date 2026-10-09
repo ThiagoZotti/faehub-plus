@@ -572,8 +572,8 @@ def issue_recovery_code(request_id: int, admin: str):
 
 def use_recovery_code(username: str, code: str, new_password: str):
     from account_ownership import is_protected
-    if len(new_password) < 10 or len(new_password) > 128:
-        raise ValueError("Use uma senha entre 10 e 128 caracteres.")
+    from account_enrollment import validate_password
+    validate_password(new_password, new_password)
     digest = hashlib.sha256(code.strip().encode("utf-8")).hexdigest()
     now = datetime.now(timezone.utc).isoformat()
     with db.connection() as conn:
@@ -587,10 +587,6 @@ def use_recovery_code(username: str, code: str, new_password: str):
         ).fetchone()
         if not row:
             raise ValueError("Código inválido ou expirado.")
-        identity = conn.execute('SELECT verified_at FROM account_identities WHERE username=?',
-                                (username.strip().lower(),)).fetchone()
-        if identity and identity['verified_at'] and len(new_password) < 15:
-            raise ValueError('Use uma senha entre 15 e 128 caracteres para sua conta ativada.')
         consumed = conn.execute(
             "UPDATE password_recovery_requests SET status='used',used_at=CURRENT_TIMESTAMP WHERE id=? AND status='issued'",
             (row["id"],),

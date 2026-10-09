@@ -6,7 +6,7 @@
   <header class="dashboard-hero">
     <div class="dashboard-hero__copy">
       <span class="dashboard-context">{{ summary.date_label }} · Turma {{ d.turma }}</span>
-      <h1>Bem-vindo, {{ d.nome.split(' ')[0] }}.</h1>
+      <h1>Bem-vindo, {{ profile_nome.split(' ')[0] }}.</h1>
       <p>O essencial para começar seu dia acadêmico.</p>
       {% if summary.unread_count %}<a class="dashboard-message-alert" href="{{ url_for('mensagens') }}"><span aria-hidden="true">✦</span><strong>{{ summary.unread_count }} {{ 'mensagem nova' if summary.unread_count == 1 else 'mensagens novas' }}</strong><small>Abrir conversas</small></a>{% endif %}
     </div>

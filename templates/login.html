@@ -32,8 +32,8 @@
     </section>
     <aside class="credential-wrap" aria-label="Acesso ao FaeHub+">
       <article class="credential" id="credential"><div class="credential-glint" aria-hidden="true"></div>
-        <header class="credential-header"><div class="credential-logo"><span>F<em>+</em></span></div><div><small>PORTAL ACADÊMICO</small><h2>FaeHub<em>+</em></h2></div><span class="credential-status" title="Conexão segura">●</span></header>
-        <div class="credential-heading"><h3>Bem-vindo ao<br><span class="login-wordmark">FaeHub<em>+</em></span></h3><p>Entre para acompanhar sua vida escolar.</p></div>
+        <header class="credential-header"><div class="credential-logo"><img src="{{ url_for('static',filename='logo.svg') }}" width="48" height="48" alt="Logo FaeHub+"></div><div><small>PORTAL ACADÊMICO</small><h2>FaeHub<em>+</em></h2></div><span class="credential-status" title="Conexão segura">●</span></header>
+        <div class="credential-heading"><h3>Bem-vindo ao<br><span class="login-wordmark"><img class="login-brand-symbol" src="{{ url_for('static',filename='logo.svg') }}" width="52" height="52" alt=""><span>FaeHub<em>+</em></span></span></h3><p>Entre para acompanhar sua vida escolar.</p></div>
         <div class="credential-tabs" role="group" aria-label="Perfil de acesso"><button type="button" data-role="diretor" aria-pressed="false"><span aria-hidden="true">◆</span><b>Diretor</b></button><button type="button" data-role="professor" aria-pressed="false"><span aria-hidden="true">▰</span><b>Professor</b></button><button type="button" data-role="aluno" aria-pressed="true"><span aria-hidden="true">◉</span><b>Aluno</b></button><button type="button" data-role="responsavel" aria-pressed="false"><span aria-hidden="true">◇</span><b>Responsável</b></button></div>
         <p class="credential-profile-hint"><i></i><span id="roleHint">Seu espaço de aprendizagem e evolução.</span></p>
         <form id="arrivalForm" novalidate method="post" action="{{ url_for('entrar') }}" aria-describedby="arrivalError">

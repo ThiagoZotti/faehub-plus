@@ -342,7 +342,7 @@ def inject_shell():
     role = session.get("role")
     if not role:
         return {}
-    nome = current_aluno()["nome"] if role == "aluno" else session.get("display_name", PROFILE_FALLBACKS[role])
+    nome = session.get("display_name") or (current_aluno()["nome"] if role == "aluno" else PROFILE_FALLBACKS[role])
     shell_notifications = request_notifications(session["username"], role)
     notification_unread = sum(
         not item["is_read"] and not (role == "aluno" and item.get("category") == "mensagem")
@@ -403,6 +403,8 @@ def login_required(view_name_map):
                 session.clear()
                 return redirect(url_for("login"))
             g.current_view = view_name_map
+            if access.get('name'):
+                session['display_name'] = access['name']
             g.is_owner = access.get("is_owner", False)
             g.view_title = VIEW_TITLES[role].get(view_name_map, "")
             return fn(*args, **kwargs)
@@ -479,7 +481,8 @@ def ativar_conta():
                 if not enrollment.consume_rate_limit('activation', request.remote_addr or '', limit=80):
                     raise ValueError('Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.')
                 enrollment.complete_invitation(session.get('invitation_digest', ''),
-                                                request.form.get('password', ''), request.form.get('confirmation', ''))
+                                                request.form.get('password', ''), request.form.get('confirmation', ''),
+                                                request.form.get('display_name', ''))
                 session.clear()
                 flash('Conta ativada e e-mail confirmado. Entre com seu e-mail e sua nova senha.')
                 return redirect(url_for('login'))
@@ -490,10 +493,15 @@ def ativar_conta():
     invitation = enrollment.invitation_by_digest(session.get('invitation_digest', '')) if session.get('invitation_digest') else None
     field_error = None
     if error and request.form.get('action') == 'complete' and invitation:
-        if not 15 <= len(request.form.get('password','')) <= 128:
+        if not enrollment.PASSWORD_MIN_LENGTH <= len(request.form.get('password','')) <= enrollment.PASSWORD_MAX_LENGTH:
             field_error = 'password'
         elif request.form.get('password') != request.form.get('confirmation'):
             field_error = 'confirmation'
+        elif invitation['role'] != 'proprietario':
+            try:
+                enrollment.normalize_display_name(request.form.get('display_name', ''))
+            except ValueError:
+                field_error = 'display_name'
     response = app.make_response((render_template('account_activation.html', invitation=invitation,
                   token=session['enrollment_token'], error=error, field_error=field_error), 422 if error else 200))
     response.headers['Referrer-Policy'] = 'no-referrer'

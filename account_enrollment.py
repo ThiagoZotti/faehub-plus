@@ -10,6 +10,7 @@ import os
 import re
 import secrets
 import time
+import unicodedata
 from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
@@ -21,6 +22,18 @@ import account_ownership as ownership
 
 DEMO_USERS = ('gilberto', 'aline', 'thiago.zotti', 'jonathan.samuel',
               'pablo.sousa', 'marlon.eduardo', 'responsavel.thiago')
+PASSWORD_MIN_LENGTH = 8
+PASSWORD_MAX_LENGTH = 128
+
+
+def normalize_display_name(value):
+    name = ' '.join(unicodedata.normalize('NFC', value).split())
+    parts = name.split()
+    if (not 3 <= len(name) <= 160 or len(parts) < 2
+            or any(not (char.isalpha() or char in " '-.") for char in name)
+            or any(not any(char.isalpha() for char in part) for part in parts)):
+        raise ValueError('Informe seu nome e sobrenome, com até 160 caracteres.')
+    return name
 
 
 def init_enrollment(conn):
@@ -63,8 +76,8 @@ def normalize_email(value):
 
 
 def validate_password(password, confirmation):
-    if not 15 <= len(password) <= 128:
-        raise ValueError('Use uma senha entre 15 e 128 caracteres. Uma frase longa é uma boa opção.')
+    if not PASSWORD_MIN_LENGTH <= len(password) <= PASSWORD_MAX_LENGTH:
+        raise ValueError('Use uma senha entre 8 e 128 caracteres. Prefira uma senha longa e exclusiva.')
     if password != confirmation:
         raise ValueError('As senhas não coincidem. Digite a mesma senha nos dois campos.')
 
@@ -85,6 +98,7 @@ def send_invitation_email(email, token, invitation_id):
     payload = json.dumps({
         'from': os.environ['FAEHUB_MAIL_FROM'], 'to': [email],
         'subject': 'Ative seu acesso ao FaeHub+',
+        'html': current_app.jinja_env.get_template('emails/invitation.html').render(activation_link=link),
         'text': 'A escola autorizou seu acesso ao FaeHub+.\n\n'
                 'Abra o link abaixo para confirmar este e-mail e criar sua senha:\n' + link +
                 '\n\nO convite vale por 48 horas e só pode ser usado uma vez. '
@@ -243,10 +257,14 @@ def invitation_by_digest(digest):
     return None
 
 
-def complete_invitation(digest, password, confirmation):
+def complete_invitation(digest, password, confirmation, display_name=None):
     validate_password(password, confirmation)
-    if not invitation_by_digest(digest):
+    invitation = invitation_by_digest(digest)
+    if not invitation:
         raise ValueError('Convite inválido, expirado ou já utilizado. Peça um novo convite à escola.')
+    # Only the server-held reservation can authorize the owner's one-word name.
+    name = 'admin' if invitation['role'] == 'proprietario' else normalize_display_name(
+        invitation['name'] if display_name is None else display_name)
     hashed_password = generate_password_hash(password)
     with db.connection() as conn:
         # Compare-and-swap is the serialization point: concurrent/replayed submissions fail.
@@ -261,7 +279,7 @@ def complete_invitation(digest, password, confirmation):
             raise ValueError('O cadastro mudou. Peça um novo convite à escola.')
         ownership.protect_activation(conn, row['username'], row['email'])
         conn.execute('UPDATE account_identities SET verified_at=? WHERE username=?', (int(time.time()), row['username']))
-        conn.execute('UPDATE users SET active=TRUE,password_hash=? WHERE username=?', (hashed_password, row['username']))
+        conn.execute('UPDATE users SET active=TRUE,password_hash=?,name=? WHERE username=?', (hashed_password, name, row['username']))
         conn.execute('''INSERT INTO auth_versions(username,version) VALUES(?,1)
                         ON CONFLICT(username) DO UPDATE SET version=auth_versions.version+1''', (row['username'],))
         conn.execute('INSERT INTO activity_log(username,action,details) VALUES(?,?,?)',
