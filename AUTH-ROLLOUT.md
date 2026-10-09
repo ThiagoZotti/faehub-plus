@@ -30,7 +30,17 @@ Ao provisionar, confira que a conta é da direção, sem matrícula ou vínculos
 
 ## Configuração do serviço de e-mail
 
-O Render Free bloqueia as portas SMTP 25, 465 e 587. Por isso esta etapa usa a API HTTPS do Resend, sem SDK adicional.
+O Render Free bloqueia as portas SMTP 25, 465 e 587. Os transportes usam HTTPS, sem SDK adicional. `FAEHUB_MAIL_PROVIDER` seleciona `resend` (compatibilidade) ou `gmail`; não há fallback automático nem reenvio cego após falha.
+
+### Gmail institucional (sem domínio próprio)
+
+1. No Google Cloud, crie/selecione projeto, habilite Gmail API e configure Google Auth Platform.
+2. Crie um cliente OAuth e autorize **somente** `https://www.googleapis.com/auth/gmail.send` pela conta `faetech.sc@gmail.com`, com acesso offline. O titular deve concluir consentimento e autenticação; não compartilhar senha.
+3. Guarde Client ID, Client Secret e refresh token somente no ambiente privado do Render em `FAEHUB_GMAIL_CLIENT_ID`, `FAEHUB_GMAIL_CLIENT_SECRET` e `FAEHUB_GMAIL_REFRESH_TOKEN`.
+4. Defina `FAEHUB_GMAIL_SENDER=faetech.sc@gmail.com` e `FAEHUB_MAIL_PROVIDER=gmail`, mantendo a origem pública HTTPS.
+5. Faça envio controlado a endereço autorizado e confirme recebimento antes de anunciar disponibilidade geral. Limites e revogação da conta Gmail continuam aplicáveis.
+
+Um projeto OAuth externo em **Testing** com esse escopo normalmente expira refresh tokens em sete dias: não considerar configuração permanente. Defina o estado de publicação adequado e cumpra exigências de verificação do Google quando aplicáveis. Nunca ampliar para leitura da caixa ou publicar tokens. O transporte renova o access token no servidor antes de cada envio e mantém HTML/texto do convite existente.
 
 Configure **apenas no ambiente privado do servidor**:
 

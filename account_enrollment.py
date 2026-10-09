@@ -19,6 +19,7 @@ from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 import database as db
 import account_ownership as ownership
+import gmail_mail
 
 DEMO_USERS = ('gilberto', 'aline', 'thiago.zotti', 'jonathan.samuel',
               'pablo.sousa', 'marlon.eduardo', 'responsavel.thiago')
@@ -86,7 +87,10 @@ def mail_configured():
     """HTTPS transport works on Render Free, unlike outbound SMTP ports."""
     base = os.getenv('FAEHUB_PUBLIC_URL', '').rstrip('/')
     parsed = urlsplit(base)
-    return bool(os.getenv('FAEHUB_RESEND_API_KEY') and os.getenv('FAEHUB_MAIL_FROM')
+    provider = os.getenv('FAEHUB_MAIL_PROVIDER', 'resend').strip().lower()
+    ready = gmail_mail.configured() if provider == 'gmail' else (
+        provider == 'resend' and os.getenv('FAEHUB_RESEND_API_KEY') and os.getenv('FAEHUB_MAIL_FROM'))
+    return bool(ready
                 and parsed.scheme == 'https' and parsed.netloc and not parsed.username
                 and not parsed.query and not parsed.fragment and parsed.path in ('', '/'))
 
@@ -95,8 +99,8 @@ def send_invitation_email(email, token, invitation_id):
     if not mail_configured():
         raise ValueError('O envio de e-mails ainda não está configurado. O convite permanece pendente.')
     link = os.environ['FAEHUB_PUBLIC_URL'].rstrip('/') + '/ativar#convite=' + token
-    payload = json.dumps({
-        'from': os.environ['FAEHUB_MAIL_FROM'], 'to': [email],
+    content = {
+        'to': [email],
         'subject': 'Ative seu acesso ao FaeHub+',
         'html': current_app.jinja_env.get_template('emails/invitation.html').render(activation_link=link),
         'text': 'A escola autorizou seu acesso ao FaeHub+.\n\n'
@@ -104,7 +108,12 @@ def send_invitation_email(email, token, invitation_id):
                 '\n\nO convite vale por 48 horas e só pode ser usado uma vez. '
                 'Seu perfil e seus vínculos foram definidos pela escola. '
                 'Se não esperava este convite, ignore esta mensagem. Nunca compartilhe o link.'
-    }).encode('utf-8')
+    }
+    if os.getenv('FAEHUB_MAIL_PROVIDER', 'resend').strip().lower() == 'gmail':
+        gmail_mail.send(email, content['subject'], content['text'], content['html'])
+        return
+    content['from'] = os.environ['FAEHUB_MAIL_FROM']
+    payload = json.dumps(content).encode('utf-8')
     # No request payload, token, email-provider response or API key is logged.
     req = Request('https://api.resend.com/emails', data=payload, method='POST', headers={
         'Authorization': 'Bearer ' + os.environ['FAEHUB_RESEND_API_KEY'],
