@@ -17,7 +17,7 @@
       <h1>{{ 'Olá, ' ~ invitation.name ~ '.' if invitation else 'Seu lugar no campus.' }}</h1>
       {% if error %}<p class="ops-error" id="activationError" role="alert" tabindex="-1">{{ error }}</p>{% endif %}
       {% if invitation %}
-      <p>A escola autorizou seu acesso como <strong>{{ {'aluno':'Aluno','professor':'Professor','diretor':'Diretor','responsavel':'Responsável'}.get(invitation.role,invitation.role) }}</strong>. Seus vínculos escolares não são alterados neste cadastro.</p>
+      <p>Seu acesso foi autorizado como <strong>{{ {'aluno':'Aluno','professor':'Professor','diretor':'Diretor','responsavel':'Responsável pelo aluno','proprietario':'Proprietário do sistema'}.get(invitation.role,invitation.role) }}</strong>. {{ 'Sua conta administra o sistema e é protegida contra alterações pela equipe escolar.' if invitation.role=='proprietario' else 'Seus vínculos escolares não são alterados neste cadastro.' }}</p>
       <form method="post" novalidate data-activation-form aria-describedby="passwordHelp">
         <input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="action" value="complete">
         <label for="activationEmail">E-mail autorizado pela escola</label>

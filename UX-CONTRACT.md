@@ -122,6 +122,8 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 
 ### Primeiro acesso por convite
 
+- Conforme `AUTH-ROLLOUT.md`, a central identifica o **Proprietário do sistema**, distinguindo-o do **Responsável pelo aluno**. A conta protegida aparece somente para consulta pelos diretores, sem ações de alteração. O titular vê a reserva pendente e o convite com endereço fixo; após confirmar, o cabeçalho exibe sua autoridade. A seleção de novos cadastros não permite criar proprietários.
+
 - Política de autorização e rollout: `AUTH-ROLLOUT.md`; operação canônica em `account_enrollment.py`.
 - Direção prepara cadastro e confirma sua senha; sem configuração de e-mail, a interface anuncia cadastro pendente, nunca envio fictício.
 - A direção demo não pode criar contas reais arbitrárias. O primeiro diretor só migra a própria conta para o e-mail autorizado em `FAEHUB_BOOTSTRAP_ADMIN_EMAIL`; a configuração pertence ao dono do servidor. Os demais convites requerem direção verificada.

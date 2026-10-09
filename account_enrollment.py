@@ -17,6 +17,7 @@ from urllib.error import URLError, HTTPError
 from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 import database as db
+import account_ownership as ownership
 
 DEMO_USERS = ('gilberto', 'aline', 'thiago.zotti', 'jonathan.samuel',
               'pablo.sousa', 'marlon.eduardo', 'responsavel.thiago')
@@ -113,6 +114,11 @@ def authorize_invitation_actor(actor, action, *, username=None, email=None, invi
     invitations are issued by verified, active directors.
     """
     with db.connection() as conn:
+        if invitation_id:
+            target = conn.execute('SELECT username,email FROM account_invitations WHERE id=?', (invitation_id,)).fetchone()
+            if target:
+                username, email = target['username'], target['email']
+        ownership.protect_account(conn, actor, username, action, email=(email or '').strip().lower())
         user = conn.execute('''SELECT u.active,COALESCE(ar.role,u.role) role,ai.verified_at
                                FROM users u LEFT JOIN account_roles ar ON ar.username=u.username
                                LEFT JOIN account_identities ai ON ai.username=u.username WHERE u.username=?''', (actor,)).fetchone()
@@ -142,6 +148,7 @@ def create_invitation(actor, username, email, *, name=None, role=None, student_i
     if not re.fullmatch(r'[a-z0-9_.-]{3,50}', username):
         raise ValueError('Identificação: 3 a 50 letras sem acento, números, ponto, hífen ou sublinhado.')
     with db.connection() as conn:
+        ownership.protect_account(conn, actor, username, 'invite', email=email)
         existing = conn.execute('SELECT * FROM users WHERE username=?', (username,)).fetchone()
         identity = conn.execute('SELECT * FROM account_identities WHERE username=?', (username,)).fetchone()
         if identity and identity['verified_at']:
@@ -192,6 +199,7 @@ def deliver_invitation(actor, invitation_id):
     token = secrets.token_urlsafe(32)
     digest = hashlib.sha256(token.encode()).hexdigest()
     with db.connection() as conn:
+        ownership.protect_invitation(conn, actor, invitation_id, 'send_invite')
         # Atomic cooldown across workers. No provider call while holding a lock.
         row = conn.execute('''UPDATE account_invitations SET status='sending',token_hash=?,
                               expires_at=?,last_sent_at=? WHERE id=? AND status IN ('draft','failed','sent','sending')
@@ -223,7 +231,16 @@ def invitation_by_digest(digest):
                               LEFT JOIN account_roles ar ON ar.username=u.username
                               WHERE i.token_hash=? AND i.status='sent' AND i.expires_at>?''',
                            (digest, int(time.time()))).fetchone()
-    return dict(row) if row else None
+        if row:
+            try:
+                ownership.protect_activation(conn, row['username'], row['email'])
+            except ValueError:
+                return None
+            result = dict(row)
+            if ownership.is_protected(conn, row['username']):
+                result['role'] = 'proprietario'
+            return result
+    return None
 
 
 def complete_invitation(digest, password, confirmation):
@@ -242,6 +259,7 @@ def complete_invitation(digest, password, confirmation):
         if not identity or identity['email'] != row['email'] or identity['verified_at']:
             conn.rollback()
             raise ValueError('O cadastro mudou. Peça um novo convite à escola.')
+        ownership.protect_activation(conn, row['username'], row['email'])
         conn.execute('UPDATE account_identities SET verified_at=? WHERE username=?', (int(time.time()), row['username']))
         conn.execute('UPDATE users SET active=TRUE,password_hash=? WHERE username=?', (hashed_password, row['username']))
         conn.execute('''INSERT INTO auth_versions(username,version) VALUES(?,1)
@@ -253,6 +271,7 @@ def complete_invitation(digest, password, confirmation):
 
 def cancel_invitation(actor, invitation_id):
     with db.connection() as conn:
+        ownership.protect_invitation(conn, actor, invitation_id, 'cancel_invite')
         row = conn.execute("UPDATE account_invitations SET status='revoked',token_hash=NULL WHERE id=? AND status!='used' RETURNING username", (invitation_id,)).fetchone()
         if not row:
             raise ValueError('Convite não encontrado ou já utilizado.')
@@ -299,6 +318,8 @@ def retire_demos(actor, password):
         if not user or not user['active'] or user['role'] != 'diretor' or not user['verified_at'] or not check_password_hash(user['password_hash'], password):
             raise ValueError('Ative sua conta de diretor por e-mail e confirme sua senha atual para encerrar as demonstrações.')
         for username in DEMO_USERS:
+            if ownership.is_protected(conn, username):
+                continue
             identity = conn.execute('SELECT verified_at FROM account_identities WHERE username=?', (username,)).fetchone()
             if identity and identity['verified_at']:
                 continue  # A former demo converted to a real account is no longer a demo.

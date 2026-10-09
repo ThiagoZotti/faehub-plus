@@ -362,7 +362,7 @@ def inject_shell():
     return {
         "icons": ICONS,
         "role": role,
-        "role_label": ROLE_LABEL.get(role),
+        "role_label": "Proprietário do sistema" if getattr(g, "is_owner", False) else ROLE_LABEL.get(role),
         "nav_items": nav_items,
         "nav_primary": nav_primary,
         "nav_more": nav_more,
@@ -403,6 +403,7 @@ def login_required(view_name_map):
                 session.clear()
                 return redirect(url_for("login"))
             g.current_view = view_name_map
+            g.is_owner = access.get("is_owner", False)
             g.view_title = VIEW_TITLES[role].get(view_name_map, "")
             return fn(*args, **kwargs)
         return wrapper

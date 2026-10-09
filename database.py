@@ -679,7 +679,9 @@ def create_user(username, password, name, role, student_id=None):
 
 
 def toggle_user(username):
+    from account_ownership import protect_account
     with connection() as db:
+        protect_account(db, None, username, 'status')
         db.execute("UPDATE users SET active = NOT active WHERE username = ?", (username,))
 
 

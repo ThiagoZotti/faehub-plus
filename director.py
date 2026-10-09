@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash
 import database as db
 import p1_operations as operations
 import account_enrollment as enrollment
+import account_ownership as ownership
 
 
 def init_director():
@@ -41,7 +42,11 @@ def account_access(username):
                             LEFT JOIN account_roles ar ON ar.username=u.username
                             LEFT JOIN auth_versions av ON av.username=u.username
                             WHERE u.username=?''',(username,)).fetchone()
-    return dict(row) if row else None
+        result = dict(row) if row else None
+        if result:
+            owner = ownership.owner_state(conn) if result['role'] == 'diretor' else None
+            result['is_owner'] = bool(owner and owner['username'] == username and owner['verified'])
+    return result
 
 
 def valid_account(username, role):
@@ -76,7 +81,8 @@ def manage(section, roster, subjects):
             allowed={'usuarios':{'invite','send_invite','cancel_invite','retire_demos','update','status','password'},'turmas':{'class','assign','unassign'},'configuracoes':{'settings'}}
             if action not in allowed.get(section,set()):raise ValueError('Ação inválida para esta seção.')
             if section == 'usuarios' and action not in {'invite','send_invite','cancel_invite','retire_demos'}:
-                enrollment.authorize_invitation_actor(session['username'],action)
+                enrollment.authorize_invitation_actor(session['username'],action,
+                    username=request.form.get('username','').strip().lower())
             if section == 'usuarios' and action in {'invite','send_invite','cancel_invite','retire_demos'}:
                 if action != 'retire_demos':
                     enrollment.authorize_invitation_actor(session['username'],action,
@@ -111,6 +117,7 @@ def manage(section, roster, subjects):
                     username=field('username',50).lower()
                     existing=conn.execute('SELECT * FROM users WHERE username=?',(username,)).fetchone()
                     if not existing:raise ValueError('Conta não encontrada.')
+                    ownership.protect_account(conn,session['username'],username,action)
                     if action=='update':conn.execute('UPDATE users SET name=? WHERE username=?',(field('name'),username))
                     elif action=='status':
                         if username==session['username']:raise ValueError('Você não pode desativar sua própria conta.')
@@ -209,5 +216,6 @@ def manage(section, roster, subjects):
                            logs=db.recent_logs(50) if section=='relatorios' else [],records=records,grades=grades,start=start,end=end,
                            p1_metrics=operations.p1_metrics() if section in ('painel','relatorios') else {},
                            identities=enrollment.invitation_directory() if section=='usuarios' else {},
+                           system_owner=ownership.owner_state() if section=='usuarios' else None,
                            mail_configured=enrollment.mail_configured(), demos_enabled=enrollment.demos_enabled(),
                            retry={k:v for k,v in request.form.items() if k not in ('password','current_password','token')} if error else None),422 if error else 200

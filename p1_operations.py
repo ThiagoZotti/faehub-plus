@@ -521,7 +521,10 @@ def cancel_calendar_event(event_id: int):
 
 
 def request_password_recovery(username: str):
+    from account_ownership import is_protected
     with db.connection() as conn:
+        if is_protected(conn, username):
+            return  # Same neutral public response; no school-mediated owner recovery.
         user = conn.execute("SELECT username FROM users WHERE username=? AND active=TRUE", (username,)).fetchone()
         if user:
             pending = conn.execute(
@@ -541,15 +544,22 @@ def list_recovery_requests():
         return [dict(row) for row in conn.execute(
             """SELECT r.*,u.name FROM password_recovery_requests r
                JOIN users u ON u.username=r.username
-               WHERE r.status IN ('requested','issued') ORDER BY r.id DESC"""
+               WHERE r.status IN ('requested','issued')
+               AND NOT EXISTS (SELECT 1 FROM enrollment_settings s
+                               WHERE s.key='system_owner_username' AND s.value=r.username)
+               ORDER BY r.id DESC"""
         )]
 
 
 def issue_recovery_code(request_id: int, admin: str):
+    from account_ownership import is_protected
     code = secrets.token_urlsafe(9)
     digest = hashlib.sha256(code.encode("utf-8")).hexdigest()
     expires = (datetime.now(timezone.utc) + timedelta(minutes=30)).isoformat()
     with db.connection() as conn:
+        target = conn.execute('SELECT username FROM password_recovery_requests WHERE id=?', (request_id,)).fetchone()
+        if target and is_protected(conn, target['username']):
+            raise ValueError('A recuperação do proprietário não pode ser realizada pela secretaria.')
         result = conn.execute(
             """UPDATE password_recovery_requests SET token_hash=?,status='issued',expires_at=?,issued_by=?
                WHERE id=? AND status='requested'""",
@@ -561,11 +571,14 @@ def issue_recovery_code(request_id: int, admin: str):
 
 
 def use_recovery_code(username: str, code: str, new_password: str):
+    from account_ownership import is_protected
     if len(new_password) < 10 or len(new_password) > 128:
         raise ValueError("Use uma senha entre 10 e 128 caracteres.")
     digest = hashlib.sha256(code.strip().encode("utf-8")).hexdigest()
     now = datetime.now(timezone.utc).isoformat()
     with db.connection() as conn:
+        if is_protected(conn, username.strip().lower()):
+            raise ValueError('Código inválido ou expirado.')
         row = conn.execute(
             """SELECT id FROM password_recovery_requests
                WHERE username=? AND token_hash=? AND status='issued' AND expires_at>=?

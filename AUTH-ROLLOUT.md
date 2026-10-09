@@ -14,7 +14,19 @@
 - Requisição concorrente/repetida consome o convite por atualização condicional atômica. Ativação e revogação de sessões pertencem à mesma transação.
 - Fotografias, notas, mensagens, matrículas e demais registros continuam ligados à identificação escolar, não ao e-mail.
 
-## Conectar o envio
+## Propriedade do sistema
+
+Política autorizada pelo titular em 08/10/2026: o proprietário administra o app acima da direção e não possui matrícula. “Responsável pelo aluno” continua sendo o perfil familiar.
+
+A reserva utiliza duas chaves privadas em `enrollment_settings`: `system_owner_username` (identificação imutável existente) e `system_owner_email` (endereço normalizado autorizado). Ambas são provisionadas juntas por administração do servidor, nunca por formulários, convites comuns ou alterações de perfil. O endereço real não é publicado no repositório. O perfil acadêmico subjacente permanece `diretor` por compatibilidade; a autoridade adicional é calculada no servidor a cada requisição, exigindo conta ativa, perfil diretor e confirmação do endereço exato reservado.
+
+Antes da confirmação, a conta é exibida como propriedade pendente e só pode preparar/enviar/cancelar o próprio convite para o endereço reservado. As credenciais demo não liberam privilégios de proprietário. Ativar o convite exige recebimento do e-mail e senha pessoal; invalida sessões anteriores. Novos convites com papel `proprietario` são rejeitados.
+
+Diretores não podem editar nome, e-mail, senha, situação ou convites dessa conta, inclusive por requisições diretas. Somente o proprietário confirmado pode editar seu nome. A conta não pode ser desativada pelo app, nem pelo encerramento de demos. A recuperação mediada pela secretaria é bloqueada, incluindo códigos emitidos anteriormente. Recuperação/transferência da propriedade exige administração privada do servidor até existir um fluxo próprio seguro; não se anuncia recuperação automática pronta.
+
+Ao provisionar, confira que a conta é da direção, sem matrícula ou vínculos familiares, que a identidade corresponde ao e-mail autorizado e que nenhum proprietário diferente já foi reservado. Revogue convites antigos e códigos de recuperação e incremente `auth_versions` na mesma transação. Não marque o e-mail como confirmado nem atribua senha conhecida. Para transferir futuramente, use uma operação administrativa auditada e revogue sessões dos envolvidos; nenhum diretor dispõe desse recurso.
+
+## Configuração do serviço de e-mail
 
 O Render Free bloqueia as portas SMTP 25, 465 e 587. Por isso esta etapa usa a API HTTPS do Resend, sem SDK adicional.
 
