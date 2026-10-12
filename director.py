@@ -38,15 +38,23 @@ def account_access(username):
     """Return all request-auth state in one database round-trip."""
     with db.connection() as conn:
         row=conn.execute('''SELECT u.active,u.name,COALESCE(ar.role,u.role) role,
-                                   COALESCE(av.version,0) auth_version
+                                   COALESCE(av.version,0) auth_version,
+                                   CASE WHEN u.active=TRUE AND COALESCE(ar.role,u.role)='diretor'
+                                     AND EXISTS (
+                                       SELECT 1 FROM enrollment_settings s
+                                       JOIN enrollment_settings e ON e.key='system_owner_email'
+                                       JOIN account_identities ai ON ai.username=u.username
+                                       WHERE s.key='system_owner_username' AND s.value=u.username
+                                         AND e.value=ai.email AND e.value!='' AND ai.verified_at IS NOT NULL
+                                         AND ai.verified_at!=0
+                                     ) THEN TRUE ELSE FALSE END is_owner
                             FROM users u
                             LEFT JOIN account_roles ar ON ar.username=u.username
                             LEFT JOIN auth_versions av ON av.username=u.username
                             WHERE u.username=?''',(username,)).fetchone()
         result = dict(row) if row else None
         if result:
-            owner = ownership.owner_state(conn) if result['role'] == 'diretor' else None
-            result['is_owner'] = bool(owner and owner['username'] == username and owner['verified'])
+            result['is_owner'] = bool(result['is_owner'])
     return result
 
 
@@ -190,7 +198,7 @@ def manage(section, roster, subjects):
         if start and end and start>end:raise ValueError()
     except ValueError:return 'Período inválido.',400
     records=[r for r in attendance if (not start or r['class_date']>=start) and (not end or r['class_date']<=end)]
-    grades=db.load_grades() if section in ('painel','relatorios') else []
+    grades=db.load_grades() if section=='relatorios' else []
     if request.args.get('export'):
         if section!='relatorios':return 'Exportação indisponível.',400
         kind=request.args['export'];output=io.StringIO();writer=csv.writer(output,delimiter=';')
@@ -222,5 +230,5 @@ def manage(section, roster, subjects):
                                              if section=='painel' else [],
                            identities=enrollment.invitation_directory() if section=='usuarios' else {},
                            system_owner=ownership.owner_state() if section=='usuarios' else None,
-                           mail_configured=enrollment.mail_configured(), demos_enabled=enrollment.demos_enabled(),
+                           mail_configured=enrollment.mail_configured(), demos_enabled=enrollment.demos_enabled() if section=='usuarios' else False,
                            retry={k:v for k,v in request.form.items() if k not in ('password','current_password','token')} if error else None),422 if error else 200

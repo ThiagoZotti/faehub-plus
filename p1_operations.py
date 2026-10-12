@@ -460,6 +460,21 @@ def list_notifications(username: str, role: str):
         )]
 
 
+def notification_unread_count(username: str, role: str):
+    """Match the inbox's latest-100 badge without transferring notification bodies."""
+    with db.connection() as conn:
+        row = conn.execute('''SELECT COUNT(*) total FROM (
+            SELECT n.category,r.username reader
+            FROM notifications n LEFT JOIN notification_reads r
+              ON r.notification_id=n.id AND r.username=?
+            WHERE (n.recipient=? OR n.role_target=? OR n.role_target='todos')
+              AND (n.expires_at IS NULL OR n.expires_at>=CURRENT_TIMESTAMP)
+            ORDER BY n.created_at DESC,n.id DESC LIMIT 100
+          ) recent WHERE reader IS NULL AND (?!='aluno' OR category!='mensagem')''',
+          (username,username,role,role)).fetchone()
+    return row['total']
+
+
 def mark_notification(notification_id: int, username: str, read: bool, role: str):
     if notification_id not in {item['id'] for item in list_notifications(username, role)}:
         raise ValueError("Notificação indisponível para esta conta.")
@@ -673,12 +688,11 @@ def get_attachment(attachment_id: int):
 
 def p1_metrics():
     with db.connection() as conn:
-        def count(table, where=""):
-            return conn.execute(f"SELECT COUNT(*) total FROM {table} {where}").fetchone()["total"]
-        return {
-            "diaries_pending": count("class_diary_entries", "WHERE status='submitted'"),
-            "documents_pending": count("document_requests", "WHERE status IN ('requested','processing')"),
-            "interventions_open": count("pedagogical_interventions", "WHERE status!='closed'"),
-            "calendar_upcoming": count("calendar_events", "WHERE status='published' AND ends_at>=CURRENT_TIMESTAMP"),
-            "recovery_pending": count("password_recovery_requests", "WHERE status='requested'"),
-        }
+        # Independent scalar aggregates keep exact counts and use one round-trip.
+        return dict(conn.execute('''SELECT
+          (SELECT COUNT(*) FROM class_diary_entries WHERE status='submitted') diaries_pending,
+          (SELECT COUNT(*) FROM document_requests WHERE status IN ('requested','processing')) documents_pending,
+          (SELECT COUNT(*) FROM pedagogical_interventions WHERE status!='closed') interventions_open,
+          (SELECT COUNT(*) FROM calendar_events WHERE status='published' AND ends_at>=CURRENT_TIMESTAMP) calendar_upcoming,
+          (SELECT COUNT(*) FROM password_recovery_requests WHERE status='requested') recovery_pending
+        ''').fetchone())

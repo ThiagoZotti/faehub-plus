@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from dashboard import CAMPUS_TZ, DAY_NAMES
 
-def teacher_overview(username, assignments, schedule, roster, exercises, submissions, grades, messages, now=None):
+def teacher_overview(username, assignments, schedule, roster, exercises, submissions, grades, messages, now=None, *, unread_count=None):
     now=now or datetime.now(CAMPUS_TZ)
     classes=sorted({a['class_name'] for a in assignments})
     allowed={(a['class_name'],a['discipline']) for a in assignments}
@@ -30,5 +30,5 @@ def teacher_overview(username, assignments, schedule, roster, exercises, submiss
                                      subjects=[a['discipline'] for a in assignments if a['class_name']==c]) for c in classes],
                 lessons=lessons[:4],exercise_count=len(owned),submission_count=len(received),
                 pending_reviews=sum(not s.get('reviewed_at') or s.get('answer_snapshot')!=s.get('answer') for s in received),
-                grade_count=len(saved),unread=sum(m['recipient']==username and not m['is_read'] for m in messages),
+                grade_count=len(saved),unread=unread_count if unread_count is not None else sum(m['recipient']==username and not m['is_read'] for m in messages),
                 date_label=f'{DAY_NAMES[now.weekday()]}, {now:%d/%m}',name=username)

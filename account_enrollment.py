@@ -357,3 +357,46 @@ def retire_demos(actor, password):
         conn.execute("INSERT INTO enrollment_settings(key,value) VALUES('demos_disabled','1') ON CONFLICT(key) DO UPDATE SET value='1'")
         conn.execute('INSERT INTO activity_log(username,action,details) VALUES(?,?,?)',
                      (actor, 'demos_encerradas', 'Acessos não ativados encerrados; registros preservados.'))
+
+
+def demo_reactivation_plan(conn):
+    """Private operator workflow: never overwrite identities or reset passwords."""
+    owner = ownership.owner_state(conn)
+    result = {'eligible': [], 'preserved': []}
+    for username in DEMO_USERS:
+        user = conn.execute('''SELECT u.username,u.active,ai.username identity_username
+          FROM users u LEFT JOIN account_identities ai ON ai.username=u.username
+          WHERE u.username=?''', (username,)).fetchone()
+        has_invitation = conn.execute('SELECT 1 FROM account_invitations WHERE username=?', (username,)).fetchone()
+        if (not user or user['identity_username'] or has_invitation
+                or (owner and owner['username'] == username)):
+            result['preserved'].append(username)
+        else:
+            result['eligible'].append(username)
+    return result
+
+
+def reactivate_demos(actor):
+    """Server-operator only; no public demo session can reopen other accounts."""
+    with db.connection() as conn:
+        owner = ownership.owner_state(conn)
+        if not owner or not owner['verified'] or actor != owner['username']:
+            raise ValueError('A reabertura requer a conta verificada do proprietário do sistema.')
+        plan = demo_reactivation_plan(conn)
+        for username in plan['eligible']:
+            # Recheck identity/invitation on the actual UPDATE, not just the plan.
+            changed = conn.execute('''UPDATE users SET active=TRUE WHERE username=? AND active=FALSE
+              AND NOT EXISTS (SELECT 1 FROM account_identities ai WHERE ai.username=users.username)
+              AND NOT EXISTS (SELECT 1 FROM account_invitations i WHERE i.username=users.username)
+              AND NOT EXISTS (SELECT 1 FROM enrollment_settings s
+                WHERE s.key='system_owner_username' AND s.value=users.username)''', (username,))
+            if changed.rowcount:
+                conn.execute('''INSERT INTO auth_versions(username,version) VALUES(?,1)
+                  ON CONFLICT(username) DO UPDATE SET version=auth_versions.version+1''', (username,))
+        # Reopening access must not reseed deleted accounts or academic fixtures
+        # at the next restart of an installation that already retired its demos.
+        conn.execute("INSERT INTO enrollment_settings(key,value) VALUES('demos_seed_blocked','1') ON CONFLICT(key) DO UPDATE SET value='1'")
+        conn.execute("INSERT INTO enrollment_settings(key,value) VALUES('demos_disabled','0') ON CONFLICT(key) DO UPDATE SET value='0'")
+        conn.execute('INSERT INTO activity_log(username,action,details) VALUES(?,?,?)',
+                     (actor, 'demos_reabertas', 'Reabertura autorizada no banco principal; proprietário, identidades, convites e senhas preservados.'))
+    return plan

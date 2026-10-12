@@ -87,6 +87,18 @@ O encerramento desativa somente as sete contas demo conhecidas que ainda não fo
 
 ## Verificação
 
+### Reabertura excepcional das demos (12/10/2026)
+
+O usuário autorizou explicitamente reabrir as demos no app principal, ciente de
+que compartilham os dados escolares. Essa decisão não transforma o ambiente em
+uma sandbox. `tools/reactivate_demos.py` é comando privado do operador, sem rota
+web; exige proprietário ativo/verificado e reconhecimento explícito do acesso
+compartilhado. Preserva proprietário, identidades pessoais, convites e senhas,
+e revoga sessões antigas das contas efetivamente reabertas. Não cria usuários.
+O marcador `demos_seed_blocked=1` impede novos seeds de demonstração no reinício;
+o encerramento pela direção continua disponível. Evidências de desempenho e
+validação estão em `docs/navigation-performance.md`.
+
 O pool PostgreSQL verifica a conexão antes de entregá-la ao pedido e descarta sockets defeituosos. Falhas de rollback não escondem a exceção original nem impedem a devolução da conexão ao pool. A página de erro 500 não consulta notificações ou dados de perfil. Não há repetição automática de operações de cadastro ou envio de convites: em uma falha durante a operação, confira o estado antes de tentar novamente.
 
 `test_account_enrollment.py` cobre rascunho bloqueado, ativação, e-mail como alias, perfil imutável, tokens sem exposição, expiração, cancelamento, falha do provedor, reenvio/cooldown, CSRF/permissões, vínculo familiar, transição segura das demos e limites persistentes. Os testes usam exclusivamente bancos temporários isolados; o envio é simulado.

@@ -16,7 +16,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from flask import (Flask, g, jsonify, render_template, request, redirect, url_for,
                    session, flash, send_file, has_request_context)
 from database import (authenticate, archive_internship, create_exercise, create_user, get_exercises,
-                      get_messages, get_submissions, init_db, list_users,
+                      get_messages, dashboard_message_summary, get_submissions, init_db, list_users,
                       load_attendance, load_grades, log_action, recent_logs,
                       save_attendance, save_grade, send_message, submit_exercise,
                       toggle_user, get_internships,
@@ -41,15 +41,17 @@ from pathlib import Path
 from database import close_request_connection
 app.teardown_appcontext(close_request_connection)
 _static_versions = {
-    p.relative_to(app.static_folder).as_posix(): str(p.stat().st_mtime_ns)
+    # Stable across deploys: unchanged files stay cached, changed bytes bust cache.
+    p.relative_to(app.static_folder).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()[:16]
     for p in Path(app.static_folder).rglob("*")
     if p.is_file()
 }
 
 @app.url_defaults
 def version_static(endpoint, values):
-    if endpoint=='static' and 'v' not in values:
-        values['v']=_static_versions.get(values.get('filename'),'1')
+    if endpoint=='static':
+        digest=_static_versions.get(values.get('filename'),'1')
+        values['v']=f"{values['v']}-{digest}" if 'v' in values else digest
 
 
 @app.after_request
@@ -104,8 +106,8 @@ from director import manage as manage_director, init_director, account_access, a
 init_director()
 
 def director_section(section):
-    snapshot=academic_core.structure_snapshot()
-    subjects=[subject['code'] for subject in snapshot['subjects'] if subject['active']]
+    # Only class binding needs this catalog, not the entire ten-query snapshot.
+    subjects=academic_core.active_subject_codes() if section == 'turmas' else []
     return manage_director(section,live_roster(),subjects)
 seed_teacher_assignments()
 academic_core.sync_teacher_assignments()
@@ -280,11 +282,10 @@ def current_aluno():
         if not student:
             student=next((s for s in roster if s['nome'].casefold()==name.casefold()),None)
         grades=[]
-        for grade in load_grades():
-            if grade['student_id']==sid:
-                media=round((grade['n1']+grade['n2'])/2,2)
-                grades.append(dict(disciplina=grade['discipline'],n1=grade['n1'],n2=grade['n2'],
-                                   media=media,situacao=_situacao(media)))
+        for grade in load_grades(student_id=sid):
+            media=round((grade['n1']+grade['n2'])/2,2)
+            grades.append(dict(disciplina=grade['discipline'],n1=grade['n1'],n2=grade['n2'],
+                               media=media,situacao=_situacao(media)))
         result=dict(nome=name,matricula=sid,turma=student['turma'] if student else '',grades=grades,
                     frequencia=0,faltas=0,aulas_dadas=0)
 
@@ -312,7 +313,8 @@ def current_student_attendance(student_id):
 def apply_persisted_grades():
     if has_request_context() and getattr(g, "persisted_grades_applied", False):
         return
-    for saved in load_grades():
+    student_id = session.get('aluno_id') if has_request_context() and session.get('role') == 'aluno' else None
+    for saved in load_grades(student_id=student_id):
         aluno = ALUNOS_DB.get(saved["student_id"])
         if not aluno:
             continue
@@ -343,10 +345,12 @@ def inject_shell():
     if not role:
         return {}
     nome = session.get("display_name") or (current_aluno()["nome"] if role == "aluno" else PROFILE_FALLBACKS[role])
-    shell_notifications = request_notifications(session["username"], role)
-    notification_unread = sum(
-        not item["is_read"] and not (role == "aluno" and item.get("category") == "mensagem")
-        for item in shell_notifications
+    cached_notifications = getattr(g, 'notification_cache', {}).get((session['username'], role))
+    notification_unread = (
+        sum(not item['is_read'] and not (role == 'aluno' and item.get('category') == 'mensagem')
+            for item in cached_notifications)
+        if cached_notifications is not None
+        else operations.notification_unread_count(session['username'], role)
     )
     nav_items = NAV.get(role, [])
     primary_limit = 6 if role == "aluno" else (7 if role in {"professor", "admin"} else len(nav_items))
@@ -564,14 +568,20 @@ def painel():
         d = dict(aluno, avisos=student_notices(aluno['turma'],AVISOS_3110))
         media_geral = round(sum(g["media"] for g in d["grades"]) / len(d["grades"]), 1) if d['grades'] else 0
         recuperacoes = sum(1 for g in d["grades"] if g["situacao"] == "Recuperação")
+        message_stats=dashboard_message_summary(session['username'])
         return render_template("aluno_painel.html", d=d, media_geral=media_geral, recuperacoes=recuperacoes,
-                               summary=student_summary(d, get_exercises(), get_submissions(session['username']),
-                                   [message for message in get_messages(session['username'])
-                                    if message['recipient'] == session['username']], SCHEDULE_3110))
+                               summary=student_summary(d, get_exercises(class_name=aluno['turma']), get_submissions(session['username']),
+                                   message_stats['messages'], SCHEDULE_3110, message_stats=message_stats))
     if role == "professor":
-        overview = teacher_overview(session['username'], get_teacher_assignments(session['username']),
-                                    SCHEDULE_3110, live_roster(), get_exercises(), get_submissions(),
-                                    load_grades(), get_messages(session['username']))
+        assignments=get_teacher_assignments(session['username'])
+        roster=live_roster()
+        classes={assignment['class_name'] for assignment in assignments}
+        message_stats=dashboard_message_summary(session['username'])
+        overview = teacher_overview(session['username'], assignments,
+                                    SCHEDULE_3110, roster, get_exercises(teacher=session['username']),
+                                    get_submissions(teacher=session['username']),
+                                    load_grades(student_ids=[s['id'] for s in roster if s['turma'] in classes]),
+                                    message_stats['messages'], unread_count=message_stats['unread_count'])
         return render_template("professor_painel.html", overview=overview)
     if role == "responsavel":
         apply_persisted_grades()
@@ -825,11 +835,9 @@ def historico():
         available = [row for row in live_roster() if row["id"] == session.get("aluno_id")]
     elif role == "responsavel":
         linked = {row["student_id"] for row in operations.guardian_students(session["username"])}
-        snapshot = academic_core.structure_snapshot()
-        available = [{"id": row["registration"], "nome": row["full_name"]} for row in snapshot["students"] if row["registration"] in linked]
+        available = academic_core.student_directory(linked)
     elif role == "admin":
-        snapshot = academic_core.structure_snapshot()
-        available = [{"id": row["registration"], "nome": row["full_name"]} for row in snapshot["students"]]
+        available = academic_core.student_directory()
     else:
         return "Acesso restrito.", 403
     requested = request.args.get("matricula", "")
@@ -864,7 +872,7 @@ def notas():
             return redirect(url_for('notas',turma=ctx['selected'],disciplina=discipline))
         except ValueError as exc:error=str(exc)
     ids={s['id'] for s in ctx['roster']}
-    saved={g['student_id']:g for g in load_grades() if g['student_id'] in ids and g['discipline']==discipline}
+    saved={g['student_id']:g for g in load_grades(student_ids=ids, discipline=discipline)}
     return render_template('professor_notas.html',**ctx,discipline=discipline,saved=saved,error=error),422 if error else 200
 
 @app.route("/chamada",methods=["GET","POST"])

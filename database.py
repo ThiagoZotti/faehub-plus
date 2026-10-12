@@ -503,7 +503,8 @@ def init_db():
         db.execute("DROP TABLE IF EXISTS avatar_profiles")
         from account_enrollment import init_enrollment, demos_enabled
         init_enrollment(db)
-        seed_demos = demos_enabled(db)
+        seed_block = db.execute("SELECT value FROM enrollment_settings WHERE key='demos_seed_blocked'").fetchone()
+        seed_demos = demos_enabled(db) and not (seed_block and seed_block['value'] == '1')
         accounts = [
             ("gilberto", "direcao@123", "Gilberto", "diretor", None),
             ("aline", "professora@123", "Profa. Aline", "professor", None),
@@ -606,9 +607,20 @@ def save_grade(student_id, discipline, n1, n2):
     sync_grade(student_id, discipline, n1, n2)
 
 
-def load_grades():
+def load_grades(student_id=None, *, student_ids=None, discipline=None):
+    where=[];params=[]
+    if student_id is not None:
+        where.append('student_id=?');params.append(canonical_student_id(student_id))
+    if student_ids is not None:
+        ids=sorted({canonical_student_id(sid) for sid in student_ids})
+        if not ids:
+            return []
+        where.append('student_id IN (' + ','.join('?' for _ in ids) + ')');params.extend(ids)
+    if discipline is not None:
+        where.append('discipline=?');params.append(discipline)
     with connection() as db:
-        return [dict(r) for r in db.execute("SELECT * FROM grades")]
+        return [dict(r) for r in db.execute("SELECT * FROM grades" +
+                                           (' WHERE ' + ' AND '.join(where) if where else ''), params)]
 
 
 def save_attendance_batch(class_date, marks):
@@ -763,6 +775,19 @@ def _enrich_messages(db, rows):
             item["users"].append(reaction["username"])
         message["reaction_summary"] = list(summary.values())
     return messages
+
+
+def dashboard_message_summary(username):
+    """Two previews and exact inbox totals; never transfer the complete chat history."""
+    with connection() as db:
+        messages = [dict(row) for row in db.execute('''SELECT m.*,su.name sender_name,ru.name recipient_name,
+            COUNT(*) OVER () message_count,
+            SUM(CASE WHEN m.is_read=FALSE THEN 1 ELSE 0 END) OVER () unread_count
+            FROM messages m JOIN users su ON su.username=m.sender
+            JOIN users ru ON ru.username=m.recipient
+            WHERE m.group_id IS NULL AND m.recipient=? ORDER BY m.id DESC LIMIT 2''', (username,))]
+    return dict(messages=messages, message_count=messages[0]['message_count'] if messages else 0,
+                unread_count=messages[0]['unread_count'] if messages else 0)
 
 
 def get_messages(username):
@@ -1039,11 +1064,18 @@ def create_exercise(teacher, title, description, discipline, class_name, due_dat
         return row["id"]
 
 
-def get_exercises(include_archived=False):
+def get_exercises(include_archived=False, *, teacher=None, class_name=None):
+    where=[];params=[]
+    if not include_archived:
+        where.append('COALESCE(s.archived,FALSE)=FALSE')
+    if teacher is not None:
+        where.append('e.teacher=?');params.append(teacher)
+    if class_name is not None:
+        where.append('e.class_name=?');params.append(class_name)
     with connection() as db:
         return [dict(r) for r in db.execute("""SELECT e.*, COALESCE(s.archived,FALSE) archived FROM exercises e
             LEFT JOIN exercise_states s ON s.exercise_id=e.id """ +
-            ("" if include_archived else " WHERE COALESCE(s.archived,FALSE)=FALSE ") + " ORDER BY due_date, e.id DESC")]
+            (" WHERE " + ' AND '.join(where) if where else '') + " ORDER BY due_date, e.id DESC", params)]
 
 
 def submit_exercise(exercise_id, student, answer):
@@ -1055,12 +1087,18 @@ def submit_exercise(exercise_id, student, answer):
         return row["id"]
 
 
-def get_submissions(username=None):
+def get_submissions(username=None, *, teacher=None):
     with connection() as db:
         sql = """SELECT s.*, r.feedback, r.score, r.answer_snapshot, r.reviewed_at,
                  u.name student_name FROM submissions s JOIN users u ON u.username=s.student
-                 LEFT JOIN submission_reviews r ON r.submission_id=s.id""" + (" WHERE student=?" if username else "")
-        rows = db.execute(sql, (username,) if username else ())
+                 LEFT JOIN submission_reviews r ON r.submission_id=s.id"""
+        where=[];params=[]
+        if username:
+            where.append('s.student=?');params.append(username)
+        if teacher is not None:
+            where.append('EXISTS (SELECT 1 FROM exercises e WHERE e.id=s.exercise_id AND e.teacher=?)')
+            params.append(teacher)
+        rows = db.execute(sql + (' WHERE ' + ' AND '.join(where) if where else ''), params)
         return [dict(r) for r in rows]
 
 

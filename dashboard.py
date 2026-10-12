@@ -26,7 +26,7 @@ def upcoming_lessons(schedule, now=None):
     return lessons[:5]
 
 
-def student_summary(student, exercises, submissions, messages, schedule, now=None):
+def student_summary(student, exercises, submissions, messages, schedule, now=None, *, message_stats=None):
     now = now or datetime.now(CAMPUS_TZ)
     submitted = {item['exercise_id'] for item in submissions}
     exercises = [dict(item) for item in exercises if item['class_name'] == student['turma']]
@@ -48,8 +48,8 @@ def student_summary(student, exercises, submissions, messages, schedule, now=Non
     return {'pending': pending, 'activity_preview': activity_preview, 'pending_count': len(pending), 'completed': completed,
             'total': len(exercises), 'completion': round(completed / len(exercises) * 100) if exercises else 0,
             'overdue': sum(item['overdue'] for item in pending),
-            'messages': messages[:2], 'message_count': len(messages),
-            'unread_count': sum(not item.get('is_read', 0) for item in messages),
+            'messages': messages[:2], 'message_count': message_stats['message_count'] if message_stats is not None else len(messages),
+            'unread_count': message_stats['unread_count'] if message_stats is not None else sum(not item.get('is_read', 0) for item in messages),
             'lessons': upcoming_lessons(schedule, now), 'now': now.isoformat(),
             'date_label': f'{DAY_NAMES[now.weekday()]}, {now:%d/%m}',
             'best': max(student['grades'], key=lambda item: item['media'], default=None),

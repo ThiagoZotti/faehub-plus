@@ -152,6 +152,23 @@ def roster(active_only=True, year_id=None):
     return [dict(row, nota=0, freq=0) for row in rows]
 
 
+def active_subject_codes():
+    """The binding dropdown needs codes only, in the same order as the catalog."""
+    with db.connection() as conn:
+        return [row['code'] for row in conn.execute('SELECT code FROM subjects WHERE active=TRUE ORDER BY name')]
+
+
+def student_directory(registrations=None):
+    """History picker: students only, optionally restricted to guardian links."""
+    params=tuple(registrations) if registrations is not None else ()
+    if registrations is not None and not params:
+        return []
+    where=' WHERE registration IN (' + ','.join('?' for _ in params) + ')' if registrations is not None else ''
+    with db.connection() as conn:
+        return [dict(row) for row in conn.execute('SELECT registration id,full_name nome FROM students' + where +
+                                                 ' ORDER BY full_name', params)]
+
+
 def structure_snapshot():
     with db.connection() as conn:
         years = [dict(r) for r in conn.execute("SELECT * FROM academic_years ORDER BY starts_on DESC")]
