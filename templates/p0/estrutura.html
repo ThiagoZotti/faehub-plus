@@ -5,7 +5,7 @@
 {% set active_year=(data.years|selectattr('status','equalto','active')|list|first) %}
 <main class="core-map ops">
   <header class="core-hero">
-    <div><span class="core-path">Direção / Estrutura acadêmica</span><h1>O mapa da escola,<br><em>ano após ano.</em></h1><p>Cadastros conectados sem apagar o caminho percorrido por cada estudante.</p></div>
+    <div><span class="core-path">Direção / Estrutura acadêmica</span><h1>{{ view_title }}</h1><p>Cadastros conectados sem apagar o caminho percorrido por cada estudante.</p></div>
     <aside><span>Ano em operação</span><strong>{{ active_year.name if active_year else 'Nenhum' }}</strong><small>{{ data.classes|selectattr('academic_year','equalto',active_year.name)|list|length if active_year else 0 }} turmas · {{ data.students|length }} estudantes</small></aside>
   </header>
   <nav class="core-nav" aria-label="Áreas da estrutura acadêmica">

@@ -1,0 +1,82 @@
+/* Full teacher/director rollout, mapped to the v2 boards. Campus Electric owns tokens. */
+.campus-electric:is(.role-professor,.role-admin){--tw-mint:var(--campus-accent);--gold:var(--campus-accent);--ops-blue:var(--campus-accent-2);--core-blue:var(--campus-accent);--core-warn:var(--electric-warning)}
+.campus-electric.campus-shell .app__content>:is(.core-map,.history-map){padding:0;min-height:0;width:100%;max-width:none}
+.campus-electric .teacher-workspace{--tw-mint:var(--campus-accent);color:var(--campus-text);padding-bottom:0}
+.campus-electric dialog{position:fixed;inset:0;margin:auto;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px)}
+.campus-electric :is(.director-world,.teacher-workspace,.ops,.core-map,.history-map){background:none;font-family:var(--font-body)}
+.campus-electric :is(.director-heading,.core-hero,.history-map>header){margin:0 0 24px;padding:0 0 22px;border-bottom:1px solid var(--campus-line);gap:24px}
+.campus-electric :is(.academic-heading,.director-heading,.core-hero,.history-map>header) h1{font:800 clamp(28px,2.6vw,40px)/1.16 var(--font-display);letter-spacing:-.045em;color:var(--campus-text)}
+.campus-electric :is(.core-hero p,.core-notice p,.core-path,.history-map>header p,.tw-help,.tw-counter,.tw-savebar p,.tw-banner p,.tw-student p,.teacher-workspace small,.director-dialog p,.director-panel p,.director-binding small,.director-footnote){color:var(--campus-muted)}
+.campus-electric :is(.tw-selector label,.tw-search,.studio-dialog label,.director-world label,.director-toolbar label){color:var(--campus-muted);font-size:12px}
+.campus-electric :is(.tw-banner,.tw-panel,.tw-class-card,.tw-student,.studio-card,.studio-dialog,.director-panel,.director-class-heading,.director-dialog,.director-metrics a,.director-report-metrics article,.director-focus,.history-line article,.core-year,.core-catalog section,.core-table-wrap,.core-create,.core-class,.core-notice){background:var(--campus-panel);color:var(--campus-text);border-color:var(--campus-line);border-radius:14px;box-shadow:var(--campus-shadow);backdrop-filter:none}
+.campus-electric :is(.tw-panel,.director-panel,.studio-dialog,.director-dialog){padding:22px}
+.campus-electric :is(.tw-banner,.director-class-heading,.director-focus){background:linear-gradient(115deg,var(--campus-panel-strong),var(--campus-panel));padding:24px;min-height:0;gap:18px}
+.campus-electric :is(.tw-banner h2,.director-panel h2,.studio-card h2,.ops-card h2){font-family:var(--font-display);color:var(--campus-text);letter-spacing:-.025em}
+.campus-electric .tw-banner h2{font-size:24px;margin:8px 0}
+.campus-electric .tw-live-counts{gap:22px}.campus-electric .tw-live-counts span{color:var(--campus-muted);font-size:11px}
+.campus-electric :is(.tw-live-counts b,.tw-big-number,.tw-grade-row output,.director-metrics strong,.director-report-metrics strong,.director-line strong,.director-class-heading strong){color:var(--campus-accent);font-family:var(--font-display)}
+.campus-electric .tw-live-counts span:nth-child(2) b{color:var(--electric-warning)}
+.campus-electric .tw-live-counts span:nth-child(3) b{color:var(--campus-accent-2)}
+.campus-electric :is(.teacher-workspace input,.teacher-workspace select,.studio-dialog textarea,.director-world input,.director-world select,.director-world textarea,.core-map input,.core-map select,.history-map select){background:var(--electric-field);color:var(--campus-text);border-color:var(--campus-line);color-scheme:dark}
+.campus-electric :is(.studio-dialog textarea,.director-world textarea){resize:none;min-height:140px}
+.campus-electric :is(.teacher-workspace .tw-primary,.director-primary,.core-map .core-primary){background:var(--electric-blue);border-color:var(--electric-blue);color:#fff;min-height:44px}
+.campus-electric :is(.teacher-workspace .academic-button,.director-secondary,.core-nav a,.studio-tabs button){background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line);min-height:44px;border-radius:10px}
+.campus-electric :is(.teacher-workspace .tw-primary,.director-primary):hover{background:var(--electric-blue);color:#fff;filter:brightness(1.14)}
+.campus-electric :is(.director-secondary,.studio-tabs button,.core-nav a,.teacher-workspace .academic-button):hover{background:var(--campus-panel-strong);color:var(--campus-accent);border-color:var(--campus-accent)}
+.campus-electric :is(.studio-tabs [aria-pressed=true],.core-nav a[aria-current]){background:var(--electric-blue);color:#fff}
+.campus-electric :is(.tw-roll-row,.tw-grade-row,.tw-grade-head,.director-binding,.director-person,.director-action,.director-records>div,.studio-delivery,.core-table-wrap td,.core-table-wrap th){border-color:var(--campus-line);color:var(--campus-text)}
+.campus-electric .tw-grade-head{background:var(--campus-panel-strong);color:var(--campus-muted);font-size:10px;border-radius:8px}
+.campus-electric :is(.tw-roll-row,.tw-grade-row){padding-block:14px}
+.campus-electric :is(.tw-roll-row:hover,.tw-grade-row:hover,.director-person:hover){background:var(--campus-panel-strong);color:var(--campus-text)}
+.campus-electric .tw-presence span{background:var(--campus-panel-strong);border-color:var(--campus-line);color:var(--campus-muted);border-radius:8px;padding:9px 13px}
+.campus-electric .tw-presence input:checked+span{color:var(--electric-success);background:var(--electric-success-panel);border-color:var(--electric-success)}
+.campus-electric .tw-presence input[value=ausente]:checked+span{color:var(--electric-red);background:var(--electric-danger-panel);border-color:var(--electric-red)}
+.campus-electric .tw-presence input:focus-visible+span{outline:3px solid var(--campus-accent);outline-offset:3px}
+.campus-electric :is(.tw-error,.director-error,.campus-field-error){color:var(--electric-red);border-color:var(--electric-red);background:var(--electric-danger-panel)}
+.campus-field-error{display:block;padding:10px 12px;border:1px solid;border-radius:8px;font-size:12px;line-height:1.7;margin:8px 0}
+.tw-grade-row>.campus-field-error{grid-column:1/-1}
+.campus-electric .tw-class-card{padding:22px;border-top:3px solid var(--electric-blue)}
+.campus-electric .tw-class-card strong{font-size:36px;color:var(--campus-accent)}
+.campus-electric .tw-class-card p,.campus-electric .tw-class-card>div span{color:var(--campus-muted)}
+.campus-electric .tw-student a{color:var(--campus-accent);min-height:40px;display:inline-flex;align-items:center}
+.campus-electric .studio-grid{grid-template-columns:1fr;gap:12px}
+.campus-electric .studio-card{padding:20px;border-left:3px solid var(--electric-blue);transform:none}
+.campus-electric .studio-card:hover{transform:none;border-color:var(--campus-accent)}
+.campus-electric .studio-number{display:none} /* Independent publications are not an ordered process. */
+.campus-electric .studio-card h2{font-size:19px;margin:12px 0 8px}
+.campus-electric .studio-excerpt{min-height:0;-webkit-line-clamp:2;margin:0;font-size:13px;color:var(--campus-muted)}
+.campus-electric :is(.studio-meta,.studio-number span,.studio-dialog p,.director-records small,.director-records time,.director-metrics span,.director-metrics small,.director-report-metrics span,.director-report-metrics small){color:var(--campus-muted)}
+.campus-electric .studio-tag,.campus-electric .director-tag{background:var(--campus-panel-strong);color:var(--campus-accent);border-color:var(--campus-line)}
+.campus-electric .studio-meta{padding:12px 0;margin-bottom:12px;border-color:var(--campus-line)}
+.campus-electric .studio-answer{background:var(--electric-field);color:var(--campus-text);border:1px solid var(--campus-line)}
+.campus-electric .internship-dialog{background:var(--campus-panel);color:var(--campus-text);border-color:var(--campus-line);box-shadow:var(--campus-shadow)}
+.campus-electric .internship-form-grid label>span,.campus-electric .internship-form-grid small{color:var(--campus-muted)}
+.campus-electric .internship-form-grid :is(input,select,textarea){background:var(--electric-field);color:var(--campus-text);border-color:var(--campus-line)}
+.campus-electric .internship-dialog header>button{background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line)}
+.campus-electric .studio-delivery summary{color:var(--campus-accent)}
+.campus-electric :is(.studio-dialog header button,.director-dialog header button){background:var(--campus-panel-strong);border-color:var(--campus-line);color:var(--campus-text);min-width:40px;min-height:40px}
+.campus-electric .director-world details>summary{color:var(--campus-accent)}
+.campus-electric .director-avatar{background:#302349;color:var(--campus-accent-2)}
+.campus-electric .director-status{color:var(--electric-success)}.campus-electric .director-status.inactive{color:var(--electric-warning)}
+.campus-electric .director-roster>div,.campus-electric .core-chipset span{background:var(--campus-panel-strong);border-color:var(--campus-line);color:var(--campus-text)}
+.campus-electric .director-roster small{color:var(--campus-muted)}
+.campus-electric .director-badge{display:none}
+.campus-electric .core-nav{background:var(--campus-panel);border-color:var(--campus-line)}
+.campus-electric .core-hero h1 em{color:var(--campus-accent)}
+.campus-electric :is(.core-map,.history-map){--core-ink:var(--campus-text);--core-muted:var(--campus-muted);--core-panel:var(--campus-panel);--core-line:var(--campus-line);--core-warn:var(--electric-warning)}
+.campus-electric :is(.core-table-wrap table,.director-world table){color:var(--campus-text);background:var(--campus-panel)}
+.campus-electric .history-content>p{color:var(--campus-muted)}
+.campus-electric .ops .ops-field-error{color:var(--electric-red)}
+.campus-electric .ops-status--muted{color:var(--campus-muted);background:var(--campus-panel-strong)}
+.campus-electric .ops-card{border-radius:14px}
+.campus-electric :is(.academic-empty,.ops-empty,.core-empty){color:var(--campus-muted);border-color:var(--campus-line)}
+.campus-roster-search{display:flex;align-items:center;gap:8px}.campus-roster-search input{flex:1;width:100%;min-width:0}
+.campus-clear-search{width:40px;min-height:44px;flex:none;border:1px solid var(--campus-line);border-radius:9px;background:var(--campus-panel-strong);color:var(--campus-text);font-size:20px;cursor:pointer}
+.campus-action-dialog{position:fixed;inset:0;margin:auto;width:min(480px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:24px;overflow:auto;border:1px solid var(--campus-line);border-radius:14px;background:var(--campus-panel);color:var(--campus-text);box-shadow:var(--campus-shadow);font-family:var(--font-body)}
+.campus-action-dialog::backdrop{background:#030818b8}.campus-action-dialog h2{font-size:22px;margin:0 0 14px}.campus-action-dialog p{font-size:13px;line-height:1.8;color:var(--campus-muted);margin:0 0 20px}
+.campus-action-dialog footer{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}.campus-action-dialog button{min-height:44px;padding:10px 16px;border:1px solid var(--campus-line);border-radius:9px;background:var(--campus-panel-strong);color:var(--campus-text);font:700 12px var(--font-body);cursor:pointer}.campus-action-dialog .is-primary{background:var(--electric-blue);border-color:var(--electric-blue);color:#fff}
+.campus-action-dialog button:hover,.campus-clear-search:hover{border-color:var(--campus-accent);filter:brightness(1.15)}
+.campus-action-dialog .is-warning{background:var(--electric-warning-panel);border-color:var(--electric-warning);color:var(--electric-warning)}
+.campus-action-dialog button:focus-visible{outline:3px solid var(--campus-accent);outline-offset:3px}
+@media(max-width:1100px){.campus-electric .tw-selector{flex-wrap:wrap}.campus-electric .director-person{flex-wrap:wrap}.campus-electric .director-person>div{min-width:0;flex-basis:calc(100% - 70px)}.campus-electric .director-report-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.campus-electric :is(.director-toolbar,.studio-toolbar,.tw-selector){flex-wrap:wrap;gap:14px}.campus-electric .director-toolbar label{flex-basis:100%;min-width:0}.campus-electric .tw-selector label{min-width:0;width:100%}.campus-electric .tw-selector select{min-width:0;width:100%}.campus-electric .tw-class-cards{grid-template-columns:1fr}.campus-electric .tw-presence{margin-left:0}.campus-electric .tw-roll-row{gap:12px}.campus-electric .tw-roll-name{min-width:0;flex-basis:calc(100% - 50px)}.campus-electric .studio-tabs{flex-wrap:wrap}.campus-electric .studio-tabs button{padding:10px 14px}.campus-electric .studio-dialog,.campus-electric .director-dialog{padding:20px}.campus-electric .director-report-metrics{grid-template-columns:1fr}.campus-electric .director-panel{padding:20px}.campus-electric .core-hero{grid-template-columns:1fr}.campus-electric .history-map>header form{min-width:0;width:100%}}

@@ -2,7 +2,7 @@
 {% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='p1/operations.css') }}">{% endblock %}
 {% block content %}
 <main class="ops">
-  <section class="ops-hero"><div><p class="ops-kicker">Registro pedagógico · fluxo auditável</p><h1>O que aconteceu em sala, organizado.</h1><p>Planeje, registre e envie cada aula para validação. Períodos fechados permanecem protegidos contra alterações tardias.</p></div><div class="ops-score"><span>{{ 'Aguardando coordenação' if role == 'professor' else 'Fila de validação' }}</span><strong>{{ entries|selectattr('status','equalto','submitted')|list|length }}</strong><i style="--progress:72%"></i><small>registros em revisão</small></div></section>
+  <section class="ops-hero"><div><p class="ops-kicker">Registro pedagógico · fluxo auditável</p>{% if role in ['professor','admin'] %}<h1>{{ view_title }}</h1>{% else %}<h1>O que aconteceu em sala, organizado.</h1>{% endif %}<p>Planeje, registre e envie cada aula para validação. Períodos fechados permanecem protegidos contra alterações tardias.</p></div><div class="ops-score"><span>{{ 'Aguardando coordenação' if role == 'professor' else 'Fila de validação' }}</span><strong>{{ entries|selectattr('status','equalto','submitted')|list|length }}</strong><i style="--progress:72%"></i><small>registros em revisão</small></div></section>
   {% if error %}<p class="ops-error" role="alert">{{ error }}</p>{% endif %}
   <section class="ops-grid">
     {% if role == 'professor' %}<article class="ops-card ops-card--wide ops-card--accent"><div class="ops-card__head"><div><h2>Registrar aula</h2><p>Os campos pedagógicos ficam no histórico da turma.</p></div></div>

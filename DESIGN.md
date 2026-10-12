@@ -73,7 +73,7 @@ Um campus em movimento com força e juventude: o mockup enviado em 09/10/2026 é
 - **Memorable signature:** o campus é tratado como um lugar navegável; a fotografia aparece no login e como faixa contextual no painel. O painel do aluno usa um radar do dia — agenda, desempenho e prioridade — no lugar de personagens. A estrutura acadêmica mantém percurso e linha do tempo; operações escolares preservam protocolos e estados claros.
 - **Restraint:** CRUD, campos, confirmação, busca e estados de erro permanecem previsíveis, legíveis e sem gestos escondidos.
 - **Anti-references:** não reduzir o mockup a um kit claro genérico; não trocar identidade forte por neutralidade; não usar o cartaz em perspectiva como captura de interface funcional. Nenhuma marca d'água, texto ilegível ou número ilustrativo entra no produto.
-- **Token ownership/runtime mapping:** modelo B, CSS é canônico. `static/campus-electric.css` é o owner do aluno e dos painéis iniciais docente/direção. `--electric-blue` mapeia `colors.primary`; `--electric-cyan` e o alias `--campus-accent` mapeiam `colors.secondary`; painel/texto/linha mapeiam `colors.surface`, `on-background`, `outline`; `--font-body`/`--font-display` usam Plus Jakarta Sans local (WOFF2, licença OFL). `static/arrival-electric.css` adapta o login reutilizando esses tokens, sem duplicar paleta. O seletor `electric_view` em `base.html` limita a migração: responsável e demais rotas de professor/direção preservam `campus-bright.css`. Autorização e autenticação permanecem iguais.
+- **Token ownership/runtime mapping:** modelo B, CSS é canônico. `static/campus-electric.css` é o owner do aluno e de todas as páginas existentes de professor/direção. `--electric-blue` mapeia `colors.primary`; `--electric-cyan` e o alias `--campus-accent` mapeiam `colors.secondary`; painel/texto/linha mapeiam `colors.surface`, `on-background`, `outline`; `--font-body`/`--font-display` usam Plus Jakarta Sans local (WOFF2, licença OFL). `arrival-electric.css` adapta o login; `staff-reference.css` compõe painéis; `staff-modules.css` adapta listas, edição, formulários e diálogos sobre os mesmos tokens. `electric_view` cobre aluno, professor e admin; responsável preserva o visual anterior. Autorização e autenticação permanecem iguais.
 
 ## Colors
 
@@ -142,6 +142,16 @@ Em 12/10/2026, o usuário rejeitou a adaptação anterior e indicou o chat **Cri
 O login agora usa um quadro central de até 1120px, com foto à esquerda (44%) e credenciais à direita (56%), borda elétrica e altura natural. A fotografia noturna já existente `campus-login-cinematic-v3.webp` é reutilizada, sem geração/edição de imagem. A foto não ocupa mais a maior parte da janela. Regras antigas da grade inferior e do pseudo-elemento da credencial foram neutralizadas para evitar sobreposição e superfícies acidentais. Ícones de perfil são SVG semântico decorativo, com rótulos textuais preservados. No celular, o quadro vira coluna e o formulário continua na rolagem da página.
 
 Capturas reais de navegador isolado, com dados locais descartáveis, foram comparadas às referências; não são o cartaz usado como tela. A ausência de busca global, locais das aulas, tendências e SSO do cartaz continua honesta: não foram adicionados controles fictícios.
+
+### Rollout integral de professor/direção e login em tela cheia
+
+Após esclarecer o escopo, o usuário confirmou **todas as páginas existentes dos dois perfis**. As pranchas `professor-todas-telas-v2.png` e `diretor-todas-telas-v2.png` passam a orientar os módulos completos: sidebar persistente, navegação inferior no celular, superfícies azul-noite, ações cobalto, status semânticos, listas compactas e formulários escuros. Os painéis individuais preservam a composição já implementada. Nenhum número, foto de pessoa ou gráfico ilustrativo vira dado real.
+
+Professor: painel, turmas, notas, chamada, diário, exercícios, mensagens, avisos, estágios, calendário e notificações. Direção: painel, usuários, estrutura e suas seis abas, turmas, secretaria, coordenação, diário, histórico, relatórios, períodos, calendário, mensagens, notificações e configurações. Conta/perfil reutiliza foto, iniciais e diálogos existentes; não foram inventadas preferências, SMS, autenticador ou nova rota de perfil. Estágios conserva a gestão de oportunidades existente, não cria acompanhamento de horas ilustrado no mockup.
+
+Login ocupa toda a largura e, no mínimo, a altura da janela, sem margens, borda ou raio externos. Mantém proporção 44/56 no desktop e coluna no celular, com rolagem natural em telas baixas. O foco de usuário/senha fica somente no contorno externo `field-shell:focus-within`; não há retângulo interno azul. Alto contraste conserva outline externo do sistema.
+
+Os formulários de linha, chamada e publicações do professor usam `campus-actions.js` para confirmação por diálogo nativo do app, validação inline, busca com limpar e envio único. A troca de `alert/confirm` do navegador não altera as regras de salvar, substituir ou arquivar. Diretor/P0/operações preservam seus owners e consequências de negócio existentes, apenas recebem o tema compartilhado.
 
 ### Forms and overlays
 

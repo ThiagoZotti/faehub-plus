@@ -80,17 +80,17 @@ body.arrival-electric{margin:0;background:var(--campus-ink);color:var(--campus-t
 @media(prefers-reduced-motion:reduce){.arrival-electric *,.arrival-electric *::before,.arrival-electric *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media(forced-colors:active){.arrival-electric .credential-tabs button[aria-pressed=true]{outline:2px solid Highlight}.arrival-electric .arrival-story h1 em{-webkit-text-fill-color:CanvasText}.arrival-electric .arrival-scene{display:none}}
 
-/* Login composition repair: a contained frame, not a full-screen split.
+/* Login composition repair: full-window split without outer margins.
    Override obsolete pulse grid positioning explicitly to prevent text collisions. */
-body.arrival-electric{display:grid;place-items:center;padding:32px;min-height:100dvh;background:radial-gradient(ellipse at 50% 10%,#132b5a55,transparent 65%),var(--campus-ink);overflow-x:visible}
-.arrival-frame{position:relative;width:min(1120px,100%);border:1px solid #2a4c87;border-radius:20px;background:var(--campus-ink);overflow:hidden;box-shadow:0 0 0 1px #144bff22,0 0 35px #144bff20,0 24px 70px #0005}
+body.arrival-electric{display:block;padding:0;min-height:100dvh;background:var(--campus-ink);overflow-x:visible}
+.arrival-frame{position:relative;width:100%;min-height:100dvh;border:0;border-radius:0;background:var(--campus-ink);overflow:hidden;box-shadow:none}
 .arrival-electric .arrival-scene{inset:0 56% 0 0}
 .arrival-electric .arrival-campus{object-position:30% 50%;filter:saturate(1) brightness(.85)}
 .arrival-electric .arrival-atmosphere{background:linear-gradient(0deg,#070d24ac,transparent 50%),linear-gradient(90deg,#070d246b,#070d2415)}
 .arrival-electric .arrival-header{right:56%;height:auto;padding:30px;pointer-events:none}
 .arrival-electric .arrival-brand{pointer-events:auto;font-size:27px}
 .arrival-electric .arrival-options,.arrival-electric .arrival-location{display:none}
-.arrival-electric .arrival-main{grid-template-columns:minmax(0,44%) minmax(0,56%);min-height:700px}
+.arrival-electric .arrival-main{grid-template-columns:minmax(0,44%) minmax(0,56%);min-height:100dvh}
 .arrival-electric .arrival-story{position:relative;padding:130px 36px 45px;justify-content:center;gap:0;min-height:0}
 .arrival-electric .arrival-story h1{font-size:clamp(42px,4.5vw,66px);text-transform:uppercase;letter-spacing:-.045em;margin:20px 0 18px;max-width:9ch}
 .arrival-electric .arrival-story>p{font-size:11px;letter-spacing:.08em;line-height:1.8;max-width:30ch}
@@ -114,6 +114,9 @@ body.arrival-electric{display:grid;place-items:center;padding:32px;min-height:10
 .arrival-electric .credential-profile-hint{min-height:32px;margin:14px 0 10px}
 .arrival-electric .arrival-footer{display:none}
 .arrival-electric.light-mode .arrival-campus{filter:saturate(1) brightness(.85)}
-@media(max-width:960px){body.arrival-electric{padding:20px}.arrival-electric .credential-wrap{padding:35px 28px}.arrival-electric .arrival-story{padding-inline:28px}.arrival-electric .credential-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.arrival-electric .credential-tabs button{flex-direction:row;gap:8px;min-height:60px}}
-@media(max-width:760px){body.arrival-electric{padding:16px;display:block}.arrival-frame{margin:auto;border-radius:16px}.arrival-electric .arrival-main{display:block;min-height:0}.arrival-electric .arrival-scene{inset:0 0 auto;height:305px}.arrival-electric .arrival-header{right:0;padding:22px}.arrival-electric .arrival-story{min-height:305px;padding:95px 26px 25px}.arrival-electric .arrival-story h1{font-size:42px;margin:16px 0 12px}.arrival-electric .arrival-pulse{display:none}.arrival-electric .credential-wrap{padding:28px 24px 34px;border-left:0;border-top:1px solid var(--campus-line)}.arrival-electric .credential-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.arrival-electric .credential-heading h3{font-size:24px}}
-@media(max-width:380px){body.arrival-electric{padding:10px}.arrival-electric .credential-wrap{padding-inline:18px}.arrival-electric .arrival-brand{font-size:23px}.arrival-electric .arrival-story{padding-inline:22px}}
+/* Focus belongs to the whole field, not a second rectangle inside the input. */
+.arrival-electric .field-shell input:is(:focus,:focus-visible){outline:none;box-shadow:none}
+@media(forced-colors:active){.arrival-electric .field-shell:focus-within{outline:2px solid Highlight;outline-offset:2px}}
+@media(max-width:960px){.arrival-electric .credential-wrap{padding:35px 28px}.arrival-electric .arrival-story{padding-inline:28px}.arrival-electric .credential-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.arrival-electric .credential-tabs button{flex-direction:row;gap:8px;min-height:60px}}
+@media(max-width:760px){.arrival-electric .arrival-main{display:block;min-height:100dvh}.arrival-electric .arrival-scene{inset:0 0 auto;height:305px}.arrival-electric .arrival-header{right:0;padding:22px}.arrival-electric .arrival-story{min-height:305px;padding:95px 26px 25px}.arrival-electric .arrival-story h1{font-size:42px;margin:16px 0 12px}.arrival-electric .arrival-pulse{display:none}.arrival-electric .credential-wrap{padding:28px 24px 34px;border-left:0;border-top:1px solid var(--campus-line)}.arrival-electric .credential-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.arrival-electric .credential-heading h3{font-size:24px}}
+@media(max-width:380px){.arrival-electric .credential-wrap{padding-inline:18px}.arrival-electric .arrival-brand{font-size:23px}.arrival-electric .arrival-story{padding-inline:22px}}

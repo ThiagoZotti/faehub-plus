@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% set electric_view = role == 'aluno' or (role in ['professor','admin'] and current_view == 'painel') %}
+{% set electric_view = role in ['aluno','professor','admin'] %}
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='campus-bright.css') }}">
 {% if electric_view %}<link rel="stylesheet" href="{{ url_for('static', filename='campus-electric.css', v=3) }}">{% endif %}
 {% if role in ['professor','admin'] and current_view == 'painel' %}<link rel="stylesheet" href="{{ url_for('static', filename='staff-reference.css', v=1) }}">{% endif %}
+{% if role in ['professor','admin'] %}<link rel="stylesheet" href="{{ url_for('static', filename='staff-modules.css', v=1) }}"><script src="{{ url_for('static', filename='campus-actions.js', v=1) }}"></script>{% endif %}
 {% endif %}
 </head>
 <body class="role-{{ role }}{{ ' campus-shell' if role in ['aluno', 'professor', 'admin', 'responsavel'] else '' }}{{ ' campus-electric' if electric_view else '' }}{{ (' view-' ~ current_view) if current_view else '' }}">

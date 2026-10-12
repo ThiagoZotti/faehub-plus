@@ -6,7 +6,7 @@
 - Locale: `pt-BR`; fuso: `America/Sao_Paulo`; calendário gregoriano.
 - Meta de acessibilidade: WCAG 2.2 AA.
 - Fontes de verdade: `ROADMAP.md`, autorização em `app.py`/`director.py`, dados em `database.py`/`p1_operations.py` e migrações em `supabase/migrations/`.
-- Direção visual canônica: `DESIGN.md`; `static/campus-electric.css` define o tema forte do aluno e dos painéis iniciais de professor/direção. `static/arrival-electric.css` adapta o login com os mesmos tokens. Responsável e demais rotas de professor/direção mantêm `campus-bright.css`; ativação/recuperação continuam intactas. A logo aprovada é `static/logo-faehub.webp`.
+- Direção visual canônica: `DESIGN.md`; `campus-electric.css` cobre aluno, professor e direção. `staff-modules.css` adapta todos os módulos docentes/administrativos; `staff-reference.css` compõe seus painéis. `arrival-electric.css` adapta o login em tela cheia. Responsável mantém `campus-bright.css`; ativação/recuperação continuam intactas. A logo aprovada é `static/logo-faehub.webp`.
 
 ## Modelo de permissão
 
@@ -120,6 +120,14 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 - Revisão real em navegador isolado: três telas em 1440, 900, 390 e 320px; nenhuma largura de documento excedeu a janela. Também foram conferidos seleção de perfil, máscara/revelação, erro de login vazio e Escape em menu/foto. Banco e perfis usados são descartáveis, sem acesso ao Supabase de produção.
 
 ## Feedback e resiliência
+
+### Escopo integral confirmado em 12/10/2026
+
+- A limitação anterior de três telas foi revogada por confirmação explícita do usuário: todas as páginas existentes de professor/direção recebem o tema e a navegação Electric. Os testes percorrem as rotas principais e complementares dos dois perfis. Perfil mantém o menu e diálogos reais; imagens conceituais não autorizam inventar recursos.
+- Owners mantidos: `academic-core.js` na P0, `director.js` na gestão, `operations.js` em P1. `campus-actions.js` é o owner de confirmação/validação para as variantes docentes de linha, chamada e publicação; `teacher-workspace.js`/`teacher-studio.js` continuam donos das regras desses fluxos. Confirmações mantêm consequências e verbos explícitos, foco inicial em Cancelar, Escape e foco restaurado.
+- Validação docente usa `novalidate`, erro associado ao campo e preservação dos valores. Campos e tokens enviados ao servidor são os mesmos. Antes de substituir notas/chamada ou arquivar, a confirmação do app é obrigatória. Submit duplicado é bloqueado, rótulos reservam largura e BFCache restaura botões; timers de reenvio são cancelados ao sair.
+- Buscas de alunos e publicações têm limpar explícito com foco restaurado; filtro local continua restrito à lista já autorizada e não faz requisições remotas. Salvamento de uma linha continua avisando sobre outras alterações não salvas.
+- Login não possui limite de largura ou margem externa; permanece responsivo e naturalmente rolável. O foco no campo de senha é visível na caixa externa, não no input interno. Não se altera máscara, senha, CSRF, autenticação ou confirmação de entrada.
 
 - Mutações são pessimistas e retornam ao módulo somente após commit.
 - Tokens CSRF são específicos da sessão em todos os formulários, inclusive recuperação pública.
