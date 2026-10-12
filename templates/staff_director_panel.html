@@ -1,0 +1,24 @@
+{% include 'staff_hero.html' %}
+<section class="staff-stats staff-stats-four" aria-label="Panorama da escola">
+  <a href="{{ url_for('turmas') }}"><span class="staff-stat-icon">{{ icons['users']|safe }}</span><div><span>Alunos cadastrados</span><strong>{{ stats.students }}</strong><small>Lista acadêmica</small></div></a>
+  <a href="{{ url_for('usuarios') }}"><span class="staff-stat-icon">{{ icons['users']|safe }}</span><div><span>Contas ativas</span><strong>{{ stats.active }}</strong><small>de {{ stats.accounts }} contas</small></div></a>
+  <a href="{{ url_for('turmas') }}"><span class="staff-stat-icon">{{ icons['book']|safe }}</span><div><span>Professores ativos</span><strong>{{ stats.teachers }}</strong><small>Equipe cadastrada</small></div></a>
+  <a href="{{ url_for('turmas') }}"><span class="staff-stat-icon">{{ icons['layers']|safe }}</span><div><span>Turmas</span><strong>{{ stats.classes }}</strong><small>Turmas cadastradas</small></div></a>
+</section>
+<div class="staff-pair">
+  <section class="staff-pane"><header><h2>{{ icons['document']|safe }} Fila de atendimento</h2><a href="{{ url_for('relatorios') }}">Ver dados →</a></header>
+    <a class="staff-task-row staff-queue-violet" href="{{ url_for('diario') }}"><span class="staff-queue-icon">{{ icons['journal']|safe }}</span><div><strong>Diários para validar</strong><small>{{ p1_metrics.diaries_pending }} aguardando validação</small></div><b>›</b></a>
+    <a class="staff-task-row staff-queue-cyan" href="{{ url_for('secretaria') }}"><span class="staff-queue-icon">{{ icons['document']|safe }}</span><div><strong>Documentos em fila</strong><small>{{ p1_metrics.documents_pending }} solicitações em andamento</small></div><b>›</b></a>
+    <a class="staff-task-row staff-queue-green" href="{{ url_for('coordenacao') }}"><span class="staff-queue-icon">{{ icons['users']|safe }}</span><div><strong>Acompanhamentos abertos</strong><small>{{ p1_metrics.interventions_open }} planos em andamento</small></div><b>›</b></a>
+  </section>
+  <section class="staff-pane"><header><h2>{{ icons['calendar']|safe }} Calendário acadêmico</h2><a href="{{ url_for('calendario') }}">Ver calendário →</a></header>
+    {% for event in dashboard_events %}<a class="staff-event" href="{{ url_for('calendario') }}"><time datetime="{{ event.starts_at }}"><strong>{{ event.starts_at[8:10] }}</strong><span>{{ ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'][event.starts_at[5:7]|int-1] }}</span></time><div><h3>{{ event.title }}</h3><p>{{ event.starts_at|local_datetime }} · {{ event.location or 'Local a confirmar' }}</p></div><b>›</b></a>{% else %}<div class="staff-empty">Nenhum evento futuro publicado. Novas datas aparecerão aqui quando forem cadastradas.</div>{% endfor %}
+  </section>
+</div>
+<div class="staff-director-bottom">
+  <section class="staff-pane"><header><h2>{{ icons['chart']|safe }} Panorama das turmas</h2><a href="{{ url_for('turmas') }}">Ver todas →</a></header>
+    <div class="staff-table-scroll" tabindex="0" role="region" aria-label="Panorama das turmas; role horizontalmente em telas pequenas"><table class="staff-data-table"><thead><tr><th scope="col">Turma</th><th scope="col">Alunos</th><th scope="col">Equipe</th><th scope="col">Vínculos</th></tr></thead><tbody>{% for group in classes %}{% set team=assignments|selectattr('class_name','equalto',group.name)|list %}<tr><th scope="row"><a href="{{ url_for('turmas') }}">{{ group.name }}</a></th><td>{{ group.count }}</td><td>{{ team|map(attribute='name')|unique|join(', ') if team else 'Sem professor vinculado' }}</td><td><span class="staff-status {{ 'is-warning' if not team }}">{{ team|length }} vínculos</span></td></tr>{% else %}<tr><td colspan="4">Nenhuma turma cadastrada.</td></tr>{% endfor %}</tbody></table></div>
+  </section>
+  <aside class="staff-pane staff-management"><span class="staff-management-icon" aria-hidden="true">{{ icons['chart']|safe }}</span><h2>Gestão com<br>mais perspectiva.</h2><p>Dados organizados para decisões que fortalecem a escola.</p><a class="staff-primary-action" href="{{ url_for('usuarios') }}">Gerenciar comunidade</a><a class="staff-outline-action" href="{{ url_for('relatorios') }}">Ver relatórios</a></aside>
+</div>
+<p class="staff-muted-note">Dados dos cadastros e registros salvos. Sem percentuais ou tendências ilustrativos.</p>

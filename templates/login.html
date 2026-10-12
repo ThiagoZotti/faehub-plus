@@ -11,11 +11,12 @@
   <link rel="stylesheet" href="{{ url_for('static',filename='arrival.css',v=3) }}">
   <link rel="stylesheet" href="{{ url_for('static',filename='p1/login-p1.css',v=2) }}">
   <link rel="stylesheet" href="{{ url_for('static',filename='campus-electric.css',v=3) }}">
-  <link rel="stylesheet" href="{{ url_for('static',filename='arrival-electric.css',v=1) }}">
+  <link rel="stylesheet" href="{{ url_for('static',filename='arrival-electric.css',v=2) }}">
 </head>
 <body class="arrival-electric">
+<div class="arrival-frame">
   <div class="arrival-scene" aria-hidden="true">
-    <img class="arrival-campus" src="{{ url_for('static',filename='faehub-login-reference.webp',v=2) }}" alt="" width="785" height="982" fetchpriority="high" decoding="async">
+    <img class="arrival-campus" src="{{ url_for('static',filename='campus-login-cinematic-v3.webp') }}" alt="" width="1672" height="941" fetchpriority="high" decoding="async">
     <div class="arrival-atmosphere"></div><div class="arrival-clouds"></div><div class="arrival-light"></div><div class="arrival-reflection"></div><div class="arrival-grain"></div>
   </div>
   <header class="arrival-header">
@@ -35,7 +36,7 @@
       <article class="credential" id="credential"><div class="credential-glint" aria-hidden="true"></div>
         <header class="credential-header"><div class="credential-logo"><img src="{{ url_for('static',filename='logo-faehub.webp') }}" width="48" height="48" alt="Logo FaeHub+"></div><div><small>PORTAL ACADÊMICO</small><h2>FaeHub<em>+</em></h2></div><span class="credential-status" title="Conexão segura">●</span></header>
         <div class="credential-heading"><span class="login-wordmark"><img class="login-brand-symbol" src="{{ url_for('static',filename='logo-faehub.webp') }}" width="52" height="52" alt="FaeHub+"></span><h3>Acesse sua conta.</h3><p>Escolha seu perfil e entre no seu espaço.</p></div>
-        <div class="credential-tabs" role="group" aria-label="Perfil de acesso"><button type="button" data-role="diretor" aria-pressed="false"><span aria-hidden="true">◆</span><b>Diretor</b></button><button type="button" data-role="professor" aria-pressed="false"><span aria-hidden="true">▰</span><b>Professor</b></button><button type="button" data-role="aluno" aria-pressed="true"><span aria-hidden="true">◉</span><b>Aluno</b></button><button type="button" data-role="responsavel" aria-pressed="false"><span aria-hidden="true">◇</span><b>Responsável</b></button></div>
+        <div class="credential-tabs" role="group" aria-label="Perfil de acesso"><button type="button" data-role="aluno" aria-pressed="true"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m2 8 10-5 10 5-10 5L2 8Zm4 2v7c4 3 8 3 12 0v-7M22 8v7" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><b>Aluno</b></button><button type="button" data-role="professor" aria-pressed="false"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M4 21v-2a8 8 0 0 1 16 0v2H4Z" stroke="currentColor" stroke-width="1.6"/></svg></span><b>Professor</b></button><button type="button" data-role="diretor" aria-pressed="false"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m3 8 9-5 9 5H3ZM3 21h18M5 10v8m5-8v8m4-8v8m5-8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Diretor</b></button><button type="button" data-role="responsavel" aria-pressed="false"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="9" r="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M2 21v-3a6 6 0 0 1 12 0v3m1-6a5 5 0 0 1 7 4v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><b>Responsável</b></button></div>
         <p class="credential-profile-hint"><i></i><span id="roleHint">Seu espaço de aprendizagem e evolução.</span></p>
         <form id="arrivalForm" novalidate method="post" action="{{ url_for('entrar') }}" aria-describedby="arrivalError">
           <input type="hidden" name="token" value="{{ token }}"><label for="usuario">E-mail ou usuário</label><div class="field-shell"><span aria-hidden="true">◎</span><input id="usuario" name="usuario" value="{{ username }}" autocomplete="username" required maxlength="254" placeholder="Digite seu e-mail ou usuário"></div>
@@ -51,5 +52,5 @@
     </aside>
   </main>
   <footer class="arrival-footer"><span>ETESC · EDUCAÇÃO, TECNOLOGIA E FUTURO</span><span>Santa Cruz · RJ</span></footer>
-  <script src="{{ url_for('static',filename='arrival.js') }}"></script>
+  </div><script src="{{ url_for('static',filename='arrival.js') }}"></script>
 </body></html>

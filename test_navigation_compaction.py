@@ -126,7 +126,9 @@ class NavigationCompactionTests(unittest.TestCase):
         teacher = self.client.get('/painel').get_data(as_text=True)
         self.assertIn('campus-electric.css', teacher)
         self.assertIn('class="electric-sidebar"', teacher)
-        self.assertIn('class="electric-teacher-stats"', teacher)
+        self.assertIn('class="staff-stats"', teacher)
+        self.assertIn('staff-reference.css', teacher)
+        self.assertIn('Minhas turmas', teacher)
         for route in ('/turmas','/notas','/chamada','/diario','/exercicios','/avisos'):
             with self.subTest(route=route):
                 other = self.client.get(route).get_data(as_text=True)

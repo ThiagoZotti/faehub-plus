@@ -111,6 +111,14 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 - Números do painel vêm de `teacher_overview` e `director_section`/`p1_metrics`; ausência de aulas ou vínculos conserva o estado vazio verdadeiro. Atalhos conduzem às operações existentes; não apresentam ações fictícias.
 - Impressões, e-mails, convites e recuperação não são redesenhados. A auditoria automatizada verifica a ausência do tema nas rotas fora do escopo; não substitui inspeção visual no navegador.
 
+### Reparação visual orientada aos novos mockups
+
+- Referências: `docs/mockups/professor-v1.png` e `diretor-v1.png`, localizadas no chat solicitado. Composição dos dois painéis em `staff-reference.css`, sem estender o tema às outras rotas.
+- Login conserva o mesmo POST, CSRF, nomes/IDs e confirmação de entrada. O quadro tem largura máxima e altura natural, e o texto inferior não reutiliza posicionamento de grade antigo. Os SVGs dos perfis não dependem de sessão autenticada.
+- `teacher_overview.class_summaries` agrupa somente as turmas já autorizadas e conta a lista correspondente, sem exibir matrículas de outra turma. A direção usa `list_calendar_events('admin')`, limita a prévia a dois eventos de hoje em diante (America/Sao_Paulo) e mantém link para o calendário completo.
+- Valores, nomes, horários e lugares fictícios dos mockups não são gravados nem exibidos como reais. Dias sem evento preservam estado vazio. A tabela informa quantidade de vínculos, não uma certificação de completude.
+- Revisão real em navegador isolado: três telas em 1440, 900, 390 e 320px; nenhuma largura de documento excedeu a janela. Também foram conferidos seleção de perfil, máscara/revelação, erro de login vazio e Escape em menu/foto. Banco e perfis usados são descartáveis, sem acesso ao Supabase de produção.
+
 ## Feedback e resiliência
 
 - Mutações são pessimistas e retornam ao módulo somente após commit.

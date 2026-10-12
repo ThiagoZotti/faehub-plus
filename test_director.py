@@ -40,6 +40,19 @@ class DirectorTests(unittest.TestCase):
         self.assertEqual(self.client.get('/usuarios').status_code,403)
         self.assertEqual(self.client.get('/relatorios?export=grades').status_code,403)
 
+    def test_dashboard_calendar_and_class_panorama_use_saved_records(self):
+        events=[dict(title='Evento futuro de teste',starts_at='2099-10-15T14:00',ends_at='2099-10-15T17:00',location='Sala de testes'),
+                dict(title='Evento passado oculto',starts_at='2000-01-01T14:00',ends_at='2000-01-01T17:00',location='Sala antiga')]
+        with patch('director.operations.list_calendar_events',return_value=events) as listing:
+            response=self.client.get('/painel')
+        self.assertEqual(response.status_code,200)
+        listing.assert_called_once_with('admin')
+        html=response.get_data(as_text=True)
+        self.assertIn('Evento futuro de teste',html)
+        self.assertNotIn('Evento passado oculto',html)
+        self.assertIn('Panorama das turmas',html)
+        self.assertIn('staff-reference.css',html)
+
     def test_create_student_and_login_pages(self):
         sid=ROSTER[0]['id']
         # This test exercises enrollment with a director already authorized;

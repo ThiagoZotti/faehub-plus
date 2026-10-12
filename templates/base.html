@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='campus-system.css', v=2) }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='campus-bright.css') }}">
 {% if electric_view %}<link rel="stylesheet" href="{{ url_for('static', filename='campus-electric.css', v=3) }}">{% endif %}
+{% if role in ['professor','admin'] and current_view == 'painel' %}<link rel="stylesheet" href="{{ url_for('static', filename='staff-reference.css', v=1) }}">{% endif %}
 {% endif %}
 </head>
 <body class="role-{{ role }}{{ ' campus-shell' if role in ['aluno', 'professor', 'admin', 'responsavel'] else '' }}{{ ' campus-electric' if electric_view else '' }}{{ (' view-' ~ current_view) if current_view else '' }}">

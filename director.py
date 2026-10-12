@@ -2,7 +2,8 @@
 import csv
 import io
 import secrets
-from datetime import date
+from datetime import date, datetime
+from dashboard import CAMPUS_TZ
 from flask import request, session, render_template, redirect, url_for, flash, Response
 from werkzeug.security import generate_password_hash
 import database as db
@@ -216,6 +217,9 @@ def manage(section, roster, subjects):
                            classes=class_rows,assignments=assignments,subjects=subjects,stats=stats,settings=settings(),
                            logs=db.recent_logs(50) if section=='relatorios' else [],records=records,grades=grades,start=start,end=end,
                            p1_metrics=operations.p1_metrics() if section in ('painel','relatorios') else {},
+                           dashboard_events=[event for event in operations.list_calendar_events('admin')
+                                             if event['ends_at'][:10] >= datetime.now(CAMPUS_TZ).date().isoformat()][:2]
+                                             if section=='painel' else [],
                            identities=enrollment.invitation_directory() if section=='usuarios' else {},
                            system_owner=ownership.owner_state() if section=='usuarios' else None,
                            mail_configured=enrollment.mail_configured(), demos_enabled=enrollment.demos_enabled(),

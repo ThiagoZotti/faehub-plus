@@ -1,0 +1,31 @@
+<main class="teacher-campus staff-dashboard">
+{% include 'staff_hero.html' %}
+<section class="staff-stats" aria-label="Resumo do professor">
+  <a href="{{ url_for('turmas') }}"><span class="staff-stat-icon">{{ icons['users']|safe }}</span><div><span>Turmas vinculadas</span><strong>{{ overview.classes|length }}</strong><small>{{ overview.assignments|length }} vínculos de disciplina</small></div></a>
+  <a href="{{ url_for('exercicios') }}"><span class="staff-stat-icon">{{ icons['document']|safe }}</span><div><span>Entregas para corrigir</span><strong>{{ overview.pending_reviews }}</strong><small>Nas suas atividades</small></div></a>
+  <a href="{{ url_for('turmas') }}"><span class="staff-stat-icon">{{ icons['book']|safe }}</span><div><span>Alunos nas suas turmas</span><strong>{{ overview.student_count }}</strong><small>Lista acadêmica cadastrada</small></div></a>
+</section>
+<div class="staff-pair staff-teacher-command">
+  <section class="staff-next-class"><span class="staff-kicker">{{ 'EM AULA AGORA' if overview.lessons and overview.lessons[0].live else 'PRÓXIMA AULA' }}</span>
+    {% if overview.lessons %}{% set lesson=overview.lessons[0] %}<h2>{{ lesson.subject }}</h2><p class="staff-class-time">{{ icons['clock']|safe }} {{ lesson.time }} — {{ lesson.end }}</p><p>Turma {{ lesson.class_name }} · {{ lesson.day }}, {{ lesson.date }}</p>{% else %}<h2>{{ 'Nenhuma aula prevista' if overview.assignments else 'Seu espaço está pronto.' }}</h2><p>{{ 'Confira seus vínculos de turma e disciplina.' if overview.assignments else 'A direção precisa cadastrar suas turmas e disciplinas.' }}</p>{% endif %}
+    {% if '3110' in overview.classes %}<a class="staff-white-action" href="{{ url_for('chamada') }}">Abrir chamada da 3110 <b>→</b></a>{% endif %}
+  </section>
+  <section class="staff-pane"><header><h2>Na sua mesa</h2></header>
+    <a class="staff-task-row" href="{{ url_for('exercicios') }}">{{ icons['document']|safe }}<span><strong>{{ overview.pending_reviews }}</strong> entregas aguardando correção</span><b>›</b></a>
+    <a class="staff-task-row" href="{{ url_for('notas') }}">{{ icons['chart']|safe }}<span><strong>{{ overview.grade_count }}</strong> lançamentos de notas salvos</span><b>›</b></a>
+    <p class="staff-muted-note">{{ overview.submission_count }} entregas recebidas nas suas {{ overview.exercise_count }} atividades.</p>
+    <a class="staff-outline-action" href="{{ url_for('exercicios') }}">Ir para o estúdio →</a>
+  </section>
+</div>
+<div class="staff-pair">
+  <section class="staff-pane"><header><h2>{{ icons['users']|safe }} Minhas turmas</h2><a href="{{ url_for('turmas') }}">Ver todas →</a></header>
+    <div class="staff-table-scroll" tabindex="0" role="region" aria-label="Turmas vinculadas; role horizontalmente em telas pequenas"><table class="staff-data-table"><thead><tr><th scope="col">Turma</th><th scope="col">Componentes</th><th scope="col">Alunos</th><th scope="col">Ação</th></tr></thead><tbody>
+    {% for group in overview.class_summaries %}<tr><th scope="row"><span class="staff-class-tag">{{ group.name }}</span></th><td>{{ group.subjects|join(', ') }}</td><td>{{ group.student_count }}</td><td><a href="{{ url_for('turmas') }}" aria-label="Consultar turma {{ group.name }}">Abrir →</a></td></tr>{% else %}<tr><td colspan="4">Nenhum vínculo cadastrado para esta conta.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  <section class="staff-pane"><header><h2>{{ icons['clock']|safe }} Próximas aulas</h2><a href="{{ url_for('calendario') }}">Ver calendário →</a></header>
+    <div class="staff-lesson-list">{% for lesson in overview.lessons %}<article><time>{{ lesson.time }}</time><i aria-hidden="true"></i><div><strong>{{ lesson.subject }}</strong><small>{{ lesson.day }} · {{ lesson.date }} · Turma {{ lesson.class_name }}</small></div></article>{% else %}<p>Nenhuma aula prevista nos próximos dias.</p>{% endfor %}</div>
+  </section>
+</div>
+<nav class="staff-quick-actions" aria-label="Ações do professor"><a href="{{ url_for('notas') }}">{{ icons['chart']|safe }}<span>Lançar notas<small>Registre e gerencie as avaliações</small></span><b>›</b></a><a href="{{ url_for('chamada') }}">{{ icons['users']|safe }}<span>Registrar frequência<small>Faça a chamada das suas turmas</small></span><b>›</b></a><a href="{{ url_for('exercicios') }}">{{ icons['document']|safe }}<span>Criar atividade<small>Envie materiais e defina prazos</small></span><b>›</b></a></nav>
+</main>

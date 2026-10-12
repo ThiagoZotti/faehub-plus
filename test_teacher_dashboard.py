@@ -22,6 +22,12 @@ class TeacherDashboardTests(unittest.TestCase):
         self.assertEqual(result['classes'],[])
         self.assertEqual(result['lessons'],[])
 
+    def test_class_summary_counts_only_students_in_assigned_classes(self):
+        result=teacher_overview('aline',[dict(class_name='3110',discipline='LP3')],SCHEDULE_3110,
+                                [dict(id='1',turma='3110'),dict(id='2',turma='3110'),dict(id='3',turma='2110')],
+                                [],[],[],[],datetime(2026,9,4,9,20,tzinfo=CAMPUS_TZ))
+        self.assertEqual(result['class_summaries'],[dict(name='3110',student_count=2,subjects=['LP3'])])
+
     def test_owned_submissions_only(self):
         result=self.overview([],exercises=[dict(id=1,teacher='aline'),dict(id=2,teacher='outro')],
                              submissions=[dict(exercise_id=1),dict(exercise_id=2)],

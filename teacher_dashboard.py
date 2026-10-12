@@ -26,6 +26,8 @@ def teacher_overview(username, assignments, schedule, roster, exercises, submiss
                                 date=day.strftime('%d/%m'),day='Hoje' if offset==0 else ('Amanhã' if offset==1 else DAY_NAMES[day.weekday()]),
                                 live=start<=now<end))
     return dict(assignments=assignments,classes=classes,student_count=len(students),
+                class_summaries=[dict(name=c,student_count=sum(s['turma']==c for s in students),
+                                     subjects=[a['discipline'] for a in assignments if a['class_name']==c]) for c in classes],
                 lessons=lessons[:4],exercise_count=len(owned),submission_count=len(received),
                 pending_reviews=sum(not s.get('reviewed_at') or s.get('answer_snapshot')!=s.get('answer') for s in received),
                 grade_count=len(saved),unread=sum(m['recipient']==username and not m['is_read'] for m in messages),

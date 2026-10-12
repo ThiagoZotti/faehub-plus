@@ -79,3 +79,41 @@ body.arrival-electric{margin:0;background:var(--campus-ink);color:var(--campus-t
 /* Accessibility preferences override legacy decorative transforms. */
 @media(prefers-reduced-motion:reduce){.arrival-electric *,.arrival-electric *::before,.arrival-electric *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media(forced-colors:active){.arrival-electric .credential-tabs button[aria-pressed=true]{outline:2px solid Highlight}.arrival-electric .arrival-story h1 em{-webkit-text-fill-color:CanvasText}.arrival-electric .arrival-scene{display:none}}
+
+/* Login composition repair: a contained frame, not a full-screen split.
+   Override obsolete pulse grid positioning explicitly to prevent text collisions. */
+body.arrival-electric{display:grid;place-items:center;padding:32px;min-height:100dvh;background:radial-gradient(ellipse at 50% 10%,#132b5a55,transparent 65%),var(--campus-ink);overflow-x:visible}
+.arrival-frame{position:relative;width:min(1120px,100%);border:1px solid #2a4c87;border-radius:20px;background:var(--campus-ink);overflow:hidden;box-shadow:0 0 0 1px #144bff22,0 0 35px #144bff20,0 24px 70px #0005}
+.arrival-electric .arrival-scene{inset:0 56% 0 0}
+.arrival-electric .arrival-campus{object-position:30% 50%;filter:saturate(1) brightness(.85)}
+.arrival-electric .arrival-atmosphere{background:linear-gradient(0deg,#070d24ac,transparent 50%),linear-gradient(90deg,#070d246b,#070d2415)}
+.arrival-electric .arrival-header{right:56%;height:auto;padding:30px;pointer-events:none}
+.arrival-electric .arrival-brand{pointer-events:auto;font-size:27px}
+.arrival-electric .arrival-options,.arrival-electric .arrival-location{display:none}
+.arrival-electric .arrival-main{grid-template-columns:minmax(0,44%) minmax(0,56%);min-height:700px}
+.arrival-electric .arrival-story{position:relative;padding:130px 36px 45px;justify-content:center;gap:0;min-height:0}
+.arrival-electric .arrival-story h1{font-size:clamp(42px,4.5vw,66px);text-transform:uppercase;letter-spacing:-.045em;margin:20px 0 18px;max-width:9ch}
+.arrival-electric .arrival-story>p{font-size:11px;letter-spacing:.08em;line-height:1.8;max-width:30ch}
+.arrival-electric .arrival-eyebrow{display:none}
+.arrival-electric .arrival-pulse{display:flex;align-items:stretch;gap:14px;margin-top:36px;max-width:100%;width:auto;background:none;backdrop-filter:none;box-shadow:none;border-radius:0;padding:0}
+.arrival-electric .arrival-pulse>span{display:flex;flex-direction:column;gap:5px;border:0;padding:0;min-width:0;grid-template-columns:none}
+.arrival-electric .arrival-pulse :is(b,small,strong){display:block;grid-column:auto;grid-row:auto;margin:0;white-space:normal;line-height:1.7;font-weight:500;font-size:11px;max-width:100%}
+.arrival-electric .arrival-pulse>span b{max-width:22ch;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--campus-text)}
+.arrival-electric .arrival-pulse>span small{color:var(--campus-muted)}
+.arrival-electric .arrival-pulse>strong{color:var(--campus-muted);padding-top:14px;border-top:2px solid var(--electric-lime);width:max-content;max-width:100%}
+.arrival-electric .credential-wrap{padding:40px 44px;min-height:0;border-left:1px solid var(--campus-line);background:var(--campus-ink)}
+.arrival-electric .credential{max-width:470px;background:none}
+.arrival-electric .credential::before{display:none}
+.arrival-electric .credential-heading{margin:0 0 23px}
+.arrival-electric .credential-heading .login-wordmark{display:none}
+.arrival-electric .credential-heading h3{font-size:26px}
+.arrival-electric .credential-heading p{font-size:12px}
+.arrival-electric .credential-tabs button{min-height:76px;font-size:11px;border-radius:10px}
+.arrival-electric .credential-tabs button span{display:grid;place-items:center}
+.arrival-electric .credential-tabs svg{width:24px;height:24px}
+.arrival-electric .credential-profile-hint{min-height:32px;margin:14px 0 10px}
+.arrival-electric .arrival-footer{display:none}
+.arrival-electric.light-mode .arrival-campus{filter:saturate(1) brightness(.85)}
+@media(max-width:960px){body.arrival-electric{padding:20px}.arrival-electric .credential-wrap{padding:35px 28px}.arrival-electric .arrival-story{padding-inline:28px}.arrival-electric .credential-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.arrival-electric .credential-tabs button{flex-direction:row;gap:8px;min-height:60px}}
+@media(max-width:760px){body.arrival-electric{padding:16px;display:block}.arrival-frame{margin:auto;border-radius:16px}.arrival-electric .arrival-main{display:block;min-height:0}.arrival-electric .arrival-scene{inset:0 0 auto;height:305px}.arrival-electric .arrival-header{right:0;padding:22px}.arrival-electric .arrival-story{min-height:305px;padding:95px 26px 25px}.arrival-electric .arrival-story h1{font-size:42px;margin:16px 0 12px}.arrival-electric .arrival-pulse{display:none}.arrival-electric .credential-wrap{padding:28px 24px 34px;border-left:0;border-top:1px solid var(--campus-line)}.arrival-electric .credential-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.arrival-electric .credential-heading h3{font-size:24px}}
+@media(max-width:380px){body.arrival-electric{padding:10px}.arrival-electric .credential-wrap{padding-inline:18px}.arrival-electric .arrival-brand{font-size:23px}.arrival-electric .arrival-story{padding-inline:22px}}

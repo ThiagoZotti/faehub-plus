@@ -133,6 +133,16 @@ Professor recebe três métricas reais (turmas, entregas para corrigir e alunos 
 
 Somente esses dois painéis usam a sidebar Electric de todos os destinos autorizados e barra inferior abaixo de 760px; ao abrir outra tela docente/administrativa retorna o shell anterior. Essa transição visual é intencional para cumprir o escopo limitado, não significa migração integral. Os adaptadores comuns agora usam a classe `campus-electric`, ativada somente nas superfícies autorizadas; a variante do aluno conserva o resultado anterior.
 
+### Correção de fidelidade — referências do chat de mockups
+
+Em 12/10/2026, o usuário rejeitou a adaptação anterior e indicou o chat **Criar mockups para diretor e docente**. As referências detalhadas para os dois painéis passam a ser `docs/mockups/professor-v1.png` e `docs/mockups/diretor-v1.png`; as pranchas v2 completas são referências complementares, não autorização para alterar módulos fora das três telas já delimitadas.
+
+`staff-reference.css` é o adaptador de composição dos painéis, reutilizando os tokens Electric: faixa fotográfica diagonal no topo, métricas alinhadas em uma linha, bloco azul da próxima aula, tabelas comparativas e filas compactas. Professor exibe os estudantes apenas das turmas vinculadas. Direção mostra eventos publicados de hoje em diante e tabela das turmas com vínculos reais; não atribui “vínculos completos” ou tendências percentuais sem evidência.
+
+O login agora usa um quadro central de até 1120px, com foto à esquerda (44%) e credenciais à direita (56%), borda elétrica e altura natural. A fotografia noturna já existente `campus-login-cinematic-v3.webp` é reutilizada, sem geração/edição de imagem. A foto não ocupa mais a maior parte da janela. Regras antigas da grade inferior e do pseudo-elemento da credencial foram neutralizadas para evitar sobreposição e superfícies acidentais. Ícones de perfil são SVG semântico decorativo, com rótulos textuais preservados. No celular, o quadro vira coluna e o formulário continua na rolagem da página.
+
+Capturas reais de navegador isolado, com dados locais descartáveis, foram comparadas às referências; não são o cartaz usado como tela. A ausência de busca global, locais das aulas, tendências e SSO do cartaz continua honesta: não foram adicionados controles fictícios.
+
 ### Forms and overlays
 
 Campos têm rótulos persistentes. Seleção e data usam controles nativos aceitos pelo contrato de UX. Diálogos têm título, fechamento explícito, fundo modal e foco gerenciado pelo navegador. A confirmação de arquivamento nunca usa `window.confirm`.
