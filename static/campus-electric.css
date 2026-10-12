@@ -1,11 +1,11 @@
 /* Campus em movimento — identidade forte aprovada em 09/10/2026.
-   Owner do tema do aluno; a camada anterior mantém a estrutura dos módulos. */
+   Owner do aluno e dos painéis iniciais docente/direção; estrutura legada preservada. */
 @font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:400 800;font-display:swap;src:url("fonts/plus-jakarta-sans-latin.woff2") format("woff2")}
 :root{
   --font-body:"Plus Jakarta Sans","Segoe UI",Arial,sans-serif;--font-display:var(--font-body);
   --campus-ink:#070d24;--campus-panel:#111b36;--campus-panel-strong:#172747;
   --campus-text:#f5f7ff;--campus-muted:#b3c1dc;--campus-line:#2b3c63;
-  --campus-accent:#23ceff;--campus-accent-2:#a890ff;--electric-blue:#144bff;
+  --electric-cyan:#23ceff;--campus-accent:var(--electric-cyan);--campus-accent-2:#a890ff;--electric-blue:#144bff;
   --electric-violet:#975cff;--electric-lime:#c1ff35;--electric-red:#ff6f85;
   --campus-danger:var(--electric-red);--campus-shadow:0 14px 35px #02051666;
   --campus-nav-height:76px;--electric-sidebar-width:224px;
@@ -17,12 +17,12 @@ html{background:var(--campus-ink);color-scheme:dark;scrollbar-color:var(--scroll
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:var(--scroll-track)}::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border:2px solid var(--scroll-track);border-radius:8px}::-webkit-scrollbar-thumb:hover{background:var(--scroll-hover)}::-webkit-scrollbar-thumb:active{background:var(--campus-accent)}
 body.campus-shell{background:var(--campus-ink);color:var(--campus-text);--surface:var(--campus-panel);--text:var(--campus-text);--text-muted:var(--campus-muted);--text-soft:var(--campus-muted);--border:var(--campus-line);--soft-blue:var(--campus-panel-strong)}
 /* The old photographic fixed backdrop must not compete with the hero. */
-.role-aluno.campus-shell::before{background:radial-gradient(ellipse at 90% 0%,#144bff20,transparent 52%),var(--campus-ink)!important}
-.role-aluno.campus-shell .app__main{padding-left:var(--electric-sidebar-width);padding-top:var(--campus-nav-height)}
-.role-aluno.campus-shell .app__content{max-width:1700px;padding:26px 32px 48px;margin:auto}
-.role-aluno.campus-shell .campus-header{height:var(--campus-nav-height);padding:0 28px 0 18px;gap:24px;background:#080f26;border-color:var(--campus-line);box-shadow:0 2px 16px #01051950;flex-wrap:nowrap}
+.campus-electric.campus-shell::before{background:radial-gradient(ellipse at 90% 0%,#144bff20,transparent 52%),var(--campus-ink)!important}
+.campus-electric.campus-shell .app__main{padding-left:var(--electric-sidebar-width);padding-top:var(--campus-nav-height)}
+.campus-electric.campus-shell .app__content{max-width:1700px;padding:26px 32px 48px;margin:auto}
+.campus-electric.campus-shell .campus-header{height:var(--campus-nav-height);padding:0 28px 0 18px;gap:24px;background:#080f26;border-color:var(--campus-line);box-shadow:0 2px 16px #01051950;flex-wrap:nowrap}
 .campus-brand,.campus-brand:visited{color:var(--campus-text);flex:0 0 206px;font-size:25px;gap:8px;letter-spacing:-.055em}.campus-brand img{width:44px;height:44px}.campus-brand-hub,.campus-brand em{color:#5ab4ff}.campus-brand small{display:none}
-.role-aluno .campus-header>.campus-tabs,.role-aluno .campus-header>.campus-more,.role-aluno .campus-pager{display:none}
+.campus-electric .campus-header>.campus-tabs,.campus-electric .campus-header>.campus-more,.campus-electric .campus-pager{display:none}
 .electric-header-context{display:grid;gap:4px;flex:1;min-width:0}.electric-header-context>span{font-size:9px;letter-spacing:.14em;color:var(--campus-muted)}.electric-header-context strong{font-size:15px}
 .electric-header-actions{display:flex;gap:8px}.electric-header-actions>a{position:relative;display:grid;place-items:center;width:44px;height:44px;color:var(--campus-muted);border-radius:10px;text-decoration:none}.electric-header-actions svg{width:21px;height:21px}.electric-header-actions>a:hover{background:var(--campus-panel-strong);color:var(--campus-accent)}.electric-header-actions b{position:absolute;top:1px;right:0;border-radius:12px;background:var(--electric-red);color:#090e22;font-size:9px;padding:2px 5px}
 .campus-account-menu{margin-left:0;border-color:var(--campus-line)}.campus-account-menu .campus-account{max-width:none;border:0}.campus-account-menu .campus-account-copy strong{color:var(--campus-text);font-size:12px;max-width:150px}.campus-account-menu .campus-account-copy small{color:var(--campus-muted)}.campus-account-photo{background:#312858;color:#dfd6ff;border-color:#695493}.campus-account-chevron{color:var(--campus-muted)}
@@ -45,43 +45,43 @@ body.campus-shell{background:var(--campus-ink);color:var(--campus-text);--surfac
 .performance-ring{background:conic-gradient(from -90deg,transparent 0 var(--score-angle),#2a3458 var(--score-angle) 360deg),conic-gradient(from -90deg,var(--campus-accent),var(--electric-blue) calc(var(--score-angle)*.3),var(--electric-violet) calc(var(--score-angle)*.6),var(--electric-lime) var(--score-angle))}
 .dashboard-hero__campus::before{inset:0;width:100%;transform:none;clip-path:polygon(22% 0,23% 0,1% 100%,0 100%)}
 @media(max-width:540px){.dashboard-hero__campus::before{clip-path:none;width:100%;height:4px;transform:rotate(-4deg);transform-origin:right}}
-.role-aluno :is(.academic-kicker,.unified-kicker,.dm-kicker,.core-kicker,.unified-event time,.unified-message__meta span){color:var(--campus-accent)}
-.role-aluno :is(.dm-empty h2,.dm-empty-small strong,.profile-photo-dialog h2,.day-card h2,.lesson-block h3,.banner-stat strong,.mission-dialog h2){color:var(--campus-text)}
-.role-aluno :is(.dm-search>label,.unified-month-form label,.mission-dialog p,.mission-dialog small,.compose-dialog label,.dm-conversation__head small,.core-map label,.history-map label){color:var(--campus-muted)}
-.role-aluno :is(.dm-menu-popover,.dm-file-preview,.dm-reply-preview,.dm-bubble.is-deleted>div){background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line)}
-.role-aluno .dm-message-menu .dm-menu-popover button{color:var(--campus-text)}.role-aluno .dm-message-menu .dm-menu-popover button:hover{background:var(--campus-panel);color:var(--campus-accent)}
-.role-aluno :is(.unified-hero h1,.unified-panel__head h2,.dm-heading h1,.academic-heading h1){font-family:var(--font-display)}
-.role-aluno .record-day{background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line)}.role-aluno .record-day.presente{background:#164c45;color:#b5ffe6}.role-aluno .record-day.ausente{background:#542b43;color:#ffc5cd}.role-aluno .record-day[aria-pressed="true"]{outline:2px solid var(--campus-accent);outline-offset:2px}
-.role-aluno .grade-table tbody th{background:var(--campus-panel);color:var(--campus-text);border-color:var(--campus-line)}
-.role-aluno :is(.grade-table td strong,.grade-summary-icon,.academic-kicker,.unified-kicker,.sim-result strong){color:var(--campus-accent)}
-.role-aluno .grade-summary-icon{background:var(--campus-panel-strong)}
+.campus-electric :is(.academic-kicker,.unified-kicker,.dm-kicker,.core-kicker,.unified-event time,.unified-message__meta span){color:var(--campus-accent)}
+.campus-electric :is(.dm-empty h2,.dm-empty-small strong,.profile-photo-dialog h2,.day-card h2,.lesson-block h3,.banner-stat strong,.mission-dialog h2){color:var(--campus-text)}
+.campus-electric :is(.dm-search>label,.unified-month-form label,.mission-dialog p,.mission-dialog small,.compose-dialog label,.dm-conversation__head small,.core-map label,.history-map label){color:var(--campus-muted)}
+.campus-electric :is(.dm-menu-popover,.dm-file-preview,.dm-reply-preview,.dm-bubble.is-deleted>div){background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line)}
+.campus-electric .dm-message-menu .dm-menu-popover button{color:var(--campus-text)}.campus-electric .dm-message-menu .dm-menu-popover button:hover{background:var(--campus-panel);color:var(--campus-accent)}
+.campus-electric :is(.unified-hero h1,.unified-panel__head h2,.dm-heading h1,.academic-heading h1){font-family:var(--font-display)}
+.campus-electric .record-day{background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line)}.campus-electric .record-day.presente{background:#164c45;color:#b5ffe6}.campus-electric .record-day.ausente{background:#542b43;color:#ffc5cd}.campus-electric .record-day[aria-pressed="true"]{outline:2px solid var(--campus-accent);outline-offset:2px}
+.campus-electric .grade-table tbody th{background:var(--campus-panel);color:var(--campus-text);border-color:var(--campus-line)}
+.campus-electric :is(.grade-table td strong,.grade-summary-icon,.academic-kicker,.unified-kicker,.sim-result strong){color:var(--campus-accent)}
+.campus-electric .grade-summary-icon{background:var(--campus-panel-strong)}
 .student-dashboard .dashboard-pending svg{color:#96ffdd}
 ::-webkit-scrollbar-button{width:0;height:0}
 /* Same semantic surfaces on the student's sibling modules. */
 .academic,.unified-page,.ops,.core-map,.history-map,.dm-world{color:var(--campus-text);--muted:var(--campus-muted);--mint:var(--campus-accent);--unified-line:var(--campus-line);--unified-panel:var(--campus-panel);--ops-bg:var(--campus-ink);--ops-panel:var(--campus-panel);--ops-panel-2:var(--campus-panel-strong);--ops-line:var(--campus-line);--ops-text:var(--campus-text);--ops-muted:var(--campus-muted);--ops-cyan:var(--campus-accent);--core-ink:var(--campus-text);--core-muted:var(--campus-muted);--core-panel:var(--campus-panel);--core-line:var(--campus-line);--dm-line:var(--campus-line);--dm-panel:var(--campus-panel);--dm-panel-soft:var(--campus-panel-strong);--dm-text-soft:var(--campus-muted)}
-.role-aluno :is(.academic-heading h1,.unified-hero h1,.dm-heading h1,.core-hero h1,.history-map h1,.grade-table td,.grade-table th,.grade-summary strong,.grade-table .grade-subject){color:var(--campus-text)}
-.role-aluno :is(.academic-glass,.unified-panel,.unified-stats div,.ops-card,.ops-stat,.core-nav,.core-route,.core-ledger,.core-list,.core-create,.grade-summary,.grade-table-wrap,.grade-lab,.grade-table tbody td,.day-card,.mission-card,.dm-shell,.dm-sidebar,.dm-conversation__head,.dm-composer,.social-dialog,.mission-dialog,.ops-dialog,.core-dialog){background:var(--campus-panel);color:var(--campus-text);border-color:var(--campus-line)}
-.role-aluno :is(.academic-heading p,.unified-hero p,.unified-panel__head p,.unified-event p,.unified-message p,.unified-stats span,.grade-table-help,.grade-summary span,.grade-subject small,.module-banner p,.lesson-block p,.lesson-block time,.mission-meta,.core-hero p,.history-map header p){color:var(--campus-muted)}
-.role-aluno :is(.unified-hero,.ops-hero,.module-banner,.grade-table thead th,.grade-table tbody tr:hover td,.grade-lab summary,.dm-conversation,.dm-bubble.is-theirs>div){background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line)}
-.role-aluno :is(.unified-link,.unified-action,.academic-button,.module-filter button,.grade-filters button,.dm-attach-trigger,.dm-dialog-upload,.dm-load-older){background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line)}
-.role-aluno :is(input,select,textarea){background:#0a142b;color:var(--campus-text);border-color:var(--campus-line);color-scheme:dark}.role-aluno :is(input,textarea)::placeholder{color:var(--campus-muted)}
-.role-aluno :is(.grade-filters button.is-active,.grade-filters button[aria-pressed="true"],.module-filter button[aria-pressed="true"],.dm-send,.ops-btn--primary){background:var(--electric-blue);color:#fff}.role-aluno .dm-thread{color:var(--campus-text);border-color:var(--campus-line)}.role-aluno .dm-thread:is(:hover,.is-active){background:var(--campus-panel-strong)}.role-aluno .dm-bubble.is-theirs :is(p,time,.dm-subject,.dm-bubble-meta){color:var(--campus-text)}
+.campus-electric :is(.academic-heading h1,.unified-hero h1,.dm-heading h1,.core-hero h1,.history-map h1,.grade-table td,.grade-table th,.grade-summary strong,.grade-table .grade-subject){color:var(--campus-text)}
+.campus-electric :is(.academic-glass,.unified-panel,.unified-stats div,.ops-card,.ops-stat,.core-nav,.core-route,.core-ledger,.core-list,.core-create,.grade-summary,.grade-table-wrap,.grade-lab,.grade-table tbody td,.day-card,.mission-card,.dm-shell,.dm-sidebar,.dm-conversation__head,.dm-composer,.social-dialog,.mission-dialog,.ops-dialog,.core-dialog){background:var(--campus-panel);color:var(--campus-text);border-color:var(--campus-line)}
+.campus-electric :is(.academic-heading p,.unified-hero p,.unified-panel__head p,.unified-event p,.unified-message p,.unified-stats span,.grade-table-help,.grade-summary span,.grade-subject small,.module-banner p,.lesson-block p,.lesson-block time,.mission-meta,.core-hero p,.history-map header p){color:var(--campus-muted)}
+.campus-electric :is(.unified-hero,.ops-hero,.module-banner,.grade-table thead th,.grade-table tbody tr:hover td,.grade-lab summary,.dm-conversation,.dm-bubble.is-theirs>div){background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line)}
+.campus-electric :is(.unified-link,.unified-action,.academic-button,.module-filter button,.grade-filters button,.dm-attach-trigger,.dm-dialog-upload,.dm-load-older){background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line)}
+.campus-electric :is(input,select,textarea){background:#0a142b;color:var(--campus-text);border-color:var(--campus-line);color-scheme:dark}.campus-electric :is(input,textarea)::placeholder{color:var(--campus-muted)}
+.campus-electric :is(.grade-filters button.is-active,.grade-filters button[aria-pressed="true"],.module-filter button[aria-pressed="true"],.dm-send,.ops-btn--primary){background:var(--electric-blue);color:#fff}.campus-electric .dm-thread{color:var(--campus-text);border-color:var(--campus-line)}.campus-electric .dm-thread:is(:hover,.is-active){background:var(--campus-panel-strong)}.campus-electric .dm-bubble.is-theirs :is(p,time,.dm-subject,.dm-bubble-meta){color:var(--campus-text)}
 .profile-photo-dialog{background:var(--campus-panel);color:var(--campus-text);border-color:var(--campus-line)}.profile-photo-dialog :is(p,small,label),#profilePhotoFilename{color:var(--campus-muted)}.profile-photo-dialog :is(.profile-photo-picker,footer button){background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line)}.profile-photo-dialog footer button.profile-photo-save{background:var(--electric-blue);color:#fff}.profile-photo-dialog .profile-photo-status.is-error{color:var(--campus-danger)}
-.role-aluno :is(a,button,summary){cursor:pointer}.role-aluno :is(a,button,summary):active{filter:brightness(.9)}.role-aluno button:disabled{cursor:not-allowed;opacity:.55}.role-aluno :is(a,button,summary,input,select,textarea):focus-visible{outline:3px solid var(--campus-accent);outline-offset:4px;scroll-margin-block:100px}.flash-stack{z-index:var(--z-toast)}.flash-toast{background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-accent)}
+.campus-electric :is(a,button,summary){cursor:pointer}.campus-electric :is(a,button,summary):active{filter:brightness(.9)}.campus-electric button:disabled{cursor:not-allowed;opacity:.55}.campus-electric :is(a,button,summary,input,select,textarea):focus-visible{outline:3px solid var(--campus-accent);outline-offset:4px;scroll-margin-block:100px}.flash-stack{z-index:var(--z-toast)}.flash-toast{background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-accent)}
 @media(min-width:1500px){.student-dashboard .dashboard-hero{min-height:340px}.student-dashboard .radar-focus{min-height:175px}.student-dashboard .day-route li{min-height:168px}.performance-ring{width:154px;height:154px}}
-@media(max-width:1200px){:root{--electric-sidebar-width:190px}.campus-brand,.campus-brand:visited{flex-basis:172px;font-size:22px}.role-aluno.campus-shell .app__content{padding-inline:22px}.student-dashboard .dashboard-layout{grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr);gap:16px}.student-dashboard .dashboard-panel__head{padding-inline:18px}.student-dashboard .dashboard-panel__body{padding-inline:18px}.student-dashboard .radar-focus{grid-template-columns:45px minmax(0,1fr);padding:18px;gap:14px}.radar-subject-icon{min-height:54px}.student-dashboard .radar-time{grid-column:1/-1;min-height:68px}.student-dashboard .day-route{grid-template-columns:repeat(2,minmax(0,1fr))}.performance-ring{width:116px;height:116px}.student-dashboard .performance-pair .performance-presence>strong{font-size:38px}}
-@media(max-width:980px){.student-dashboard .dashboard-layout{grid-template-columns:1fr}.student-dashboard .dashboard-right{grid-template-columns:1fr 1fr;align-items:start}.student-dashboard .performance-pair{grid-template-columns:1fr}.student-dashboard .performance-presence{margin-top:20px}.student-dashboard .dashboard-hero{min-height:290px;padding:28px}.student-dashboard .dashboard-hero h1{font-size:42px}.student-dashboard .day-route{grid-template-columns:repeat(4,minmax(0,1fr))}.electric-header-context{display:none}.electric-header-actions{margin-left:auto}.campus-account-menu .campus-account-copy{display:none}.campus-account-menu .campus-account{min-width:0}.role-aluno.campus-shell .campus-header{gap:12px}}
-@media(max-width:760px){:root{--campus-nav-height:68px}.electric-sidebar{display:none}.role-aluno.campus-shell .app__main{padding-left:0}.role-aluno.campus-shell .app__content{padding:20px 18px calc(100px + env(safe-area-inset-bottom))}.role-aluno.campus-shell .campus-header{height:68px;padding:0 16px;gap:8px}.campus-brand,.campus-brand:visited{flex-basis:auto;font-size:23px}.campus-brand img{width:40px;height:40px}.electric-header-actions{gap:0}.electric-header-actions>a{width:38px}.campus-account-menu{padding-left:8px}.campus-account-photo{width:34px;height:34px}.campus-account-chevron{display:none}.role-aluno .campus-mobile-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;z-index:var(--z-header);bottom:0;left:0;right:0;background:#0b142c;border-top:1px solid #354b7b;padding:8px 8px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -6px 25px #02051699}.campus-mobile-nav>a,.campus-mobile-more>summary{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;min-height:50px;color:var(--campus-muted);font-size:10px;text-decoration:none;border-radius:10px}.campus-mobile-nav svg{display:block;width:20px;height:20px}.campus-mobile-nav>a[aria-current],.campus-mobile-more[data-current="true"]>summary{background:#14295b;color:var(--campus-accent)}.campus-mobile-more>div{bottom:calc(100% + 16px);background:var(--campus-panel);border-color:var(--campus-line);max-height:65dvh;overflow-y:auto}.campus-mobile-more>div a{color:var(--campus-text)}.campus-mobile-more>div a:hover{background:var(--campus-panel-strong)}.campus-mobile-more>div a[aria-current]{background:var(--electric-blue);color:white}.student-dashboard .dashboard-hero{min-height:275px;padding:24px}.student-dashboard .dashboard-hero h1{font-size:40px}}
-@media(max-width:540px){.student-dashboard{gap:18px}.student-dashboard .dashboard-hero{grid-template-columns:1fr;min-height:340px;padding:26px 22px 140px}.dashboard-hero__campus{width:100%;top:auto;height:130px;clip-path:polygon(0 20%,100% 0,100% 100%,0 100%)}.dashboard-hero__campus img{object-position:50% 60%}.dashboard-hero__campus::before{inset:0 0 auto;height:4px;width:100%;transform:rotate(-4deg);transform-origin:right}.dashboard-hero__campus>span{font-size:9px;right:18px;bottom:14px}.student-dashboard .dashboard-hero h1{font-size:42px;margin:12px 0}.student-dashboard .dashboard-hero__copy>p{font-size:12px}.student-dashboard .dashboard-panel__head{padding:18px 16px 12px;align-items:start;flex-wrap:wrap}.student-dashboard .dashboard-panel__head h2{font-size:20px}.student-dashboard .dashboard-panel__head>a{font-size:10px}.student-dashboard .dashboard-panel__body{padding:4px 16px 20px}.student-dashboard .radar-focus{grid-template-columns:46px minmax(0,1fr);gap:14px}.student-dashboard .radar-time strong{font-size:44px}.student-dashboard .day-route{grid-template-columns:repeat(2,minmax(0,1fr))}.student-dashboard .day-route li{min-height:128px}.student-dashboard .dashboard-right{grid-template-columns:1fr;gap:18px}.student-dashboard .performance-pair{grid-template-columns:1fr 1fr;padding:12px 18px 24px}.student-dashboard .performance-presence{margin-top:0}.performance-ring{width:132px;height:132px}.student-dashboard .performance-pair .performance-presence>strong{font-size:46px}.day-route-heading>a{font-size:10px}.campus-brand img{width:34px;height:34px}.campus-brand,.campus-brand:visited{font-size:21px}.role-aluno.campus-shell .campus-header{padding-inline:10px}.campus-account-menu{padding-left:2px}.campus-account-menu .campus-account{padding:0}.electric-header-actions>a{width:34px}.campus-account-photo{width:32px;height:32px}.campus-account-popover{width:min(260px,calc(100vw - 28px))}.student-dashboard .dashboard-context{font-size:10px}.student-dashboard .dashboard-message-alert{gap:6px}}
+@media(max-width:1200px){:root{--electric-sidebar-width:190px}.campus-brand,.campus-brand:visited{flex-basis:172px;font-size:22px}.campus-electric.campus-shell .app__content{padding-inline:22px}.student-dashboard .dashboard-layout{grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr);gap:16px}.student-dashboard .dashboard-panel__head{padding-inline:18px}.student-dashboard .dashboard-panel__body{padding-inline:18px}.student-dashboard .radar-focus{grid-template-columns:45px minmax(0,1fr);padding:18px;gap:14px}.radar-subject-icon{min-height:54px}.student-dashboard .radar-time{grid-column:1/-1;min-height:68px}.student-dashboard .day-route{grid-template-columns:repeat(2,minmax(0,1fr))}.performance-ring{width:116px;height:116px}.student-dashboard .performance-pair .performance-presence>strong{font-size:38px}}
+@media(max-width:980px){.student-dashboard .dashboard-layout{grid-template-columns:1fr}.student-dashboard .dashboard-right{grid-template-columns:1fr 1fr;align-items:start}.student-dashboard .performance-pair{grid-template-columns:1fr}.student-dashboard .performance-presence{margin-top:20px}.student-dashboard .dashboard-hero{min-height:290px;padding:28px}.student-dashboard .dashboard-hero h1{font-size:42px}.student-dashboard .day-route{grid-template-columns:repeat(4,minmax(0,1fr))}.electric-header-context{display:none}.electric-header-actions{margin-left:auto}.campus-account-menu .campus-account-copy{display:none}.campus-account-menu .campus-account{min-width:0}.campus-electric.campus-shell .campus-header{gap:12px}}
+@media(max-width:760px){:root{--campus-nav-height:68px}.electric-sidebar{display:none}.campus-electric.campus-shell .app__main{padding-left:0}.campus-electric.campus-shell .app__content{padding:20px 18px calc(100px + env(safe-area-inset-bottom))}.campus-electric.campus-shell .campus-header{height:68px;padding:0 16px;gap:8px}.campus-brand,.campus-brand:visited{flex-basis:auto;font-size:23px}.campus-brand img{width:40px;height:40px}.electric-header-actions{gap:0}.electric-header-actions>a{width:38px}.campus-account-menu{padding-left:8px}.campus-account-photo{width:34px;height:34px}.campus-account-chevron{display:none}.campus-electric .campus-mobile-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;z-index:var(--z-header);bottom:0;left:0;right:0;background:#0b142c;border-top:1px solid #354b7b;padding:8px 8px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -6px 25px #02051699}.campus-mobile-nav>a,.campus-mobile-more>summary{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;min-height:50px;color:var(--campus-muted);font-size:10px;text-decoration:none;border-radius:10px}.campus-mobile-nav svg{display:block;width:20px;height:20px}.campus-mobile-nav>a[aria-current],.campus-mobile-more[data-current="true"]>summary{background:#14295b;color:var(--campus-accent)}.campus-mobile-more>div{bottom:calc(100% + 16px);background:var(--campus-panel);border-color:var(--campus-line);max-height:65dvh;overflow-y:auto}.campus-mobile-more>div a{color:var(--campus-text)}.campus-mobile-more>div a:hover{background:var(--campus-panel-strong)}.campus-mobile-more>div a[aria-current]{background:var(--electric-blue);color:white}.student-dashboard .dashboard-hero{min-height:275px;padding:24px}.student-dashboard .dashboard-hero h1{font-size:40px}}
+@media(max-width:540px){.student-dashboard{gap:18px}.student-dashboard .dashboard-hero{grid-template-columns:1fr;min-height:340px;padding:26px 22px 140px}.dashboard-hero__campus{width:100%;top:auto;height:130px;clip-path:polygon(0 20%,100% 0,100% 100%,0 100%)}.dashboard-hero__campus img{object-position:50% 60%}.dashboard-hero__campus::before{inset:0 0 auto;height:4px;width:100%;transform:rotate(-4deg);transform-origin:right}.dashboard-hero__campus>span{font-size:9px;right:18px;bottom:14px}.student-dashboard .dashboard-hero h1{font-size:42px;margin:12px 0}.student-dashboard .dashboard-hero__copy>p{font-size:12px}.student-dashboard .dashboard-panel__head{padding:18px 16px 12px;align-items:start;flex-wrap:wrap}.student-dashboard .dashboard-panel__head h2{font-size:20px}.student-dashboard .dashboard-panel__head>a{font-size:10px}.student-dashboard .dashboard-panel__body{padding:4px 16px 20px}.student-dashboard .radar-focus{grid-template-columns:46px minmax(0,1fr);gap:14px}.student-dashboard .radar-time strong{font-size:44px}.student-dashboard .day-route{grid-template-columns:repeat(2,minmax(0,1fr))}.student-dashboard .day-route li{min-height:128px}.student-dashboard .dashboard-right{grid-template-columns:1fr;gap:18px}.student-dashboard .performance-pair{grid-template-columns:1fr 1fr;padding:12px 18px 24px}.student-dashboard .performance-presence{margin-top:0}.performance-ring{width:132px;height:132px}.student-dashboard .performance-pair .performance-presence>strong{font-size:46px}.day-route-heading>a{font-size:10px}.campus-brand img{width:34px;height:34px}.campus-brand,.campus-brand:visited{font-size:21px}.campus-electric.campus-shell .campus-header{padding-inline:10px}.campus-account-menu{padding-left:2px}.campus-account-menu .campus-account{padding:0}.electric-header-actions>a{width:34px}.campus-account-photo{width:32px;height:32px}.campus-account-popover{width:min(260px,calc(100vw - 28px))}.student-dashboard .dashboard-context{font-size:10px}.student-dashboard .dashboard-message-alert{gap:6px}}
 @media(max-width:360px){.student-dashboard .dashboard-hero h1{font-size:34px}.student-dashboard .performance-pair .performance-presence>strong{font-size:38px}.performance-ring{width:112px;height:112px}}
 /* Accessibility preferences override decorative transitions. */
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.role-aluno *,.role-aluno *::before,.role-aluno *::after{animation:none!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.campus-electric *,.campus-electric *::before,.campus-electric *::after{animation:none!important;transition:none!important}}
 @media(forced-colors:active){html,*{scrollbar-color:auto}.performance-ring{border:3px solid CanvasText}.electric-sidebar nav>a[aria-current],.campus-mobile-nav>a[aria-current]{outline:2px solid Highlight}.dashboard-hero__campus{display:none}}
 /* Print excludes navigation, preserving the established report flow. */
-@media print{.electric-sidebar,.electric-header-actions,.campus-header,.campus-mobile-nav{display:none!important}.role-aluno.campus-shell .app__main{padding:0}.role-aluno.campus-shell,.role-aluno.campus-shell .app__content{background:white;color:black}.role-aluno .grade-table :is(td,th),.role-aluno .grade-summary,.role-aluno .grade-table-wrap{background:white;color:black;border-color:#888}}
+@media print{.electric-sidebar,.electric-header-actions,.campus-header,.campus-mobile-nav{display:none!important}.campus-electric.campus-shell .app__main{padding:0}.campus-electric.campus-shell,.campus-electric.campus-shell .app__content{background:white;color:black}.campus-electric .grade-table :is(td,th),.campus-electric .grade-summary,.campus-electric .grade-table-wrap{background:white;color:black;border-color:#888}}
 
-/* Student modules — the approved multi-screen reference, not the marketing poster.
-   This file is loaded only for students. Shared role templates retain their owners. */
+/* Student modules and dashboard adapters share one approved identity.
+   Non-dashboard teacher/director routes retain their previous visual owner. */
 :root {
   --electric-success: #79edb7;
   --electric-warning: #ffcf7b;
@@ -90,273 +90,356 @@ body.campus-shell{background:var(--campus-ink);color:var(--campus-text);--surfac
   --electric-danger-panel: #49263e;
   --electric-field: #0a142b;
 }
-.role-aluno.campus-shell .app__content > :is(.academic,.ops,.internship-world) {
+.campus-electric.campus-shell .app__content > :is(.academic,.ops,.internship-world) {
   width:100%;max-width:none;margin:0;padding:0;min-height:0;
 }
-.role-aluno :is(.academic,.ops,.internship-world) {
+.campus-electric :is(.academic,.ops,.internship-world) {
   --amber:var(--electric-warning);--ops-mint:var(--electric-success);
   --ops-warn:var(--electric-warning);--ops-danger:var(--electric-red);
   --core-aqua:var(--campus-accent);--dm-accent:var(--electric-blue);
   --intern-mint:var(--campus-accent);--intern-blue:var(--campus-accent-2);
   --intern-warm:var(--electric-warning);
 }
-.role-aluno :is(.academic-heading,.dm-heading,.internship-heading) {
+.campus-electric :is(.academic-heading,.dm-heading,.internship-heading) {
   align-items:center;gap:20px;margin:0 0 26px;padding:6px 0 22px;
   border-bottom:1px solid var(--campus-line);
 }
-.role-aluno :is(.academic-heading,.unified-hero,.ops-hero,.internship-heading,.dm-heading) h1 {
+.campus-electric :is(.academic-heading,.unified-hero,.ops-hero,.internship-heading,.dm-heading) h1 {
   font:800 clamp(30px,3.1vw,48px)/1.12 var(--font-display);
   letter-spacing:-.045em;max-width:23ch;margin:10px 0 12px;color:var(--campus-text);
 }
-.role-aluno :is(.academic-heading,.unified-hero,.internship-heading) h1 em {
+.campus-electric :is(.academic-heading,.unified-hero,.internship-heading) h1 em {
   color:var(--campus-accent);font-style:normal;
 }
-.role-aluno :is(.academic-heading,.internship-heading,.dm-heading) p {
+.campus-electric :is(.academic-heading,.internship-heading,.dm-heading) p {
   color:var(--campus-muted);font-size:13px;line-height:1.65;max-width:650px;
 }
-.role-aluno :is(.academic-kicker,.unified-kicker,.ops-kicker,.internship-kicker) {
+.campus-electric :is(.academic-kicker,.unified-kicker,.ops-kicker,.internship-kicker) {
   color:var(--campus-accent);font:700 10px/1.5 var(--font-body);letter-spacing:.1em;
 }
-.role-aluno .academic-heading > div::before {background:var(--electric-blue)}
-.role-aluno :is(.academic-heading small,.academic-footnote,.unified-empty,.academic-empty,
+.campus-electric .academic-heading > div::before {background:var(--electric-blue)}
+.campus-electric :is(.academic-heading small,.academic-footnote,.unified-empty,.academic-empty,
   .ops-empty,.ops-field label,.ops-card__head p,.ops-row p,.ops-event p,.ops-event time,
   .communications-discarded__list small,.unified-history__year small,.unified-history__subjects span,
   .grade-table-toolbar>span,.grade-lab-body p,.grade-simulator-controls label,.sim-result p,
   .banner-stat span,.record-weekdays,.record-legend,.dm-compose-help) {color:var(--campus-muted)}
-.role-aluno :is(.unified-hero,.ops-hero,.module-banner,.internship-radar) {
+.campus-electric :is(.unified-hero,.ops-hero,.module-banner,.internship-radar) {
   background:linear-gradient(115deg,var(--campus-panel-strong),var(--campus-panel) 64%);
   border:1px solid var(--campus-line);border-radius:16px;box-shadow:var(--campus-shadow);
 }
-.role-aluno :is(.unified-hero,.ops-hero) {
+.campus-electric :is(.unified-hero,.ops-hero) {
   padding:26px;min-height:0;gap:24px;align-items:center;
 }
-.role-aluno .unified-hero {grid-template-columns:minmax(0,1fr) minmax(270px,.7fr)}
-.role-aluno :is(.unified-hero,.ops-hero) p {font-size:13px;line-height:1.65;color:var(--campus-muted)}
-.role-aluno .ops-hero p.ops-kicker {color:var(--campus-accent);margin:0 0 12px}
-.role-aluno .unified-stats {grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.role-aluno .unified-stats>div {
+.campus-electric .unified-hero {grid-template-columns:minmax(0,1fr) minmax(270px,.7fr)}
+.campus-electric :is(.unified-hero,.ops-hero) p {font-size:13px;line-height:1.65;color:var(--campus-muted)}
+.campus-electric .ops-hero p.ops-kicker {color:var(--campus-accent);margin:0 0 12px}
+.campus-electric .unified-stats {grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.campus-electric .unified-stats>div {
   min-width:0;border:1px solid var(--campus-line);border-top:3px solid var(--electric-blue);
   border-radius:12px;padding:18px 12px;background:var(--campus-panel);
 }
-.role-aluno .unified-stats>div:nth-child(2) {border-top-color:var(--electric-violet)}
-.role-aluno .unified-stats>div:nth-child(3) {border-top-color:var(--electric-lime)}
-.role-aluno .unified-stats strong {font:800 29px/1.1 var(--font-display);color:var(--campus-text)}
-.role-aluno .unified-stats span {font-size:11px;line-height:1.5}
-.role-aluno :is(.ops-score,.ops-count,.ops-row,.ops-notice,.core-notice,.history-line article,
+.campus-electric .unified-stats>div:nth-child(2) {border-top-color:var(--electric-violet)}
+.campus-electric .unified-stats>div:nth-child(3) {border-top-color:var(--electric-lime)}
+.campus-electric .unified-stats strong {font:800 29px/1.1 var(--font-display);color:var(--campus-text)}
+.campus-electric .unified-stats span {font-size:11px;line-height:1.5}
+.campus-electric :is(.ops-score,.ops-count,.ops-row,.ops-notice,.core-notice,.history-line article,
   .academic-overview,.grade-detail,.course-number,.grade-simulator,.dm-live-notice) {
   background:var(--campus-panel);border-color:var(--campus-line);color:var(--campus-text);
 }
-.role-aluno :is(.ops-card,.academic-glass,.unified-panel,.mission-card,.day-card) {
+.campus-electric :is(.ops-card,.academic-glass,.unified-panel,.mission-card,.day-card) {
   box-shadow:var(--campus-shadow);backdrop-filter:none;
 }
-.role-aluno :is(.unified-panel__head h2,.ops-card__head h2,.academic-glass h2,.academic-toolbar h2,
+.campus-electric :is(.unified-panel__head h2,.ops-card__head h2,.academic-glass h2,.academic-toolbar h2,
   .ops-event h3,.unified-message h3,.mission-card h2,.core-notice h2) {
   color:var(--campus-text);font-family:var(--font-display);
 }
-.role-aluno .ops-card--accent {border-top:3px solid var(--electric-blue)}
-.role-aluno .ops-score {min-width:0;width:100%;max-width:250px;backdrop-filter:none}
-.role-aluno .ops-score strong {color:var(--campus-accent)}
-.role-aluno .ops-score i {display:none} /* Decorative fixed percentages are not real metrics. */
-.role-aluno :is(.ops-row:hover,.ops-notice.is-unread,.core-nav a:hover) {background:var(--campus-panel-strong)}
-.role-aluno :is(.ops-btn,.core-map button,.core-nav a,.core-chipset span) {
+.campus-electric .ops-card--accent {border-top:3px solid var(--electric-blue)}
+.campus-electric .ops-score {min-width:0;width:100%;max-width:250px;backdrop-filter:none}
+.campus-electric .ops-score strong {color:var(--campus-accent)}
+.campus-electric .ops-score i {display:none} /* Decorative fixed percentages are not real metrics. */
+.campus-electric :is(.ops-row:hover,.ops-notice.is-unread,.core-nav a:hover) {background:var(--campus-panel-strong)}
+.campus-electric :is(.ops-btn,.core-map button,.core-nav a,.core-chipset span) {
   background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line);
 }
-.role-aluno :is(.academic .academic-button,.unified-link,.unified-action,.ops-btn,.module-filter button,
+.campus-electric :is(.academic .academic-button,.unified-link,.unified-action,.ops-btn,.module-filter button,
   .grade-filters button,.internship-button) {min-height:44px;border-radius:10px}
-.role-aluno :is(.academic .academic-button,.unified-link,.unified-action,.ops-btn):hover {
+.campus-electric :is(.academic .academic-button,.unified-link,.unified-action,.ops-btn):hover {
   background:var(--campus-panel-strong);color:var(--campus-accent);border-color:var(--campus-accent);
 }
-.role-aluno :is(.dm-new,.social-compose,.mission-action .academic-button,.mission-dialog button[type=submit],
+.campus-electric :is(.dm-new,.social-compose,.mission-action .academic-button,.mission-dialog button[type=submit],
   .ops-btn--primary,.core-map .core-primary) {
   background:var(--electric-blue);color:#fff;border-color:var(--electric-blue);
 }
-.role-aluno :is(.ops-btn--primary,.mission-action .academic-button,.mission-dialog button[type=submit]):hover {
+.campus-electric :is(.ops-btn--primary,.mission-action .academic-button,.mission-dialog button[type=submit]):hover {
   background:var(--electric-blue);color:#fff;filter:brightness(1.16);
 }
-.role-aluno :is(.academic-badge,.ops-status,.grade-state) {
+.campus-electric :is(.academic-badge,.ops-status,.grade-state) {
   border-radius:8px;padding:6px 10px;background:var(--electric-success-panel);
   color:var(--electric-success);font-size:11px;
 }
-.role-aluno :is(.academic-badge.amber,.ops-status--warn,.grade-state.is-attention,.delivery-note) {
+.campus-electric :is(.academic-badge.amber,.ops-status--warn,.grade-state.is-attention,.delivery-note) {
   color:var(--electric-warning);background:var(--electric-warning-panel);
 }
-.role-aluno :is(.ops-error,.module-field-error,.dm-compose-error) {color:var(--electric-red)}
-.role-aluno :is(.ops-success,.ops-status--success) {color:var(--electric-success)}
-.role-aluno :is(.ops-btn--danger,.core-danger,.ops-status--danger) {
+.campus-electric :is(.ops-error,.module-field-error,.dm-compose-error) {color:var(--electric-red)}
+.campus-electric :is(.ops-success,.ops-status--success) {color:var(--electric-success)}
+.campus-electric :is(.ops-btn--danger,.core-danger,.ops-status--danger) {
   color:var(--electric-red);background:var(--electric-danger-panel);border-color:var(--electric-red);
 }
-.role-aluno :is(.grade-summary article,.grade-table :is(td,th),.grade-detail,.sim-result,
+.campus-electric :is(.grade-summary article,.grade-table :is(td,th),.grade-detail,.sim-result,
   .ops-row,.ops-card__head,.ops-event,.unified-message,.unified-history__year) {border-color:var(--campus-line)}
-.role-aluno .grade-summary {padding:20px 24px;border-radius:16px;gap:16px}
-.role-aluno .grade-summary article {gap:14px;padding-inline:20px}
-.role-aluno .grade-summary article strong {font-size:36px}
-.role-aluno .grade-summary article:nth-child(2) .grade-summary-icon {
+.campus-electric .grade-summary {padding:20px 24px;border-radius:16px;gap:16px}
+.campus-electric .grade-summary article {gap:14px;padding-inline:20px}
+.campus-electric .grade-summary article strong {font-size:36px}
+.campus-electric .grade-summary article:nth-child(2) .grade-summary-icon {
   background:var(--campus-panel-strong);color:var(--campus-accent);
 }
-.role-aluno .grade-summary article:nth-child(3) .grade-summary-icon {
+.campus-electric .grade-summary article:nth-child(3) .grade-summary-icon {
   background:var(--campus-panel-strong);color:var(--campus-accent-2);
 }
-.role-aluno .grade-table :is(th,td) {padding:16px 18px;font-size:13px}
-.role-aluno .grade-table thead th {font-size:10px;color:var(--campus-muted)}
-.role-aluno .grade-table tbody tr:hover :is(th,td) {background:var(--campus-panel-strong)}
-.role-aluno.campus-shell .grade-table tbody td strong {color:var(--campus-accent)}
-.role-aluno .grade-state.is-regular {background:var(--electric-success-panel);color:var(--electric-success)}
+.campus-electric .grade-table :is(th,td) {padding:16px 18px;font-size:13px}
+.campus-electric .grade-table thead th {font-size:10px;color:var(--campus-muted)}
+.campus-electric .grade-table tbody tr:hover :is(th,td) {background:var(--campus-panel-strong)}
+.campus-electric.campus-shell .grade-table tbody td strong {color:var(--campus-accent)}
+.campus-electric .grade-state.is-regular {background:var(--electric-success-panel);color:var(--electric-success)}
 .electric-grade-meter {
   display:block;width:64px;max-width:100%;height:4px;margin:8px auto 0;
   border-radius:4px;background:var(--campus-line);overflow:hidden;
 }
 .electric-grade-meter i {display:block;height:100%;border-radius:inherit;background:var(--campus-accent)}
 .grade-entry[data-grade-state=attention] .electric-grade-meter i {background:var(--electric-red)}
-.role-aluno .grade-lab summary {color:var(--campus-accent);border-radius:14px}
-.role-aluno .grade-simulator-controls input {accent-color:var(--campus-accent)}
-.role-aluno .academic-scale {background:var(--campus-line)}
-.role-aluno .academic-scale i {background:linear-gradient(90deg,var(--electric-blue),var(--campus-accent))}
-.role-aluno :is(.academic-score,.academic-counts strong,.academic-ring strong) {color:var(--campus-text)}
-.role-aluno .academic-ring {
+.campus-electric .grade-lab summary {color:var(--campus-accent);border-radius:14px}
+.campus-electric .grade-simulator-controls input {accent-color:var(--campus-accent)}
+.campus-electric .academic-scale {background:var(--campus-line)}
+.campus-electric .academic-scale i {background:linear-gradient(90deg,var(--electric-blue),var(--campus-accent))}
+.campus-electric :is(.academic-score,.academic-counts strong,.academic-ring strong) {color:var(--campus-text)}
+.campus-electric .academic-ring {
   background:conic-gradient(var(--campus-accent) var(--rate),var(--campus-line) 0);
   box-shadow:0 0 28px #144bff20;
 }
-.role-aluno .academic-ring::before {background:var(--campus-panel)}
-.role-aluno .academic .record-day {
+.campus-electric .academic-ring::before {background:var(--campus-panel)}
+.campus-electric .academic .record-day {
   background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line);
 }
-.role-aluno .academic .record-day.presente {background:var(--electric-success-panel);color:var(--electric-success)}
-.role-aluno .academic .record-day.ausente {background:var(--electric-danger-panel);color:var(--electric-red)}
-.role-aluno .academic .record-day:is(:hover,[aria-pressed=true]) {
+.campus-electric .academic .record-day.presente {background:var(--electric-success-panel);color:var(--electric-success)}
+.campus-electric .academic .record-day.ausente {background:var(--electric-danger-panel);color:var(--electric-red)}
+.campus-electric .academic .record-day:is(:hover,[aria-pressed=true]) {
   border-color:var(--campus-accent);outline:2px solid var(--campus-accent);outline-offset:1px;
 }
-.role-aluno .academic .record-day.today {border-bottom-color:var(--electric-blue)}
-.role-aluno :is(.record-history,.grade-table-wrap,.week-cards,.dm-stream,.ops-list) {
+.campus-electric .academic .record-day.today {border-bottom-color:var(--electric-blue)}
+.campus-electric :is(.record-history,.grade-table-wrap,.week-cards,.dm-stream,.ops-list) {
   scrollbar-color:var(--scroll-thumb) var(--scroll-track);
 }
-.role-aluno .week-cards {gap:12px;background:none;border:0}
-.role-aluno .day-card {border-radius:12px;border-top:3px solid var(--day-color)}
-.role-aluno .day-card>header {padding:18px;background:var(--campus-panel-strong)}
-.role-aluno .day-card h2 {color:var(--day-color);font-size:20px}
-.role-aluno .lesson-block {padding:18px 16px 18px 26px}
-.role-aluno .lesson-block::before {left:14px}
-.role-aluno .lesson-block h3 {font-size:14px}
-.role-aluno .lesson-block time {font-size:10px}
-.role-aluno :is(.lesson-break,.day-card>footer) {
+.campus-electric .week-cards {gap:12px;background:none;border:0}
+.campus-electric .day-card {border-radius:12px;border-top:3px solid var(--day-color)}
+.campus-electric .day-card>header {padding:18px;background:var(--campus-panel-strong)}
+.campus-electric .day-card h2 {color:var(--day-color);font-size:20px}
+.campus-electric .lesson-block {padding:18px 16px 18px 26px}
+.campus-electric .lesson-block::before {left:14px}
+.campus-electric .lesson-block h3 {font-size:14px}
+.campus-electric .lesson-block time {font-size:10px}
+.campus-electric :is(.lesson-break,.day-card>footer) {
   background:var(--electric-field);color:var(--campus-muted);padding-inline:16px;font-size:9px;
 }
-.role-aluno .module-banner {padding:24px;gap:24px}
-.role-aluno .banner-stat strong {color:var(--campus-accent);font-family:var(--font-display)}
-.role-aluno .module-filter button:hover,.role-aluno .grade-filters button:hover {
+.campus-electric .module-banner {padding:24px;gap:24px}
+.campus-electric .banner-stat strong {color:var(--campus-accent);font-family:var(--font-display)}
+.campus-electric .module-filter button:hover,.campus-electric .grade-filters button:hover {
   background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-accent);
 }
-.role-aluno :is(.module-filter,.grade-filters) button[aria-pressed=true] {background:var(--electric-blue);color:#fff}
-.role-aluno .mission-cards {grid-template-columns:1fr;gap:10px}
-.role-aluno .mission-card {
+.campus-electric :is(.module-filter,.grade-filters) button[aria-pressed=true] {background:var(--electric-blue);color:#fff}
+.campus-electric .mission-cards {grid-template-columns:1fr;gap:10px}
+.campus-electric .mission-card {
   display:grid;grid-template-columns:44px minmax(0,1fr) 130px 155px;
   gap:20px;align-items:center;padding:20px;border-radius:13px;
 }
 .mission-icon {display:grid;place-items:center;width:44px;height:44px;border-radius:10px;background:var(--campus-panel-strong);color:var(--campus-accent)}
 .mission-icon svg {width:22px;height:22px}
 .mission-card[data-exercise-state=done] .mission-icon {color:var(--electric-success);background:var(--electric-success-panel)}
-.role-aluno .mission-copy {min-width:0}
-.role-aluno .mission-copy h2 {font-size:17px;margin:6px 0}
-.role-aluno .mission-copy .mission-description {margin:0;font-size:12px;line-height:1.6;-webkit-line-clamp:2}
-.role-aluno :is(.mission-copy p,.module-search,.dm-conversation__head p) {color:var(--campus-muted)}
-.role-aluno .mission-copy>a {margin-top:10px;font-size:11px}
-.role-aluno .mission-meta {display:grid;gap:8px;padding:0;border:0;font-size:11px}
-.role-aluno .mission-meta time {color:var(--campus-text)}
+.campus-electric .mission-copy {min-width:0}
+.campus-electric .mission-copy h2 {font-size:17px;margin:6px 0}
+.campus-electric .mission-copy .mission-description {margin:0;font-size:12px;line-height:1.6;-webkit-line-clamp:2}
+.campus-electric :is(.mission-copy p,.module-search,.dm-conversation__head p) {color:var(--campus-muted)}
+.campus-electric .mission-copy>a {margin-top:10px;font-size:11px}
+.campus-electric .mission-meta {display:grid;gap:8px;padding:0;border:0;font-size:11px}
+.campus-electric .mission-meta time {color:var(--campus-text)}
 .mission-action .academic-button {width:100%;font-size:11px}
 .electric-search-field {display:flex;align-items:center;gap:8px}
-.role-aluno .electric-search-field input {min-width:0;flex:1;width:100%}
+.campus-electric .electric-search-field input {min-width:0;flex:1;width:100%}
 .electric-search-field button {
   width:44px;height:44px;flex:none;border:1px solid var(--campus-line);
   border-radius:10px;background:var(--campus-panel-strong);color:var(--campus-text);font-size:22px;
 }
-.role-aluno .mission-dialog textarea {resize:none;min-height:200px;background:var(--electric-field)}
-.role-aluno .mission-dialog .delivery-note {background:var(--electric-warning-panel);color:var(--electric-warning)}
-.role-aluno .mission-dialog :is(.delivery-note p,.delivery-note small) {color:var(--electric-warning)}
-.role-aluno :is(.mission-dialog [data-close-dialog],.compose-dialog header button) {
+.campus-electric .mission-dialog textarea {resize:none;min-height:200px;background:var(--electric-field)}
+.campus-electric .mission-dialog .delivery-note {background:var(--electric-warning-panel);color:var(--electric-warning)}
+.campus-electric .mission-dialog :is(.delivery-note p,.delivery-note small) {color:var(--electric-warning)}
+.campus-electric :is(.mission-dialog [data-close-dialog],.compose-dialog header button) {
   color:var(--campus-text);background:var(--campus-panel-strong);border-color:var(--campus-line);
 }
-.role-aluno .unified-comms .unified-panel {border-top:3px solid var(--electric-red)}
-.role-aluno .unified-comms .unified-panel:nth-child(2) {border-top-color:var(--electric-violet)}
-.role-aluno .unified-message {
+.campus-electric .unified-comms .unified-panel {border-top:3px solid var(--electric-red)}
+.campus-electric .unified-comms .unified-panel:nth-child(2) {border-top-color:var(--electric-violet)}
+.campus-electric .unified-message {
   padding:18px;border:1px solid var(--campus-line);border-radius:12px;background:var(--campus-panel-strong);
 }
-.role-aluno .unified-message.is-unread {border-left:3px solid var(--campus-accent);background:var(--campus-panel-strong)}
-.role-aluno .unified-message.is-read {opacity:1;background:var(--campus-panel)}
-.role-aluno .unified-message h3 {font-size:15px}
-.role-aluno .unified-message :is(p,time),.role-aluno .communications-discarded>summary {color:var(--campus-muted)}
-.role-aluno .unified-action--quiet {background:transparent;color:var(--campus-muted)}
-.role-aluno .unified-event::before {background:var(--campus-accent);border-color:var(--campus-panel)}
-.role-aluno .unified-event:nth-child(2n)::before {background:var(--electric-violet)}
-.role-aluno .unified-event:nth-child(3n)::before {background:var(--electric-lime)}
-.role-aluno :is(.ops-field :is(input,select,textarea),.ops-row__meta select,.ops-search,
+.campus-electric .unified-message.is-unread {border-left:3px solid var(--campus-accent);background:var(--campus-panel-strong)}
+.campus-electric .unified-message.is-read {opacity:1;background:var(--campus-panel)}
+.campus-electric .unified-message h3 {font-size:15px}
+.campus-electric .unified-message :is(p,time),.campus-electric .communications-discarded>summary {color:var(--campus-muted)}
+.campus-electric .unified-action--quiet {background:transparent;color:var(--campus-muted)}
+.campus-electric .unified-event::before {background:var(--campus-accent);border-color:var(--campus-panel)}
+.campus-electric .unified-event:nth-child(2n)::before {background:var(--electric-violet)}
+.campus-electric .unified-event:nth-child(3n)::before {background:var(--electric-lime)}
+.campus-electric :is(.ops-field :is(input,select,textarea),.ops-row__meta select,.ops-search,
   .academic .month-form input,.module-search input,.dm-composer textarea,.compose-dialog :is(input,select,textarea)) {
   background:var(--electric-field);color:var(--campus-text);border-color:var(--campus-line);color-scheme:dark;
 }
-.role-aluno .ops-searchbox button {background:var(--campus-panel-strong);color:var(--campus-text)}
-.role-aluno .ops select option {background:var(--electric-field);color:var(--campus-text)}
-.role-aluno .unified-history__subjects>div {background:var(--campus-panel-strong);border-radius:10px}
-.role-aluno .dm-shell {box-shadow:var(--campus-shadow);border-radius:16px}
-.role-aluno :is(.dm-search button,.dm-author,.dm-thread__meta time,.dm-thread__copy small) {color:var(--campus-muted)}
-.role-aluno .dm-thread.is-active {border-left:3px solid var(--electric-blue);background:var(--campus-panel-strong)}
-.role-aluno .dm-person-mark {background:var(--electric-blue);border-color:var(--electric-blue);color:#fff}
-.role-aluno .dm-person-mark.is-group {background:var(--electric-violet);border-color:var(--electric-violet)}
-.role-aluno .dm-bubble.is-mine>div {background:var(--electric-blue);border-color:var(--electric-blue)}
-.role-aluno .dm-bubble.is-theirs>div {background:var(--campus-panel);border-color:var(--campus-line)}
-.role-aluno :is(.dm-file-preview strong,.dm-file-preview small,.dm-compose-help,.dm-author) {color:var(--campus-muted)}
-.role-aluno :is(.dm-file-preview button,.dm-reply-preview button,.dm-delete-dialog form>div button,.dm-edit-dialog form>div button) {
+.campus-electric .ops-searchbox button {background:var(--campus-panel-strong);color:var(--campus-text)}
+.campus-electric .ops select option {background:var(--electric-field);color:var(--campus-text)}
+.campus-electric .unified-history__subjects>div {background:var(--campus-panel-strong);border-radius:10px}
+.campus-electric .dm-shell {box-shadow:var(--campus-shadow);border-radius:16px}
+.campus-electric :is(.dm-search button,.dm-author,.dm-thread__meta time,.dm-thread__copy small) {color:var(--campus-muted)}
+.campus-electric .dm-thread.is-active {border-left:3px solid var(--electric-blue);background:var(--campus-panel-strong)}
+.campus-electric .dm-person-mark {background:var(--electric-blue);border-color:var(--electric-blue);color:#fff}
+.campus-electric .dm-person-mark.is-group {background:var(--electric-violet);border-color:var(--electric-violet)}
+.campus-electric .dm-bubble.is-mine>div {background:var(--electric-blue);border-color:var(--electric-blue)}
+.campus-electric .dm-bubble.is-theirs>div {background:var(--campus-panel);border-color:var(--campus-line)}
+.campus-electric :is(.dm-file-preview strong,.dm-file-preview small,.dm-compose-help,.dm-author) {color:var(--campus-muted)}
+.campus-electric :is(.dm-file-preview button,.dm-reply-preview button,.dm-delete-dialog form>div button,.dm-edit-dialog form>div button) {
   background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line);
 }
-.role-aluno .dm-delete-dialog .dm-confirm-delete {background:var(--electric-danger-panel);color:var(--electric-red);border-color:var(--electric-red)}
-.role-aluno .dm-edit-dialog form>div .academic-button {background:var(--electric-blue);color:#fff}
+.campus-electric .dm-delete-dialog .dm-confirm-delete {background:var(--electric-danger-panel);color:var(--electric-red);border-color:var(--electric-red)}
+.campus-electric .dm-edit-dialog form>div .academic-button {background:var(--electric-blue);color:#fff}
 /* Legacy !important text colors must not leave deleted messages unreadable. */
-.role-aluno .dm-deleted-copy,.role-aluno .dm-bubble.is-theirs .dm-menu-trigger {color:var(--campus-muted)!important}
-.role-aluno :is(.internship-world,.core-map,.history-map) {background:none;color:var(--campus-text)}
-.role-aluno .internship-opportunity {background:var(--campus-panel);border-color:var(--campus-line)}
-.role-aluno .internship-opportunity:is(:hover,[open]) {background:var(--campus-panel-strong);border-color:var(--campus-accent)}
-.role-aluno .internship-detail {background:var(--electric-field);border-color:var(--campus-line)}
-.role-aluno .internship-filter-set button {background:var(--campus-panel);border-color:var(--campus-line);color:var(--campus-text)}
-.role-aluno .internship-filter-set button[aria-pressed=true] {background:var(--electric-blue);color:#fff}
-.role-aluno .internship-search-field {background:var(--electric-field);border-color:var(--campus-line)}
-.role-aluno .internship-search input {background:transparent}
-.role-aluno .internship-radar::after {content:none}
-.role-aluno :is(.profile-photo-picker:hover,.profile-photo-dialog footer button:hover) {background:var(--campus-panel-strong);color:var(--campus-accent)}
+.campus-electric .dm-deleted-copy,.campus-electric .dm-bubble.is-theirs .dm-menu-trigger {color:var(--campus-muted)!important}
+.campus-electric :is(.internship-world,.core-map,.history-map) {background:none;color:var(--campus-text)}
+.campus-electric .internship-opportunity {background:var(--campus-panel);border-color:var(--campus-line)}
+.campus-electric .internship-opportunity:is(:hover,[open]) {background:var(--campus-panel-strong);border-color:var(--campus-accent)}
+.campus-electric .internship-detail {background:var(--electric-field);border-color:var(--campus-line)}
+.campus-electric .internship-filter-set button {background:var(--campus-panel);border-color:var(--campus-line);color:var(--campus-text)}
+.campus-electric .internship-filter-set button[aria-pressed=true] {background:var(--electric-blue);color:#fff}
+.campus-electric .internship-search-field {background:var(--electric-field);border-color:var(--campus-line)}
+.campus-electric .internship-search input {background:transparent}
+.campus-electric .internship-radar::after {content:none}
+.campus-electric :is(.profile-photo-picker:hover,.profile-photo-dialog footer button:hover) {background:var(--campus-panel-strong);color:var(--campus-accent)}
 /* Override old shared focus color without weakening the keyboard outline. */
-.role-aluno.campus-shell :is(button,a,input,select,textarea,summary):focus-visible {outline-color:var(--campus-accent)!important}
-.role-aluno.campus-shell .profile-photo-dialog form:has(#profilePhotoInput:focus-visible) .profile-photo-picker {
+.campus-electric.campus-shell :is(button,a,input,select,textarea,summary):focus-visible {outline-color:var(--campus-accent)!important}
+.campus-electric.campus-shell .profile-photo-dialog form:has(#profilePhotoInput:focus-visible) .profile-photo-picker {
   outline:3px solid var(--campus-accent);outline-offset:3px;
 }
-.role-aluno .campus-transition-hud {display:none} /* Native navigation needs no interstitial card. */
-@media(min-width:1440px){.role-aluno .week-cards{grid-template-columns:repeat(6,minmax(0,1fr))}.role-aluno .week-cards.focused{grid-template-columns:minmax(0,780px)}}
+.campus-electric .campus-transition-hud {display:none} /* Native navigation needs no interstitial card. */
+@media(min-width:1440px){.campus-electric .week-cards{grid-template-columns:repeat(6,minmax(0,1fr))}.campus-electric .week-cards.focused{grid-template-columns:minmax(0,780px)}}
 @media(max-width:1100px){
-  .role-aluno :is(.unified-hero,.ops-hero){grid-template-columns:1fr}
-  .role-aluno .unified-stats{max-width:600px}
-  .role-aluno .mission-card{grid-template-columns:40px minmax(0,1fr) 135px;gap:14px}
-  .role-aluno .mission-action{grid-column:2/-1;justify-self:end}
+  .campus-electric :is(.unified-hero,.ops-hero){grid-template-columns:1fr}
+  .campus-electric .unified-stats{max-width:600px}
+  .campus-electric .mission-card{grid-template-columns:40px minmax(0,1fr) 135px;gap:14px}
+  .campus-electric .mission-action{grid-column:2/-1;justify-self:end}
 }
 @media(max-width:760px){
-  .role-aluno :is(.academic-heading,.dm-heading){align-items:start;flex-wrap:wrap}
-  .role-aluno :is(.unified-hero,.ops-hero,.module-banner){padding:22px 18px;border-radius:14px}
-  .role-aluno .unified-hero h1{font-size:34px}
-  .role-aluno .grade-summary{gap:18px;padding:18px}
-  .role-aluno .grade-summary article{padding:0;gap:12px;border:0}
-  .role-aluno .grade-summary article strong{font-size:30px}
-  .role-aluno .grade-table-toolbar{align-items:start;flex-wrap:wrap}
-  .role-aluno .grade-table-toolbar>span{flex-basis:100%}
-  .role-aluno .grade-summary-icon{width:44px;height:44px}
-  .role-aluno .mission-card{grid-template-columns:40px minmax(0,1fr);gap:14px;padding:18px}
-  .role-aluno .mission-meta{grid-column:2;display:flex;flex-wrap:wrap;align-items:center}
-  .role-aluno .mission-action{grid-column:2;justify-self:stretch}
-  .role-aluno .mission-copy h2{font-size:16px}
-  .role-aluno .unified-stats>div{padding:14px 10px}
-  .role-aluno .unified-stats strong{font-size:25px}
-  .role-aluno .unified-stats span{font-size:10px}
+  .campus-electric :is(.academic-heading,.dm-heading){align-items:start;flex-wrap:wrap}
+  .campus-electric :is(.unified-hero,.ops-hero,.module-banner){padding:22px 18px;border-radius:14px}
+  .campus-electric .unified-hero h1{font-size:34px}
+  .campus-electric .grade-summary{gap:18px;padding:18px}
+  .campus-electric .grade-summary article{padding:0;gap:12px;border:0}
+  .campus-electric .grade-summary article strong{font-size:30px}
+  .campus-electric .grade-table-toolbar{align-items:start;flex-wrap:wrap}
+  .campus-electric .grade-table-toolbar>span{flex-basis:100%}
+  .campus-electric .grade-summary-icon{width:44px;height:44px}
+  .campus-electric .mission-card{grid-template-columns:40px minmax(0,1fr);gap:14px;padding:18px}
+  .campus-electric .mission-meta{grid-column:2;display:flex;flex-wrap:wrap;align-items:center}
+  .campus-electric .mission-action{grid-column:2;justify-self:stretch}
+  .campus-electric .mission-copy h2{font-size:16px}
+  .campus-electric .unified-stats>div{padding:14px 10px}
+  .campus-electric .unified-stats strong{font-size:25px}
+  .campus-electric .unified-stats span{font-size:10px}
 }
 @media(max-width:540px){
-  .role-aluno .unified-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .role-aluno .grade-summary{grid-template-columns:1fr}
-  .role-aluno .academic .record-day{padding:7px;min-height:50px}
+  .campus-electric .unified-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .campus-electric .grade-summary{grid-template-columns:1fr}
+  .campus-electric .academic .record-day{padding:7px;min-height:50px}
 }
 @media print{
-  .role-aluno .academic-heading,.role-aluno .grade-summary,.role-aluno .grade-table-toolbar{border:0}
+  .campus-electric .academic-heading,.campus-electric .grade-summary,.campus-electric .grade-table-toolbar{border:0}
   .electric-grade-meter{display:none}
-  .role-aluno .grade-state{background:none;border:1px solid #777;color:black}
+  .campus-electric .grade-state{background:none;border:1px solid #777;color:black}
 }
+
+/* Login, professor and director reference — dashboard-only adapters. */
+body.campus-electric{--campus-accent:var(--electric-cyan);--campus-accent-2:#a890ff;--font-body:"Plus Jakarta Sans","Segoe UI",Arial,sans-serif;--font-display:var(--font-body)}
+.campus-electric.role-professor .app__content:has(.teacher-campus){max-width:1700px;padding:26px 32px 48px}
+.campus-electric .teacher-campus{min-height:0;padding:0;background:none;color:var(--campus-text)}
+.campus-electric :is(.teacher-heading,.director-heading){align-items:center;gap:24px;margin:0 0 26px;padding:6px 0 22px;border-bottom:1px solid var(--campus-line)}
+.campus-electric :is(.teacher-heading,.director-heading) h1{font:800 clamp(28px,3vw,44px)/1.12 var(--font-display);letter-spacing:-.045em;margin:10px 0 12px;color:var(--campus-text)}
+.campus-electric :is(.teacher-heading h1 em,.director-world em){color:var(--campus-accent)}
+.campus-electric :is(.teacher-kicker,.director-world .academic-kicker){font:700 9px/1.5 var(--font-body);letter-spacing:.1em;color:var(--campus-accent)}
+.campus-electric :is(.teacher-heading p,.teacher-next p,.teacher-caption,.teacher-work p,.teacher-work>small,.teacher-agenda p>span,.teacher-bindings header>span:last-child,.director-heading p,.director-panel p,.director-focus p,.director-person small,.director-records small,.director-records time,.director-footnote){color:var(--campus-muted)}
+.campus-electric :is(.teacher-next,.teacher-work,.teacher-bindings,.teacher-agenda,.director-panel,.director-metrics a){padding:24px;border:1px solid var(--campus-line);border-radius:14px;background:var(--campus-panel);color:var(--campus-text);box-shadow:var(--campus-shadow);backdrop-filter:none}
+.campus-electric .teacher-command{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:20px;align-items:stretch}
+.campus-electric .teacher-bottom{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:20px;margin-top:20px}
+.campus-electric .teacher-time{font:800 44px var(--font-display);color:var(--campus-accent);margin:20px 0 12px}
+.campus-electric .teacher-time>span{color:var(--campus-muted)}
+.campus-electric .teacher-next{border-top:3px solid var(--electric-blue);background:linear-gradient(125deg,var(--campus-panel-strong),var(--campus-panel))}
+.campus-electric .teacher-primary{background:var(--electric-blue);color:#fff;min-height:44px;max-width:320px}
+.campus-electric .teacher-primary:hover{background:var(--electric-blue);filter:brightness(1.12)}
+.campus-electric .teacher-inbox{background:var(--campus-panel);border-color:var(--campus-line);color:var(--campus-text);min-height:44px}
+.campus-electric .teacher-inbox:hover{background:var(--campus-panel-strong);border-color:var(--campus-accent)}
+.campus-electric .teacher-inbox b{background:var(--electric-blue);color:#fff}
+.campus-electric .teacher-work>a{color:var(--campus-text);border-color:var(--campus-line);padding:18px 0}
+.campus-electric .teacher-work>a:hover{color:var(--campus-accent)}
+.campus-electric :is(.teacher-work b,.teacher-work svg,.teacher-class>strong,.teacher-class a,.teacher-agenda svg,.teacher-agenda time){color:var(--campus-accent)}
+.campus-electric .teacher-class>div span{background:var(--campus-panel-strong);color:var(--campus-muted);border:1px solid var(--campus-line)}
+.campus-electric .teacher-agenda p{border-color:var(--campus-line)}
+.electric-teacher-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:0 0 24px}
+.electric-teacher-stats>a{display:grid;gap:12px;min-width:0;padding:22px;border:1px solid var(--campus-line);border-top:3px solid var(--electric-blue);border-radius:14px;background:var(--campus-panel);color:var(--campus-text);text-decoration:none}
+.electric-teacher-stats>a:nth-child(2){border-top-color:var(--electric-violet)}
+.electric-teacher-stats>a:nth-child(3){border-top-color:var(--electric-lime)}
+.electric-teacher-stats>a:hover{background:var(--campus-panel-strong);border-color:var(--campus-accent)}
+.electric-teacher-stats span{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700}
+.electric-teacher-stats svg{width:20px;height:20px;color:var(--campus-accent)}
+.electric-teacher-stats strong{font:800 36px/1 var(--font-display);color:var(--campus-accent)}
+.electric-teacher-stats small{color:var(--campus-muted);font-size:11px;line-height:1.6}
+.electric-quick-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:24px}
+.electric-quick-actions>a{display:flex;align-items:center;gap:14px;padding:22px 18px;min-height:88px;border:1px solid #5982ff66;border-radius:12px;background:linear-gradient(110deg,#144bff,#14388a);color:#fff;text-decoration:none;font-weight:700;font-size:13px}
+.electric-quick-actions>a:nth-child(2){background:linear-gradient(110deg,#502ba0,#302349);border-color:#975cff77}
+.electric-quick-actions>a:nth-child(3){background:linear-gradient(110deg,#086753,#123c36);border-color:#79edb755}
+.electric-quick-actions>a:hover{filter:brightness(1.15)}
+.electric-quick-actions svg{width:25px;height:25px;flex:none}
+.electric-quick-actions span{flex:1;min-width:0;line-height:1.5}
+.electric-quick-actions small{display:block;font-size:10px;line-height:1.6;font-weight:400;color:#e1eafe}
+.campus-electric .director-world{--gold:var(--campus-accent);background:none}
+.campus-electric .director-badge{display:none}
+.campus-electric .director-command{display:flex;flex-direction:column-reverse;gap:22px}
+.campus-electric .director-metrics{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.campus-electric .director-metrics a{min-width:0;gap:12px;padding:22px;border-top:3px solid var(--electric-blue)}
+.campus-electric .director-metrics a:nth-child(2){border-top-color:var(--campus-accent)}
+.campus-electric .director-metrics a:nth-child(3){border-top-color:var(--electric-violet)}
+.campus-electric .director-metrics a:nth-child(4){border-top-color:var(--electric-lime)}
+.campus-electric .director-metrics a:hover{background:var(--campus-panel-strong);border-color:var(--campus-accent)}
+.campus-electric .director-metrics strong{font:800 40px/1 var(--font-display);color:var(--campus-text);letter-spacing:-.045em}
+.campus-electric .director-metrics :is(span,small),.campus-electric .director-line{color:var(--campus-muted)}
+.campus-electric .director-metrics span{font-size:9px;line-height:1.7;letter-spacing:.05em}
+.campus-electric .director-metrics small{font-size:11px;line-height:1.6}
+.campus-electric .director-focus{padding:28px;border:1px solid var(--campus-line);border-radius:16px;background:linear-gradient(120deg,var(--campus-panel-strong),var(--campus-panel));display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 30px;align-items:center}
+.campus-electric .director-focus h2{font:800 28px/1.2 var(--font-display);letter-spacing:-.04em;margin:0;grid-column:1}
+.campus-electric .director-focus p{grid-column:1;max-width:650px;font-size:13px;line-height:1.65;margin:0}
+.campus-electric .director-focus>.academic-kicker{grid-column:1}
+.campus-electric .director-focus>.director-primary{grid-column:2;grid-row:1/4}
+.campus-electric .director-line{grid-column:1/-1;margin:10px 0 0;padding:15px 0 0;border-color:var(--campus-line)}
+.campus-electric .director-line strong{color:var(--campus-accent)}
+.campus-electric .director-columns{gap:20px;margin-top:22px}
+.campus-electric .director-panel{margin-bottom:0}
+.campus-electric .director-panel h2{font:800 19px/1.4 var(--font-display);letter-spacing:-.03em;margin:0 0 18px}
+.campus-electric .director-primary{background:var(--electric-blue);border-color:var(--electric-blue);color:#fff;min-height:44px}
+.campus-electric .director-secondary{background:var(--campus-panel-strong);border-color:var(--campus-line);color:var(--campus-text);min-height:44px}
+.campus-electric .director-action{border-color:var(--campus-line);color:var(--campus-text);gap:14px}
+.campus-electric .director-action>span{display:none} /* These independent shortcuts are not a sequence. */
+.campus-electric .director-action:hover{color:var(--campus-accent)}
+.campus-electric .director-action b{color:var(--campus-accent)}
+.campus-electric .director-tag{background:var(--campus-panel-strong);border-color:var(--campus-line);color:var(--campus-accent)}
+.campus-electric .director-section-head{flex-wrap:wrap}
+.campus-electric .electric-queue-link>.electric-queue-icon{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:10px;color:var(--campus-accent);background:var(--campus-panel-strong)}
+.electric-queue-icon svg{width:20px;height:20px}
+.electric-dashboard-note{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:24px;padding:20px 0;border-top:1px solid var(--campus-line);font-size:11px;line-height:1.6;color:var(--campus-muted)}
+.electric-dashboard-note p{margin:0;max-width:650px}.electric-dashboard-note a{color:var(--campus-accent);min-height:44px;display:inline-flex;align-items:center;flex:none}
+@media(max-width:1200px){.campus-electric.role-professor .app__content:has(.teacher-campus){padding-inline:22px}.campus-electric .director-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:980px){.campus-electric :is(.teacher-command,.teacher-bottom){grid-template-columns:1fr}.electric-quick-actions{grid-template-columns:1fr}.campus-electric .director-focus{grid-template-columns:1fr}.campus-electric .director-focus>.director-primary{grid-column:1;grid-row:auto;justify-self:start}}
+@media(max-width:760px){.campus-electric.role-professor .app__content:has(.teacher-campus){padding:20px 18px calc(100px + env(safe-area-inset-bottom))}.campus-electric :is(.teacher-heading,.director-heading){align-items:start;flex-wrap:wrap}.electric-teacher-stats{gap:10px}.electric-teacher-stats>a{padding:15px}.electric-teacher-stats span{font-size:10px;flex-wrap:wrap}.electric-teacher-stats strong{font-size:28px}.campus-electric .teacher-time{font-size:38px}.campus-electric .director-focus{padding:22px}}
+@media(max-width:480px){.electric-teacher-stats{grid-template-columns:1fr}.electric-teacher-stats>a{grid-template-columns:1fr auto;align-items:center}.electric-teacher-stats small{grid-column:1/-1}.campus-electric .director-metrics{gap:10px}.campus-electric .director-metrics a{padding:16px}.campus-electric .director-metrics strong{font-size:30px}.campus-electric .teacher-next,.campus-electric .teacher-work,.campus-electric .teacher-bindings,.campus-electric .teacher-agenda{padding:20px}}
+@media(max-width:760px){.electric-dashboard-note{flex-direction:column;align-items:start;gap:12px}}

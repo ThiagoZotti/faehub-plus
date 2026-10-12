@@ -73,7 +73,7 @@ Um campus em movimento com força e juventude: o mockup enviado em 09/10/2026 é
 - **Memorable signature:** o campus é tratado como um lugar navegável; a fotografia aparece no login e como faixa contextual no painel. O painel do aluno usa um radar do dia — agenda, desempenho e prioridade — no lugar de personagens. A estrutura acadêmica mantém percurso e linha do tempo; operações escolares preservam protocolos e estados claros.
 - **Restraint:** CRUD, campos, confirmação, busca e estados de erro permanecem previsíveis, legíveis e sem gestos escondidos.
 - **Anti-references:** não reduzir o mockup a um kit claro genérico; não trocar identidade forte por neutralidade; não usar o cartaz em perspectiva como captura de interface funcional. Nenhuma marca d'água, texto ilegível ou número ilustrativo entra no produto.
-- **Token ownership/runtime mapping:** modelo B, CSS é canônico. `static/campus-electric.css` é o owner da nova identidade do aluno, adaptando módulos sobre as camadas estruturais existentes. `--electric-blue` mapeia `colors.primary`; `--campus-accent` mapeia `colors.secondary`; painel/texto/linha mapeiam `colors.surface`, `on-background`, `outline`; `--font-body`/`--font-display` usam Plus Jakarta Sans local (WOFF2, licença OFL). Migração incremental: demais perfis e login preservam `campus-bright.css`/`arrival-bright.css` nesta etapa. Autorização e autenticação permanecem iguais.
+- **Token ownership/runtime mapping:** modelo B, CSS é canônico. `static/campus-electric.css` é o owner do aluno e dos painéis iniciais docente/direção. `--electric-blue` mapeia `colors.primary`; `--electric-cyan` e o alias `--campus-accent` mapeiam `colors.secondary`; painel/texto/linha mapeiam `colors.surface`, `on-background`, `outline`; `--font-body`/`--font-display` usam Plus Jakarta Sans local (WOFF2, licença OFL). `static/arrival-electric.css` adapta o login reutilizando esses tokens, sem duplicar paleta. O seletor `electric_view` em `base.html` limita a migração: responsável e demais rotas de professor/direção preservam `campus-bright.css`. Autorização e autenticação permanecem iguais.
 
 ## Colors
 
@@ -83,7 +83,7 @@ O mesmo owner CSS define os adaptadores semânticos dos módulos: `--electric-su
 
 ## Typography
 
-Plus Jakarta Sans variável 400–800, auto-hospedada, conduz títulos e controles do aluno; fallback Segoe UI/Arial durante o carregamento. Títulos do painel têm peso 800 e espaçamento negativo. Cascadia Code continua disponível para códigos técnicos. Demais perfis preservam Segoe UI nesta etapa. Caixa alta é restrita a rótulos curtos.
+Plus Jakarta Sans variável 400–800, auto-hospedada, conduz títulos e controles das superfícies Electric (aluno, login e painéis iniciais docente/direção); fallback Segoe UI/Arial durante o carregamento. Títulos do painel têm peso 800 e espaçamento negativo. Cascadia Code continua disponível para códigos técnicos. Superfícies fora desse escopo preservam Segoe UI nesta etapa. Caixa alta é restrita a rótulos curtos.
 
 ## Layout
 
@@ -121,7 +121,17 @@ A referência multitelas original de 1792×1008 está preservada em `output/bran
 
 O boletim mantém tabela semântica e médias numéricas; barras decorativas representam a média real, limitada visualmente a 0–100%, e não substituem o texto. Exercícios usa lista compacta com disciplina, descrição, prazo, situação e ação; no celular os detalhes quebram em blocos sem esconder as ações. Calendário de presenças não trata dias sem chamada como ausência. Secretaria conserva protocolos e histórico; Mensagens conserva balões, menu contextual e confirmação de exclusão lógica.
 
-A área de conta continua sendo o menu com fotografia opcional e diálogo compartilhado. Não foram inventadas telas de preferências, autenticador, login social ou métricas presentes apenas na ilustração. Login, responsáveis, professores e direção continuam com seus owners anteriores; o cartaz dessas outras telas está guardado somente como referência futura.
+A área de conta continua sendo o menu com fotografia opcional e diálogo compartilhado. Não foram inventadas telas de preferências, autenticador, login social ou métricas presentes apenas na ilustração.
+
+### Login e painéis iniciais — três telas autorizadas em 12/10/2026
+
+O usuário restringiu esta etapa às três telas de `output/branding/login-professor-direcao-mockup.png`: login, painel inicial do professor e painel inicial da direção. O aluno preserva seu visual já entregue. Responsável, primeiro acesso, recuperação, erros e demais páginas administrativas/docentes não são redesenhados nesta etapa.
+
+Login mantém fotografia original otimizada, com tratamento escuro por CSS, mensagem “Entre no campus”, credenciais em superfície azul profunda e seleção de quatro perfis. Logo aprovada permanece; não se gera outro fundo. Validação de credenciais e confirmação explícita de entrada continuam usando `arrival.js`, sem OAuth/SSO fictício nem indicador inventado de disponibilidade.
+
+Professor recebe três métricas reais (turmas, entregas para corrigir e alunos vinculados), próxima aula, entregas recebidas, vínculos e próximas aulas, com atalhos cobalto/violeta/verde para os fluxos existentes. Direção recebe quatro métricas existentes, fila real de diário/documentos/acompanhamentos e link para calendário com total real. Nenhum gráfico de tendência, frequência de turma ou percentagem é inventado para preencher o mockup.
+
+Somente esses dois painéis usam a sidebar Electric de todos os destinos autorizados e barra inferior abaixo de 760px; ao abrir outra tela docente/administrativa retorna o shell anterior. Essa transição visual é intencional para cumprir o escopo limitado, não significa migração integral. Os adaptadores comuns agora usam a classe `campus-electric`, ativada somente nas superfícies autorizadas; a variante do aluno conserva o resultado anterior.
 
 ### Forms and overlays
 

@@ -6,7 +6,7 @@
 - Locale: `pt-BR`; fuso: `America/Sao_Paulo`; calendário gregoriano.
 - Meta de acessibilidade: WCAG 2.2 AA.
 - Fontes de verdade: `ROADMAP.md`, autorização em `app.py`/`director.py`, dados em `database.py`/`p1_operations.py` e migrações em `supabase/migrations/`.
-- Direção visual canônica: `DESIGN.md`; `static/campus-electric.css` define o tema forte do aluno, sobre a estrutura existente. Demais perfis mantêm os adaptadores em `static/campus-bright.css`; `static/arrival-bright.css` define o login nesta migração. A logo aprovada é `static/logo-faehub.webp`.
+- Direção visual canônica: `DESIGN.md`; `static/campus-electric.css` define o tema forte do aluno e dos painéis iniciais de professor/direção. `static/arrival-electric.css` adapta o login com os mesmos tokens. Responsável e demais rotas de professor/direção mantêm `campus-bright.css`; ativação/recuperação continuam intactas. A logo aprovada é `static/logo-faehub.webp`.
 
 ## Modelo de permissão
 
@@ -97,11 +97,19 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 
 ### Variante visual do aluno
 
-- Todos os módulos do aluno compartilham `campus-electric.css`; login e demais perfis não carregam esse arquivo. Nenhuma conta é desbloqueada para demonstrar o visual.
+- Todos os módulos do aluno compartilham `campus-electric.css`; o login e os painéis iniciais de professor/direção reutilizam esse owner na etapa seguinte. Nenhuma conta é desbloqueada para demonstrar o visual.
 - Lista de atividades preserva os formulários e anexos reais. `campus-modules.js` é o owner dos filtros e da validação de entrega; a busca local tem botão explícito de limpar, atualização imediata e foco devolvido ao campo. O estado transitório de busca continua local, como os filtros existentes; o filtro de pendências vindo do painel permanece na URL.
 - Entrega vazia mostra erro associado à resposta e move foco para ela; envio válido bloqueia duplicação e apresenta `Enviando…` sem reduzir o botão. Voltar pelo histórico restaura o estado disponível do botão. O campo mantém oito linhas, no mínimo 200px e rolagem interna, sem redimensionamento manual.
 - Médias continuam em texto; barras de nota são decorativas (`aria-hidden`) e derivadas dos valores reais. Impressão remove barras e navegação.
 - Seletores de matrícula/documento e mês permanecem nativos: a geometria e interação dos popups pertencem à plataforma. A página e os formulários mantêm altura natural; somente listas, tabela, menu e diálogos limitam sua própria rolagem quando necessário.
+
+### Variante das três telas (12/10/2026)
+
+- O novo pedido autoriza somente login e `/painel` docente/direção. `electric_view` em `base.html` limita CSS e sidebar a esses painéis, além do aluno já migrado. Responsável e demais rotas não recebem a classe nem o asset Electric.
+- Navegação dos painéis usa a lista de destinos já autorizados, sem ampliar acesso. Foto opcional, iniciais, ações de conta e seus diálogos reutilizam o owner existente. No celular, três destinos e Mais permanecem disponíveis; documentos e formulários externos mantêm o shell anterior.
+- Login conserva IDs dos campos, máscara/revelação, seleção de perfil por teclado, CSRF, erro, bloqueio de duplicação e confirmação explícita antes de entrar. Seleção visual não concede perfil; a conta autenticada determina o acesso no servidor. Sem contas demo desbloqueadas, novos botões SSO ou alteração de senha.
+- Números do painel vêm de `teacher_overview` e `director_section`/`p1_metrics`; ausência de aulas ou vínculos conserva o estado vazio verdadeiro. Atalhos conduzem às operações existentes; não apresentam ações fictícias.
+- Impressões, e-mails, convites e recuperação não são redesenhados. A auditoria automatizada verifica a ausência do tema nas rotas fora do escopo; não substitui inspeção visual no navegador.
 
 ## Feedback e resiliência
 

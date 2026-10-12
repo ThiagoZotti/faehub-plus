@@ -81,12 +81,17 @@ class NavigationCompactionTests(unittest.TestCase):
         self.assertNotIn('campus-approved-mockup.png', html)
         self.assertIn('class="campus-mobile-more"', html)
 
-    def test_electric_rollout_does_not_restyle_director_workspace(self):
+    def test_electric_rollout_only_restyles_director_dashboard(self):
         self.login("gilberto", "admin")
         html = self.client.get("/painel").get_data(as_text=True)
-        self.assertNotIn('campus-electric.css', html)
-        self.assertNotIn('class="electric-sidebar"', html)
+        self.assertIn('campus-electric.css', html)
+        self.assertIn('class="electric-sidebar"', html)
         self.assertIn('logo-faehub.webp', html)
+        for route in ('/usuarios','/estrutura','/secretaria','/relatorios','/configuracoes'):
+            with self.subTest(route=route):
+                other = self.client.get(route).get_data(as_text=True)
+                self.assertNotIn('campus-electric.css', other)
+                self.assertNotIn('class="electric-sidebar"', other)
 
     def test_all_student_modules_share_electric_theme_without_changing_access(self):
         self.login("thiago.zotti", "aluno", "23081")
@@ -97,7 +102,7 @@ class NavigationCompactionTests(unittest.TestCase):
                 response = self.client.get(route)
                 self.assertEqual(response.status_code, 200)
                 html = response.get_data(as_text=True)
-                self.assertIn('campus-electric.css?v=2', html)
+                self.assertIn('campus-electric.css?v=3', html)
                 self.assertIn('class="electric-sidebar"', html)
                 self.assertNotIn('student-screens-mockup.png', html)
         self.assertEqual(self.client.get('/usuarios').status_code, 403)
@@ -116,14 +121,31 @@ class NavigationCompactionTests(unittest.TestCase):
         self.assertIn('name="token"', exercises)
         self.assertIn('campus-modules.js?v=3', exercises)
 
-    def test_teacher_and_public_login_are_not_migrated_by_student_theme(self):
+    def test_only_teacher_dashboard_and_login_join_electric_theme(self):
         self.login('aline', 'professor')
         teacher = self.client.get('/painel').get_data(as_text=True)
-        self.assertNotIn('campus-electric.css', teacher)
-        self.assertNotIn('class="electric-sidebar"', teacher)
+        self.assertIn('campus-electric.css', teacher)
+        self.assertIn('class="electric-sidebar"', teacher)
+        self.assertIn('class="electric-teacher-stats"', teacher)
+        for route in ('/turmas','/notas','/chamada','/diario','/exercicios','/avisos'):
+            with self.subTest(route=route):
+                other = self.client.get(route).get_data(as_text=True)
+                self.assertNotIn('campus-electric.css', other)
+                self.assertNotIn('class="electric-sidebar"', other)
         public_login = self.client.get('/').get_data(as_text=True)
-        self.assertIn('arrival-bright.css', public_login)
-        self.assertNotIn('campus-electric.css', public_login)
+        self.assertIn('arrival-electric.css', public_login)
+        self.assertNotIn('arrival-bright.css', public_login)
+        self.assertIn('campus-electric.css', public_login)
+
+    def test_guardian_is_not_changed_by_three_screen_rollout(self):
+        self.login('responsavel.thiago','responsavel')
+        for route in ('/painel','/secretaria','/calendario','/notificacoes','/mensagens'):
+            with self.subTest(route=route):
+                response = self.client.get(route)
+                self.assertEqual(response.status_code, 200)
+                html = response.get_data(as_text=True)
+                self.assertNotIn('campus-electric.css', html)
+                self.assertNotIn('class="electric-sidebar"', html)
 
     def test_electric_dashboard_keeps_empty_lesson_state_honest(self):
         self.login("thiago.zotti", "aluno", "23081")
