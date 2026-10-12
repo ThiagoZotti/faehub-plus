@@ -37,7 +37,8 @@ Comparação local final, mantendo também a identificação da instituição no
 | Configurações | 16 | 4 |
 | Relatórios | 24 | 8 |
 
-Validação final: 148 testes passaram em 161,095s; `git diff --check` sem erros.
+Validação final, incluindo bootstrap do responsável: 148 testes passaram em
+158,653s; `git diff --check` sem erros.
 Chrome headless isolado: 104 combinações de página/largura (1440/900/390/320px),
 seis abas de estrutura e interações de foco, busca, vazio, confirmação e Escape,
 sem erros de JavaScript ou overflow da página. O audit premium ficou sem achados
@@ -78,3 +79,14 @@ altera contas. Aplicar depois que a versão com `demos_seed_blocked` estiver no
 servidor, verificar as contas no Supabase e testar o login. Na conferência prévia,
 cinco contas estavam elegíveis; proprietário e Thiago Zotti tinham identidade/
 convite e foram excluídos do plano. O fluxo de Gmail permanece pausado.
+
+Conferência operacional em 12/10/2026: a versão otimizada foi enviada ao GitHub
+e identificada no login público do Render pelo versionamento de conteúdo.
+Cinco demos foram reabertas transacionalmente no projeto FaeHub+ via conexão
+administrativa Supabase: `aline`, `jonathan.samuel`, `pablo.sousa`,
+`marlon.eduardo` e `responsavel.thiago`. Login e painel de todas retornaram HTTP
+200 com as credenciais legadas, sem registrar cookies, tokens ou corpos das
+páginas. Proprietário e Thiago Zotti preservaram identidade, convite e versão
+de sessão. Os marcadores foram conferidos: acesso habilitado e seed bloqueado.
+`demo_seeding_enabled` é compartilhado também pelo bootstrap do responsável,
+incluindo seus vínculos familiares; o teste de reinício cobre sua não recriação.

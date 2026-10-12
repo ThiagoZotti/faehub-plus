@@ -501,10 +501,9 @@ def init_db():
         # O antigo módulo de avatar foi retirado; apaga apenas suas preferências legadas.
         db.execute("DROP TABLE IF EXISTS avatar_styles")
         db.execute("DROP TABLE IF EXISTS avatar_profiles")
-        from account_enrollment import init_enrollment, demos_enabled
+        from account_enrollment import init_enrollment, demo_seeding_enabled
         init_enrollment(db)
-        seed_block = db.execute("SELECT value FROM enrollment_settings WHERE key='demos_seed_blocked'").fetchone()
-        seed_demos = demos_enabled(db) and not (seed_block and seed_block['value'] == '1')
+        seed_demos = demo_seeding_enabled(db)
         accounts = [
             ("gilberto", "direcao@123", "Gilberto", "diretor", None),
             ("aline", "professora@123", "Profa. Aline", "professor", None),

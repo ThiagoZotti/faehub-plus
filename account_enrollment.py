@@ -69,6 +69,12 @@ def demos_enabled(conn=None):
     return not row or row['value'] != '1'
 
 
+def demo_seeding_enabled(conn):
+    """Reopening access never authorizes recreating deleted demonstration data."""
+    blocked = conn.execute("SELECT value FROM enrollment_settings WHERE key='demos_seed_blocked'").fetchone()
+    return demos_enabled(conn) and not (blocked and blocked['value'] == '1')
+
+
 def normalize_email(value):
     email = value.strip().lower()
     if len(email) > 254 or '..' in email or email.startswith('.') or '.@' in email or not re.fullmatch(r"[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?\.[a-z]{2,63}", email):

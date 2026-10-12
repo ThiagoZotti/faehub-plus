@@ -207,28 +207,29 @@ def init_operations():
                        VALUES(?,?,?,?,?,?)""",
                     (year["id"], name, number, starts_on, ends_on, status),
                 )
-        from account_enrollment import demos_enabled
-        if demos_enabled(conn) and not conn.execute("SELECT 1 FROM users WHERE username='responsavel.thiago'").fetchone():
+        from account_enrollment import demo_seeding_enabled
+        if demo_seeding_enabled(conn):
+            if not conn.execute("SELECT 1 FROM users WHERE username='responsavel.thiago'").fetchone():
+                conn.execute(
+                    """INSERT INTO users(username,password_hash,name,role,student_id,active)
+                       VALUES(?,?,?,?,?,TRUE)""",
+                    (
+                        "responsavel.thiago",
+                        generate_password_hash("responsavel@123"),
+                        "Responsável de Thiago",
+                        "aluno",
+                        None,
+                    ),
+                )
             conn.execute(
-                """INSERT INTO users(username,password_hash,name,role,student_id,active)
-                   VALUES(?,?,?,?,?,TRUE)""",
-                (
-                    "responsavel.thiago",
-                    generate_password_hash("responsavel@123"),
-                    "Responsável de Thiago",
-                    "aluno",
-                    None,
-                ),
+                """INSERT INTO account_roles(username,role) SELECT username,'responsavel' FROM users WHERE username='responsavel.thiago'
+                   ON CONFLICT(username) DO NOTHING"""
             )
-        conn.execute(
-            """INSERT INTO account_roles(username,role) SELECT username,'responsavel' FROM users WHERE username='responsavel.thiago'
-               ON CONFLICT(username) DO NOTHING"""
-        )
-        conn.execute(
-            """INSERT INTO guardian_links
-               (guardian_username,student_id,relationship) SELECT username,'23081','Responsável legal' FROM users WHERE username='responsavel.thiago'
-               ON CONFLICT(guardian_username,student_id) DO NOTHING"""
-        )
+            conn.execute(
+                """INSERT INTO guardian_links
+                   (guardian_username,student_id,relationship) SELECT username,'23081','Responsável legal' FROM users WHERE username='responsavel.thiago'
+                   ON CONFLICT(guardian_username,student_id) DO NOTHING"""
+            )
 
 
 def list_periods():

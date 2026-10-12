@@ -197,8 +197,11 @@ class NavigationOptimizationTests(unittest.TestCase):
                 conn.execute('DELETE FROM submissions')
                 conn.execute('DELETE FROM exercise_states')
                 conn.execute('DELETE FROM exercises')
+                conn.execute("DELETE FROM auth_versions WHERE username='responsavel.thiago'")
+                conn.execute("DELETE FROM users WHERE username='responsavel.thiago'")
             db.init_db()
             self.assertEqual(db.get_exercises(include_archived=True), [])
+            self.assertIsNone(account_access('responsavel.thiago'))
         finally:
             with db.connection() as conn:
                 conn.execute("DELETE FROM account_identities WHERE username IN ('gilberto','thiago.zotti')")
