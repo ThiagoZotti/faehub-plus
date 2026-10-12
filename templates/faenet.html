@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% macro external_link(path, label, class_name) -%}
+<a class="{{ class_name }}" href="{{ faenet_url }}{{ path }}" target="_blank" rel="noopener noreferrer">{{ label }} <span aria-hidden="true">↗</span><span class="sr-only"> — abre em uma nova aba</span></a>
+{%- endmacro %}
+{% block content %}
+<main class="faenet-portal">
+  <nav class="faenet-breadcrumb" aria-label="Você está aqui"><ol><li><a href="{{ url_for('painel') }}">{{ icons['document']|safe }} FaeHub+</a></li><li aria-current="page">FaeNet</li></ol></nav>
+  <header class="faenet-title"><img src="{{ url_for('static',filename='logo-faenet.png') }}" width="96" height="96" alt=""><div><h1>Fae<span>Net</span></h1><p>Sua comunidade escolar, mais perto de você.</p></div></header>
+  <section class="faenet-hero" aria-labelledby="faenetHeroTitle">
+    <img class="faenet-hero-photo" src="{{ url_for('static',filename='campus-plaza-v2.webp') }}" alt="" width="1672" height="941" fetchpriority="high" decoding="async">
+    <div class="faenet-hero-copy"><h2 id="faenetHeroTitle">A escola continua<br><span>além da sala.</span></h2><p>Conecte-se com a comunidade da ETESC.<br>Compartilhe ideias, acompanhe novidades<br>e participe da vida no campus.</p>{{ external_link('','Abrir a FaeNet','faenet-cta') }}<small>A FaeNet será aberta em uma nova aba.</small></div>
+    <span class="faenet-hero-stripes" aria-hidden="true"></span>
+  </section>
+  <div class="faenet-panels">
+    <section class="faenet-features" aria-labelledby="faenetFeaturesTitle"><h2 id="faenetFeaturesTitle">O que você encontra na <span>FaeNet</span></h2><div class="faenet-feature-grid">
+      {% for path,title,text,icon,tone in [('/feed','Feed da comunidade','Publicações e novidades do campus.','chat','blue'),('/messages','Conversas','Conecte-se com colegas e professores.','users','cyan'),('/explore','Explorar','Descubra pessoas e conteúdos.','compass','violet'),('/faemap','Mapa do campus','Encontre espaços da escola.','pin','green')] %}
+      <a class="faenet-feature faenet-feature--{{ tone }}" href="{{ faenet_url }}{{ path }}" target="_blank" rel="noopener noreferrer"><span class="faenet-feature-icon" aria-hidden="true">{{ icons[icon]|safe }}</span><span><strong>{{ title }}</strong><small>{{ text }}</small></span><b aria-hidden="true">›</b><span class="sr-only">Abre em uma nova aba</span></a>
+      {% endfor %}
+    </div></section>
+    <section class="faenet-community" aria-labelledby="faenetCommunityTitle"><h2 id="faenetCommunityTitle">Duas plataformas.<br><span>Uma comunidade.</span></h2><p>Sua vida acadêmica no FaeHub+.<br>Suas conexões na FaeNet.</p><div class="faenet-platform-pair"><div><img src="{{ url_for('static',filename='logo-faehub.webp') }}" alt="" width="76" height="76"><strong>FaeHub<span>+</span></strong><small>Estudos, notas<br>e sua rotina acadêmica.</small></div><span class="faenet-platform-arrow" aria-hidden="true">→</span><div><img src="{{ url_for('static',filename='logo-faenet.png') }}" alt="" width="76" height="76"><strong>Fae<span>Net</span></strong><small>Pessoas, conversas<br>e vida no campus.</small></div></div></section>
+  </div>
+  <footer class="faenet-next"><span aria-hidden="true">{{ icons['users']|safe }}</span><h2>Sua próxima <span>conexão</span> começa aqui.</h2>{{ external_link('','Ir para a FaeNet','faenet-cta') }}</footer>
+  <p class="faenet-signin-note">FaeHub+ e FaeNet têm acessos independentes. Se necessário, entre com sua conta da FaeNet.</p>
+</main>
+{% endblock %}

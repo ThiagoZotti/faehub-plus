@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% set electric_view = role in ['aluno','professor','admin'] %}
+{% set electric_view = role in ['aluno','professor','admin'] or current_view == 'faenet' %}
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
@@ -20,6 +20,7 @@
 {% if electric_view %}<link rel="stylesheet" href="{{ url_for('static', filename='campus-electric.css', v=3) }}">{% endif %}
 {% if role in ['professor','admin'] and current_view == 'painel' %}<link rel="stylesheet" href="{{ url_for('static', filename='staff-reference.css', v=1) }}">{% endif %}
 {% if role in ['professor','admin'] %}<link rel="stylesheet" href="{{ url_for('static', filename='staff-modules.css', v=1) }}"><script src="{{ url_for('static', filename='campus-actions.js', v=1) }}"></script>{% endif %}
+{% if current_view == 'faenet' %}<link rel="stylesheet" href="{{ url_for('static', filename='faenet-portal.css') }}">{% endif %}
 {% endif %}
 </head>
 <body class="role-{{ role }}{{ ' campus-shell' if role in ['aluno', 'professor', 'admin', 'responsavel'] else '' }}{{ ' campus-electric' if electric_view else '' }}{{ (' view-' ~ current_view) if current_view else '' }}">
@@ -75,8 +76,10 @@
   </header>
   {% if electric_view %}<aside class="electric-sidebar" aria-label="Seu espaço no campus"><span class="electric-nav-label">{{ 'GESTÃO ESCOLAR' if role == 'admin' else ('ESPAÇO DO PROFESSOR' if role == 'professor' else 'VIDA ESCOLAR') }}</span><nav aria-label="Navegação principal">{% for view_id, label, icon in nav_items %}<a href="{{ url_for(view_id) }}" {% if current_view == view_id %}aria-current="page"{% endif %}>{{ icons[icon]|safe }}<span>{{ label }}</span>{% if view_id in ['comunicados','notificacoes'] and notification_unread %}<b class="campus-nav-badge" aria-label="{{ notification_unread }} não lidas">{{ notification_unread }}</b>{% endif %}</a>{% endfor %}</nav><footer><strong>A escola que se<br><span>move com você.</span></strong><small>ETESC / FAETEC Santa Cruz</small></footer></aside>{% endif %}
   {% set mobile_primary = nav_primary[:3] %}{% set mobile_ids = mobile_primary|map(attribute=0)|list %}
+  {% if current_view == 'faenet' %}{% set mobile_ids = mobile_ids + ['faenet'] %}{% endif %}
   <nav class="campus-mobile-nav" aria-label="Navegação no celular">
     {% for view_id, label, icon in mobile_primary %}<a href="{{ url_for(view_id) }}" {% if current_view == view_id %}aria-current="page"{% endif %}>{{ icons[icon]|safe }}<span>{{ label }}</span></a>{% endfor %}
+    {% if current_view == 'faenet' %}<a href="{{ url_for('faenet') }}" aria-current="page">{{ icons['network']|safe }}<span>FaeNet</span></a>{% endif %}
     <details class="campus-mobile-more"{% if current_view not in mobile_ids %} data-current="true"{% endif %}><summary aria-label="Mais módulos">{{ icons['layers']|safe }}<span>Mais</span></summary><div>{% for view_id, label, icon in nav_items %}{% if view_id not in mobile_ids %}<a href="{{ url_for(view_id) }}" {% if current_view == view_id %}aria-current="page"{% endif %}>{{ icons[icon]|safe }}<span>{{ label }}</span></a>{% endif %}{% endfor %}</div></details>
   </nav>
   <nav class="campus-pager" aria-label="Percorrer módulos">

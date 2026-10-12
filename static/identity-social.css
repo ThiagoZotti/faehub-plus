@@ -30,3 +30,20 @@
 .dm-edit-dialog form{display:grid;gap:1rem;padding:1.3rem}.dm-edit-dialog h2{margin:0}.dm-edit-dialog textarea{min-height:8rem;padding:.8rem;border:1px solid var(--dm-line);border-radius:.75rem;color:#f4faff;background:#06182b;font:inherit;resize:vertical}.dm-edit-dialog form>div{display:flex;justify-content:flex-end;gap:.65rem}.dm-edit-dialog form>div button{min-height:2.6rem;padding:0 .9rem;border:1px solid var(--dm-line);border-radius:.7rem;color:#eaf7ff;background:transparent;font-weight:750;cursor:pointer}.dm-edit-dialog form>div .academic-button{color:#062238;background:#74e8df}
 @media(max-width:760px){.dm-menu-popover{right:-.25rem}.dm-bubble-meta{flex-wrap:wrap}.dm-group-form fieldset{grid-template-columns:1fr}.dm-live-notice{right:.75rem;bottom:4.75rem;max-width:calc(100% - 1.5rem)}}
 @media(prefers-reduced-motion:reduce){.dm-world *,.dm-world *::before,.dm-world *::after{scroll-behavior:auto!important;transition:none!important}}
+/* Delivery variant shares the message attachment trigger, without image recompression. */
+.delivery-attachment{position:relative;display:grid;gap:8px;--dm-accent:var(--campus-accent)}
+.delivery-attachment-title{font-size:13px;font-weight:700}
+.mission-dialog .delivery-attachment .dm-dialog-upload{display:flex;margin:0;background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line);font-size:13px;min-height:64px}
+.delivery-attachment .dm-dialog-upload small{font-size:11px;color:var(--campus-muted)}
+.delivery-attachment:has(input:focus-visible) .dm-dialog-upload{outline:3px solid var(--campus-accent);outline-offset:3px}
+.delivery-file-preview{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--campus-line);border-radius:12px;background:var(--campus-panel-strong)}
+.delivery-file-preview[hidden]{display:none}
+.delivery-file-preview>span{flex:1;min-width:0;overflow-wrap:anywhere}
+.delivery-file-preview :is(strong,small){display:block}
+.delivery-file-preview strong{font-size:12px;color:var(--campus-text)}
+.delivery-file-preview small{font-size:11px;color:var(--campus-muted);margin-top:4px}
+.delivery-file-preview button{width:44px;height:44px;flex:none;display:grid;place-items:center;background:var(--campus-panel);color:var(--campus-text);border:1px solid var(--campus-line);border-radius:10px;cursor:pointer;font-size:20px}
+.delivery-file-preview button:hover{color:var(--campus-accent);border-color:var(--campus-accent)}
+.delivery-file-preview button:focus-visible{outline:3px solid var(--campus-accent);outline-offset:3px}
+.delivery-file-error:empty{display:none}
+.delivery-attachment .delivery-file-error{color:var(--campus-danger);font-size:12px;line-height:1.5;margin:0}

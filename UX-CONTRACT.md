@@ -121,6 +121,25 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 
 ## Feedback e resiliência
 
+### FaeNet e anexos de atividades
+
+- `/faenet` requer sessão ativa e conserva a revalidação por requisição. Todos
+  os quatro perfis existentes recebem um destino no menu, sem ampliar suas
+  permissões acadêmicas. O proprietário utiliza o mesmo destino do admin.
+- As ações abrem `https://faenet.onrender.com/feed`, `/messages`, `/explore` e
+  `/faemap` em nova aba, com `noopener noreferrer`. Não são enviados cookies,
+  tokens, nome, turma ou matrícula do FaeHub. Login e sessões são independentes.
+- Os rótulos anunciam nova aba também para leitores de tela; não se substituem
+  links por botões para esconder a prévia de endereço do navegador.
+- O anexo da atividade usa o mesmo macro visual das mensagens e um input nativo
+  associado ao rótulo. Seleção por teclado, nome/tamanho, remoção com foco
+  restaurado e erro inline são obrigatórios. Aceita um PDF/PNG/JPG/TXT/ZIP não
+  vazio de até 5 MB; o backend continua validando tipo, conteúdo e autorização.
+- O arquivo não é enviado ao selecionar: continua no multipart do formulário
+  de entrega, com CSRF e bloqueio de duplicação existentes. Arquivos inválidos
+  impedem o submit; resposta e seleção são preservadas para correção. Não se
+  anunciam porcentagens de upload que o fluxo nativo não mede.
+
 ### Escopo integral confirmado em 12/10/2026
 
 - A limitação anterior de três telas foi revogada por confirmação explícita do usuário: todas as páginas existentes de professor/direção recebem o tema e a navegação Electric. Os testes percorrem as rotas principais e complementares dos dois perfis. Perfil mantém o menu e diálogos reais; imagens conceituais não autorizam inventar recursos.

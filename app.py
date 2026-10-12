@@ -131,6 +131,10 @@ ICONS = {
     "layers": '<svg viewBox="0 0 24 24" fill="none"><path d="m12 3 8.5 4.5L12 12 3.5 7.5 12 3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m3.5 12 8.5 4.5 8.5-4.5M3.5 16.5 12 21l8.5-4.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
     "users": '<svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.7"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 8.5a3 3 0 1 1 0 5.9M18.5 19c0-2.4-1.6-4.2-3.7-4.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
     "chart": '<svg viewBox="0 0 24 24" fill="none"><path d="M4 20V10M11 20V4M18 20v-7" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>',
+    "network": '<svg viewBox="0 0 24 24" fill="none"><path d="m3 18 6-9 5 6 7-11M5 21l6-9 5 6 5-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="9" r="2" fill="currentColor"/><circle cx="21" cy="4" r="2" fill="currentColor"/><circle cx="21" cy="11" r="2" fill="currentColor"/></svg>',
+    "chat": '<svg viewBox="0 0 24 24" fill="none"><path d="M5 4h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-5 3v-3H3V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M7 9h10M7 13h7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+    "compass": '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="m16 8-3 5-5 3 3-5 5-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
+    "pin": '<svg viewBox="0 0 24 24" fill="none"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.7"/></svg>',
     "settings": '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M12 3.5v2M12 18.5v2M4.9 6.4l1.4 1.4M17.7 16.2l1.4 1.4M3.5 12h2M18.5 12h2M4.9 17.6l1.4-1.4M17.7 7.8l1.4-1.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
     "briefcase": '<svg viewBox="0 0 24 24" fill="none"><path d="M8 7V5.5A2.5 2.5 0 0 1 10.5 3h3A2.5 2.5 0 0 1 16 5.5V7M4 7h16a1.5 1.5 0 0 1 1.5 1.5v9A2.5 2.5 0 0 1 19 20H5a2.5 2.5 0 0 1-2.5-2.5v-9A1.5 1.5 0 0 1 4 7Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M2.8 12.5c2.7 1.3 5.8 2 9.2 2s6.5-.7 9.2-2M10 13.8v1.7h4v-1.7" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
     "calendar": '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M8 3v4M16 3v4M3 10h18M8 14h2M14 14h2M8 18h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
@@ -193,6 +197,13 @@ VIEW_TITLES = {
     "admin": {"painel": "Painel", "usuarios": "Usuários", "estrutura": "Estrutura acadêmica", "turmas": "Turmas", "historico": "Histórico", "diario": "Diário", "secretaria": "Secretaria", "coordenacao": "Coordenação", "periodos": "Períodos", "calendario": "Calendário", "notificacoes": "Notificações", "relatorios": "Relatórios", "configuracoes": "Configurações", "mensagens": "Mensagens"},
     "responsavel": {"painel": "Portal do responsável", "historico": "Histórico", "secretaria": "Documentos", "calendario": "Calendário", "notificacoes": "Notificações", "mensagens": "Mensagens"},
 }
+
+# Shared portal destination; academic permissions remain owned by each profile.
+for _role in NAV:
+    NAV[_role].append(('faenet', 'FaeNet', 'network'))
+    VIEW_TITLES[_role]['faenet'] = 'FaeNet'
+
+FAENET_PUBLIC_URL = 'https://faenet.onrender.com'
 
 # Horário e avisos são os mesmos para toda a turma 3110
 from school_schedule import SCHEDULE_3110
@@ -667,6 +678,14 @@ def horario():
 # ==========================================================================
 # Rotas compartilhadas (conteúdo muda por perfil)
 # ==========================================================================
+@app.get('/faenet')
+@login_required('faenet')
+def faenet():
+    if session.get('role') not in NAV:
+        return 'Acesso restrito.', 403
+    return render_template('faenet.html', faenet_url=FAENET_PUBLIC_URL)
+
+
 @app.route("/avisos", methods=["GET", "POST"])
 @login_required("avisos")
 def avisos():

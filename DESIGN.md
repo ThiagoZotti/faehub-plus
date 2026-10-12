@@ -153,6 +153,33 @@ Login ocupa toda a largura e, no mínimo, a altura da janela, sem margens, borda
 
 Os formulários de linha, chamada e publicações do professor usam `campus-actions.js` para confirmação por diálogo nativo do app, validação inline, busca com limpar e envio único. A troca de `alert/confirm` do navegador não altera as regras de salvar, substituir ou arquivar. Diretor/P0/operações preservam seus owners e consequências de negócio existentes, apenas recebem o tema compartilhado.
 
+### Tela compartilhada FaeNet (12/10/2026)
+
+`/faenet` é a apresentação da rede social dentro do FaeHub+, disponível aos
+quatro perfis existentes e ao proprietário. A referência é
+`docs/mockups/faenet-redirecionamento-v1.png`: logo original FaeNet, hero
+fotográfico diagonal com faixa ciano, quatro atalhos, par de plataformas e CTA
+inferior. `faenet-portal.css` adapta os tokens Electric, sem substituir seu owner.
+A imagem `campus-plaza-v2.webp` já existente é reutilizada; nenhuma nova imagem
+é gerada. Responsável usa o shell Electric somente nesta rota, preservando suas
+demais páginas. Foto/conta continuam reais ou com iniciais; não se usa a pessoa
+ilustrativa do mockup. Não se adiciona busca global fictícia ao cabeçalho.
+
+No celular, os painéis ficam em coluna, os recursos viram lista e FaeNet recebe
+atalho ativo na barra inferior desta tela, junto aos destinos e Mais existentes.
+O conteúdo mantém rolagem natural. Os botões externos abrem uma nova aba e o
+texto informa que as contas dos dois aplicativos são independentes.
+
+O painel do aluno tem card de pendências compacto, com ações de 64px e título
+de 18px. Em desktops com altura até 1050px, somente o próprio painel reduz o
+ritmo do hero, agenda e desempenho para caber; não se esconde conteúdo nem se
+trava o documento. Abaixo de 1100px, mantém a composição responsiva rolável.
+
+Anexos reutilizam o macro `components/attachment_trigger.html` e o estilo de
+mensagens em `identity-social.css`. A variante de entrega mostra nome/tamanho,
+remover e erro, sem recomprimir o trabalho. `campus-system.css` é owner da
+utilidade `sr-only` usada por rótulos e avisos acessíveis.
+
 ### Forms and overlays
 
 Campos têm rótulos persistentes. Seleção e data usam controles nativos aceitos pelo contrato de UX. Diálogos têm título, fechamento explícito, fundo modal e foco gerenciado pelo navegador. A confirmação de arquivamento nunca usa `window.confirm`.

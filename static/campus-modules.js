@@ -69,11 +69,30 @@
   renderRead();
   root.querySelectorAll('[data-open-answer]').forEach(button=>button.addEventListener('click',()=>document.getElementById(button.dataset.openAnswer).showModal()));
   root.querySelectorAll('[data-close-dialog]').forEach(button=>button.addEventListener('click',()=>button.closest('dialog').close()));
+  root.querySelectorAll('[data-delivery-attachment]').forEach(picker=>{
+    const input=picker.querySelector('input[type=file]'),preview=picker.querySelector('.delivery-file-preview');
+    const error=picker.querySelector('.delivery-file-error');
+    const render=()=>{
+      const file=input.files[0];
+      const invalid=file && (!/\.(pdf|png|jpe?g|txt|zip)$/i.test(file.name) || !file.size || file.size>5*1024*1024);
+      const message=invalid?'Escolha PDF, PNG, JPG, TXT ou ZIP não vazio, de até 5 MB.':'';
+      input.setCustomValidity(message);error.textContent=message;
+      if(invalid)input.setAttribute('aria-invalid','true');else input.removeAttribute('aria-invalid');
+      preview.hidden=!file;
+      if(file){picker.querySelector('[data-delivery-file-name]').textContent=file.name;picker.querySelector('[data-delivery-file-size]').textContent=file.size<1024?file.size+' bytes':new Intl.NumberFormat('pt-BR',{maximumFractionDigits:1}).format(file.size/1024)+' KB';}
+    };
+    input.addEventListener('change',render);
+    picker.querySelector('[data-delivery-remove]').addEventListener('click',()=>{input.value='';render();input.focus();});
+    picker.closest('form').addEventListener('reset',()=>{input.value='';render();});
+    window.addEventListener('pageshow',render);
+    render();
+  });
   root.querySelectorAll('.mission-dialog form').forEach(form=>form.addEventListener('submit', event=>{
     if (form.dataset.pending) { event.preventDefault(); return; }
     form.querySelectorAll('.module-field-error').forEach(error=>error.remove());
     const text = form.querySelector('textarea');
     const file = form.querySelector('input[type=file]');
+    if(file && !file.validity.valid){event.preventDefault();file.focus();return;}
     if (!text.value.trim() && !file?.files.length) {
       event.preventDefault();
       const error=document.createElement('small');

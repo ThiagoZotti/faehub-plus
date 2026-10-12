@@ -1,0 +1,3 @@
+{% macro attachment_trigger(input_id, label='Anexar', detail='') -%}
+<label class="{{ 'dm-dialog-upload' if detail else 'dm-attach-trigger' }}" for="{{ input_id }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 12.8 14.8 6.5a3.2 3.2 0 0 1 4.5 4.5l-8.1 8.1a5 5 0 0 1-7.1-7.1l8-8"/></svg><span>{% if detail %}<strong>{{ label }}</strong><small>{{ detail }}</small>{% else %}{{ label }}{% endif %}</span></label>
+{%- endmacro %}
