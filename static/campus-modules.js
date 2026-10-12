@@ -19,7 +19,17 @@
       const empty = document.getElementById(emptyId);
       if (empty) empty.hidden = cards.some(c => !c.hidden);
     };
-    search?.addEventListener('input', update);
+    const clear = root.querySelector('[data-module-search-clear="' + searchId + '"]');
+    const updateSearch = () => {
+      if (clear) clear.hidden = !search?.value;
+      update();
+    };
+    search?.addEventListener('input', updateSearch);
+    clear?.addEventListener('click', () => {
+      search.value = '';
+      updateSearch();
+      search.focus();
+    });
     root.querySelectorAll('[data-' + kind + '-filter]').forEach(button => {
       button.setAttribute('aria-pressed', String(button.dataset[kind + 'Filter'] === filter));
       button.addEventListener('click', () => {
@@ -28,7 +38,7 @@
         update();
       });
     });
-    return update;
+    return updateSearch;
   }
   const noticeUpdate = searchable('notice','.notice-entry','noticeSearch','noticeEmpty');
   const exerciseUpdate = searchable('exercise','.mission-card','exerciseSearch','exerciseEmpty');
@@ -60,6 +70,7 @@
   root.querySelectorAll('[data-open-answer]').forEach(button=>button.addEventListener('click',()=>document.getElementById(button.dataset.openAnswer).showModal()));
   root.querySelectorAll('[data-close-dialog]').forEach(button=>button.addEventListener('click',()=>button.closest('dialog').close()));
   root.querySelectorAll('.mission-dialog form').forEach(form=>form.addEventListener('submit', event=>{
+    if (form.dataset.pending) { event.preventDefault(); return; }
     form.querySelectorAll('.module-field-error').forEach(error=>error.remove());
     const text = form.querySelector('textarea');
     const file = form.querySelector('input[type=file]');
@@ -67,11 +78,27 @@
       event.preventDefault();
       const error=document.createElement('small');
       error.className='module-field-error';
+      error.id=text.id+'Error';
       error.textContent='Escreva uma resposta ou selecione um anexo antes de enviar.';
       text.setAttribute('aria-invalid','true');
+      text.setAttribute('aria-describedby',error.id);
       text.insertAdjacentElement('afterend',error);
       text.focus();
+      return;
     }
+    text.removeAttribute('aria-invalid');
+    text.removeAttribute('aria-describedby');
+    form.dataset.pending='true';
+    form.setAttribute('aria-busy','true');
+    const button=form.querySelector('button[type=submit]');
+    if(button){button.style.minWidth=button.getBoundingClientRect().width+'px';button.dataset.submitLabel=button.textContent;button.disabled=true;button.textContent='Enviando…';}
   }));
-  root.querySelectorAll('.mission-dialog textarea').forEach(text=>text.addEventListener('input',()=>text.removeAttribute('aria-invalid')));
+  root.querySelectorAll('.mission-dialog textarea').forEach(text=>text.addEventListener('input',()=>{
+    text.removeAttribute('aria-invalid');text.removeAttribute('aria-describedby');
+    text.parentElement.querySelectorAll('.module-field-error').forEach(error=>error.remove());
+  }));
+  window.addEventListener('pageshow',()=>root.querySelectorAll('.mission-dialog form').forEach(form=>{
+    delete form.dataset.pending;form.removeAttribute('aria-busy');
+    form.querySelectorAll('[data-submit-label]').forEach(button=>{button.disabled=false;button.textContent=button.dataset.submitLabel;});
+  }));
 })();

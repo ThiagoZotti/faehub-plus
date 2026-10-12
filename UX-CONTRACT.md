@@ -42,7 +42,7 @@ A interface oculta rotas não autorizadas, mas o servidor sempre revalida sessã
 | Select/Listbox | Navegador nativo | `templates/p0/estrutura.html` | curso, turma, disciplina, situação | teste de mutação P0 + teclado |
 | Date | Navegador nativo | `templates/p0/estrutura.html` | início, término e encerramento | teste de cadeia acadêmica |
 | Form | FaeHub `academic-core.js` | `static/p0/academic-core.js` | criação, vínculo, alteração de situação | erro inline + retry + testes P0 |
-| Scrollbar | Shell FaeHub | `static/campus-system.css` | página, navegação e tabela responsiva | desktop e celular |
+| Scrollbar | Shell FaeHub | `static/campus-system.css`, adaptador aluno `static/campus-electric.css` | página, navegação e tabela responsiva | desktop e celular |
 | Toast | Shell FaeHub | `templates/base.html` | sucesso após redirect | teste de mutação P0 |
 | CRUD | Núcleo acadêmico | `academic_core.py` | criação e mudança de estado sem exclusão física | `test_p0_academic_core.py` |
 
@@ -94,6 +94,14 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 - Datas usam controles nativos quando a aparência do popup não é requisito de marca.
 - Matrículas usam busca e paginação no servidor, com estado na URL e dez linhas por página.
 - Filtros locais permanecem apenas em conjuntos pequenos; acima de 50 itens devem migrar para URL/paginação do servidor.
+
+### Variante visual do aluno
+
+- Todos os módulos do aluno compartilham `campus-electric.css`; login e demais perfis não carregam esse arquivo. Nenhuma conta é desbloqueada para demonstrar o visual.
+- Lista de atividades preserva os formulários e anexos reais. `campus-modules.js` é o owner dos filtros e da validação de entrega; a busca local tem botão explícito de limpar, atualização imediata e foco devolvido ao campo. O estado transitório de busca continua local, como os filtros existentes; o filtro de pendências vindo do painel permanece na URL.
+- Entrega vazia mostra erro associado à resposta e move foco para ela; envio válido bloqueia duplicação e apresenta `Enviando…` sem reduzir o botão. Voltar pelo histórico restaura o estado disponível do botão. O campo mantém oito linhas, no mínimo 200px e rolagem interna, sem redimensionamento manual.
+- Médias continuam em texto; barras de nota são decorativas (`aria-hidden`) e derivadas dos valores reais. Impressão remove barras e navegação.
+- Seletores de matrícula/documento e mês permanecem nativos: a geometria e interação dos popups pertencem à plataforma. A página e os formulários mantêm altura natural; somente listas, tabela, menu e diálogos limitam sua própria rolagem quando necessário.
 
 ## Feedback e resiliência
 

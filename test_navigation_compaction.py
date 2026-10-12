@@ -88,6 +88,43 @@ class NavigationCompactionTests(unittest.TestCase):
         self.assertNotIn('class="electric-sidebar"', html)
         self.assertIn('logo-faehub.webp', html)
 
+    def test_all_student_modules_share_electric_theme_without_changing_access(self):
+        self.login("thiago.zotti", "aluno", "23081")
+        for route in ("/painel", "/boletim", "/agenda", "/horario", "/exercicios",
+                      "/comunicados", "/secretaria", "/estagios", "/mensagens",
+                      "/frequencia", "/calendario", "/historico"):
+            with self.subTest(route=route):
+                response = self.client.get(route)
+                self.assertEqual(response.status_code, 200)
+                html = response.get_data(as_text=True)
+                self.assertIn('campus-electric.css?v=2', html)
+                self.assertIn('class="electric-sidebar"', html)
+                self.assertNotIn('student-screens-mockup.png', html)
+        self.assertEqual(self.client.get('/usuarios').status_code, 403)
+
+    def test_student_grade_meters_and_exercise_list_reuse_real_data(self):
+        self.login("thiago.zotti", "aluno", "23081")
+        grades = self.client.get('/boletim').get_data(as_text=True)
+        self.assertIn('class="electric-grade-meter" aria-hidden="true"', grades)
+        self.assertIn('scope="row"', grades)
+        self.assertIn('Recuperação', grades)
+        exercises = self.client.get('/exercicios').get_data(as_text=True)
+        self.assertIn('data-module-search-clear="exerciseSearch"', exercises)
+        self.assertIn('class="mission-copy"', exercises)
+        self.assertIn('class="mission-action"', exercises)
+        self.assertIn('enctype="multipart/form-data" novalidate', exercises)
+        self.assertIn('name="token"', exercises)
+        self.assertIn('campus-modules.js?v=3', exercises)
+
+    def test_teacher_and_public_login_are_not_migrated_by_student_theme(self):
+        self.login('aline', 'professor')
+        teacher = self.client.get('/painel').get_data(as_text=True)
+        self.assertNotIn('campus-electric.css', teacher)
+        self.assertNotIn('class="electric-sidebar"', teacher)
+        public_login = self.client.get('/').get_data(as_text=True)
+        self.assertIn('arrival-bright.css', public_login)
+        self.assertNotIn('campus-electric.css', public_login)
+
     def test_electric_dashboard_keeps_empty_lesson_state_honest(self):
         self.login("thiago.zotti", "aluno", "23081")
         summary = dict(date_label="Hoje", unread_count=0, lessons=[], pending_count=0)

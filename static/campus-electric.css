@@ -79,3 +79,284 @@ body.campus-shell{background:var(--campus-ink);color:var(--campus-text);--surfac
 @media(forced-colors:active){html,*{scrollbar-color:auto}.performance-ring{border:3px solid CanvasText}.electric-sidebar nav>a[aria-current],.campus-mobile-nav>a[aria-current]{outline:2px solid Highlight}.dashboard-hero__campus{display:none}}
 /* Print excludes navigation, preserving the established report flow. */
 @media print{.electric-sidebar,.electric-header-actions,.campus-header,.campus-mobile-nav{display:none!important}.role-aluno.campus-shell .app__main{padding:0}.role-aluno.campus-shell,.role-aluno.campus-shell .app__content{background:white;color:black}.role-aluno .grade-table :is(td,th),.role-aluno .grade-summary,.role-aluno .grade-table-wrap{background:white;color:black;border-color:#888}}
+
+/* Student modules — the approved multi-screen reference, not the marketing poster.
+   This file is loaded only for students. Shared role templates retain their owners. */
+:root {
+  --electric-success: #79edb7;
+  --electric-warning: #ffcf7b;
+  --electric-success-panel: #123c36;
+  --electric-warning-panel: #433522;
+  --electric-danger-panel: #49263e;
+  --electric-field: #0a142b;
+}
+.role-aluno.campus-shell .app__content > :is(.academic,.ops,.internship-world) {
+  width:100%;max-width:none;margin:0;padding:0;min-height:0;
+}
+.role-aluno :is(.academic,.ops,.internship-world) {
+  --amber:var(--electric-warning);--ops-mint:var(--electric-success);
+  --ops-warn:var(--electric-warning);--ops-danger:var(--electric-red);
+  --core-aqua:var(--campus-accent);--dm-accent:var(--electric-blue);
+  --intern-mint:var(--campus-accent);--intern-blue:var(--campus-accent-2);
+  --intern-warm:var(--electric-warning);
+}
+.role-aluno :is(.academic-heading,.dm-heading,.internship-heading) {
+  align-items:center;gap:20px;margin:0 0 26px;padding:6px 0 22px;
+  border-bottom:1px solid var(--campus-line);
+}
+.role-aluno :is(.academic-heading,.unified-hero,.ops-hero,.internship-heading,.dm-heading) h1 {
+  font:800 clamp(30px,3.1vw,48px)/1.12 var(--font-display);
+  letter-spacing:-.045em;max-width:23ch;margin:10px 0 12px;color:var(--campus-text);
+}
+.role-aluno :is(.academic-heading,.unified-hero,.internship-heading) h1 em {
+  color:var(--campus-accent);font-style:normal;
+}
+.role-aluno :is(.academic-heading,.internship-heading,.dm-heading) p {
+  color:var(--campus-muted);font-size:13px;line-height:1.65;max-width:650px;
+}
+.role-aluno :is(.academic-kicker,.unified-kicker,.ops-kicker,.internship-kicker) {
+  color:var(--campus-accent);font:700 10px/1.5 var(--font-body);letter-spacing:.1em;
+}
+.role-aluno .academic-heading > div::before {background:var(--electric-blue)}
+.role-aluno :is(.academic-heading small,.academic-footnote,.unified-empty,.academic-empty,
+  .ops-empty,.ops-field label,.ops-card__head p,.ops-row p,.ops-event p,.ops-event time,
+  .communications-discarded__list small,.unified-history__year small,.unified-history__subjects span,
+  .grade-table-toolbar>span,.grade-lab-body p,.grade-simulator-controls label,.sim-result p,
+  .banner-stat span,.record-weekdays,.record-legend,.dm-compose-help) {color:var(--campus-muted)}
+.role-aluno :is(.unified-hero,.ops-hero,.module-banner,.internship-radar) {
+  background:linear-gradient(115deg,var(--campus-panel-strong),var(--campus-panel) 64%);
+  border:1px solid var(--campus-line);border-radius:16px;box-shadow:var(--campus-shadow);
+}
+.role-aluno :is(.unified-hero,.ops-hero) {
+  padding:26px;min-height:0;gap:24px;align-items:center;
+}
+.role-aluno .unified-hero {grid-template-columns:minmax(0,1fr) minmax(270px,.7fr)}
+.role-aluno :is(.unified-hero,.ops-hero) p {font-size:13px;line-height:1.65;color:var(--campus-muted)}
+.role-aluno .ops-hero p.ops-kicker {color:var(--campus-accent);margin:0 0 12px}
+.role-aluno .unified-stats {grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.role-aluno .unified-stats>div {
+  min-width:0;border:1px solid var(--campus-line);border-top:3px solid var(--electric-blue);
+  border-radius:12px;padding:18px 12px;background:var(--campus-panel);
+}
+.role-aluno .unified-stats>div:nth-child(2) {border-top-color:var(--electric-violet)}
+.role-aluno .unified-stats>div:nth-child(3) {border-top-color:var(--electric-lime)}
+.role-aluno .unified-stats strong {font:800 29px/1.1 var(--font-display);color:var(--campus-text)}
+.role-aluno .unified-stats span {font-size:11px;line-height:1.5}
+.role-aluno :is(.ops-score,.ops-count,.ops-row,.ops-notice,.core-notice,.history-line article,
+  .academic-overview,.grade-detail,.course-number,.grade-simulator,.dm-live-notice) {
+  background:var(--campus-panel);border-color:var(--campus-line);color:var(--campus-text);
+}
+.role-aluno :is(.ops-card,.academic-glass,.unified-panel,.mission-card,.day-card) {
+  box-shadow:var(--campus-shadow);backdrop-filter:none;
+}
+.role-aluno :is(.unified-panel__head h2,.ops-card__head h2,.academic-glass h2,.academic-toolbar h2,
+  .ops-event h3,.unified-message h3,.mission-card h2,.core-notice h2) {
+  color:var(--campus-text);font-family:var(--font-display);
+}
+.role-aluno .ops-card--accent {border-top:3px solid var(--electric-blue)}
+.role-aluno .ops-score {min-width:0;width:100%;max-width:250px;backdrop-filter:none}
+.role-aluno .ops-score strong {color:var(--campus-accent)}
+.role-aluno .ops-score i {display:none} /* Decorative fixed percentages are not real metrics. */
+.role-aluno :is(.ops-row:hover,.ops-notice.is-unread,.core-nav a:hover) {background:var(--campus-panel-strong)}
+.role-aluno :is(.ops-btn,.core-map button,.core-nav a,.core-chipset span) {
+  background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line);
+}
+.role-aluno :is(.academic .academic-button,.unified-link,.unified-action,.ops-btn,.module-filter button,
+  .grade-filters button,.internship-button) {min-height:44px;border-radius:10px}
+.role-aluno :is(.academic .academic-button,.unified-link,.unified-action,.ops-btn):hover {
+  background:var(--campus-panel-strong);color:var(--campus-accent);border-color:var(--campus-accent);
+}
+.role-aluno :is(.dm-new,.social-compose,.mission-action .academic-button,.mission-dialog button[type=submit],
+  .ops-btn--primary,.core-map .core-primary) {
+  background:var(--electric-blue);color:#fff;border-color:var(--electric-blue);
+}
+.role-aluno :is(.ops-btn--primary,.mission-action .academic-button,.mission-dialog button[type=submit]):hover {
+  background:var(--electric-blue);color:#fff;filter:brightness(1.16);
+}
+.role-aluno :is(.academic-badge,.ops-status,.grade-state) {
+  border-radius:8px;padding:6px 10px;background:var(--electric-success-panel);
+  color:var(--electric-success);font-size:11px;
+}
+.role-aluno :is(.academic-badge.amber,.ops-status--warn,.grade-state.is-attention,.delivery-note) {
+  color:var(--electric-warning);background:var(--electric-warning-panel);
+}
+.role-aluno :is(.ops-error,.module-field-error,.dm-compose-error) {color:var(--electric-red)}
+.role-aluno :is(.ops-success,.ops-status--success) {color:var(--electric-success)}
+.role-aluno :is(.ops-btn--danger,.core-danger,.ops-status--danger) {
+  color:var(--electric-red);background:var(--electric-danger-panel);border-color:var(--electric-red);
+}
+.role-aluno :is(.grade-summary article,.grade-table :is(td,th),.grade-detail,.sim-result,
+  .ops-row,.ops-card__head,.ops-event,.unified-message,.unified-history__year) {border-color:var(--campus-line)}
+.role-aluno .grade-summary {padding:20px 24px;border-radius:16px;gap:16px}
+.role-aluno .grade-summary article {gap:14px;padding-inline:20px}
+.role-aluno .grade-summary article strong {font-size:36px}
+.role-aluno .grade-summary article:nth-child(2) .grade-summary-icon {
+  background:var(--campus-panel-strong);color:var(--campus-accent);
+}
+.role-aluno .grade-summary article:nth-child(3) .grade-summary-icon {
+  background:var(--campus-panel-strong);color:var(--campus-accent-2);
+}
+.role-aluno .grade-table :is(th,td) {padding:16px 18px;font-size:13px}
+.role-aluno .grade-table thead th {font-size:10px;color:var(--campus-muted)}
+.role-aluno .grade-table tbody tr:hover :is(th,td) {background:var(--campus-panel-strong)}
+.role-aluno.campus-shell .grade-table tbody td strong {color:var(--campus-accent)}
+.role-aluno .grade-state.is-regular {background:var(--electric-success-panel);color:var(--electric-success)}
+.electric-grade-meter {
+  display:block;width:64px;max-width:100%;height:4px;margin:8px auto 0;
+  border-radius:4px;background:var(--campus-line);overflow:hidden;
+}
+.electric-grade-meter i {display:block;height:100%;border-radius:inherit;background:var(--campus-accent)}
+.grade-entry[data-grade-state=attention] .electric-grade-meter i {background:var(--electric-red)}
+.role-aluno .grade-lab summary {color:var(--campus-accent);border-radius:14px}
+.role-aluno .grade-simulator-controls input {accent-color:var(--campus-accent)}
+.role-aluno .academic-scale {background:var(--campus-line)}
+.role-aluno .academic-scale i {background:linear-gradient(90deg,var(--electric-blue),var(--campus-accent))}
+.role-aluno :is(.academic-score,.academic-counts strong,.academic-ring strong) {color:var(--campus-text)}
+.role-aluno .academic-ring {
+  background:conic-gradient(var(--campus-accent) var(--rate),var(--campus-line) 0);
+  box-shadow:0 0 28px #144bff20;
+}
+.role-aluno .academic-ring::before {background:var(--campus-panel)}
+.role-aluno .academic .record-day {
+  background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line);
+}
+.role-aluno .academic .record-day.presente {background:var(--electric-success-panel);color:var(--electric-success)}
+.role-aluno .academic .record-day.ausente {background:var(--electric-danger-panel);color:var(--electric-red)}
+.role-aluno .academic .record-day:is(:hover,[aria-pressed=true]) {
+  border-color:var(--campus-accent);outline:2px solid var(--campus-accent);outline-offset:1px;
+}
+.role-aluno .academic .record-day.today {border-bottom-color:var(--electric-blue)}
+.role-aluno :is(.record-history,.grade-table-wrap,.week-cards,.dm-stream,.ops-list) {
+  scrollbar-color:var(--scroll-thumb) var(--scroll-track);
+}
+.role-aluno .week-cards {gap:12px;background:none;border:0}
+.role-aluno .day-card {border-radius:12px;border-top:3px solid var(--day-color)}
+.role-aluno .day-card>header {padding:18px;background:var(--campus-panel-strong)}
+.role-aluno .day-card h2 {color:var(--day-color);font-size:20px}
+.role-aluno .lesson-block {padding:18px 16px 18px 26px}
+.role-aluno .lesson-block::before {left:14px}
+.role-aluno .lesson-block h3 {font-size:14px}
+.role-aluno .lesson-block time {font-size:10px}
+.role-aluno :is(.lesson-break,.day-card>footer) {
+  background:var(--electric-field);color:var(--campus-muted);padding-inline:16px;font-size:9px;
+}
+.role-aluno .module-banner {padding:24px;gap:24px}
+.role-aluno .banner-stat strong {color:var(--campus-accent);font-family:var(--font-display)}
+.role-aluno .module-filter button:hover,.role-aluno .grade-filters button:hover {
+  background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-accent);
+}
+.role-aluno :is(.module-filter,.grade-filters) button[aria-pressed=true] {background:var(--electric-blue);color:#fff}
+.role-aluno .mission-cards {grid-template-columns:1fr;gap:10px}
+.role-aluno .mission-card {
+  display:grid;grid-template-columns:44px minmax(0,1fr) 130px 155px;
+  gap:20px;align-items:center;padding:20px;border-radius:13px;
+}
+.mission-icon {display:grid;place-items:center;width:44px;height:44px;border-radius:10px;background:var(--campus-panel-strong);color:var(--campus-accent)}
+.mission-icon svg {width:22px;height:22px}
+.mission-card[data-exercise-state=done] .mission-icon {color:var(--electric-success);background:var(--electric-success-panel)}
+.role-aluno .mission-copy {min-width:0}
+.role-aluno .mission-copy h2 {font-size:17px;margin:6px 0}
+.role-aluno .mission-copy .mission-description {margin:0;font-size:12px;line-height:1.6;-webkit-line-clamp:2}
+.role-aluno :is(.mission-copy p,.module-search,.dm-conversation__head p) {color:var(--campus-muted)}
+.role-aluno .mission-copy>a {margin-top:10px;font-size:11px}
+.role-aluno .mission-meta {display:grid;gap:8px;padding:0;border:0;font-size:11px}
+.role-aluno .mission-meta time {color:var(--campus-text)}
+.mission-action .academic-button {width:100%;font-size:11px}
+.electric-search-field {display:flex;align-items:center;gap:8px}
+.role-aluno .electric-search-field input {min-width:0;flex:1;width:100%}
+.electric-search-field button {
+  width:44px;height:44px;flex:none;border:1px solid var(--campus-line);
+  border-radius:10px;background:var(--campus-panel-strong);color:var(--campus-text);font-size:22px;
+}
+.role-aluno .mission-dialog textarea {resize:none;min-height:200px;background:var(--electric-field)}
+.role-aluno .mission-dialog .delivery-note {background:var(--electric-warning-panel);color:var(--electric-warning)}
+.role-aluno .mission-dialog :is(.delivery-note p,.delivery-note small) {color:var(--electric-warning)}
+.role-aluno :is(.mission-dialog [data-close-dialog],.compose-dialog header button) {
+  color:var(--campus-text);background:var(--campus-panel-strong);border-color:var(--campus-line);
+}
+.role-aluno .unified-comms .unified-panel {border-top:3px solid var(--electric-red)}
+.role-aluno .unified-comms .unified-panel:nth-child(2) {border-top-color:var(--electric-violet)}
+.role-aluno .unified-message {
+  padding:18px;border:1px solid var(--campus-line);border-radius:12px;background:var(--campus-panel-strong);
+}
+.role-aluno .unified-message.is-unread {border-left:3px solid var(--campus-accent);background:var(--campus-panel-strong)}
+.role-aluno .unified-message.is-read {opacity:1;background:var(--campus-panel)}
+.role-aluno .unified-message h3 {font-size:15px}
+.role-aluno .unified-message :is(p,time),.role-aluno .communications-discarded>summary {color:var(--campus-muted)}
+.role-aluno .unified-action--quiet {background:transparent;color:var(--campus-muted)}
+.role-aluno .unified-event::before {background:var(--campus-accent);border-color:var(--campus-panel)}
+.role-aluno .unified-event:nth-child(2n)::before {background:var(--electric-violet)}
+.role-aluno .unified-event:nth-child(3n)::before {background:var(--electric-lime)}
+.role-aluno :is(.ops-field :is(input,select,textarea),.ops-row__meta select,.ops-search,
+  .academic .month-form input,.module-search input,.dm-composer textarea,.compose-dialog :is(input,select,textarea)) {
+  background:var(--electric-field);color:var(--campus-text);border-color:var(--campus-line);color-scheme:dark;
+}
+.role-aluno .ops-searchbox button {background:var(--campus-panel-strong);color:var(--campus-text)}
+.role-aluno .ops select option {background:var(--electric-field);color:var(--campus-text)}
+.role-aluno .unified-history__subjects>div {background:var(--campus-panel-strong);border-radius:10px}
+.role-aluno .dm-shell {box-shadow:var(--campus-shadow);border-radius:16px}
+.role-aluno :is(.dm-search button,.dm-author,.dm-thread__meta time,.dm-thread__copy small) {color:var(--campus-muted)}
+.role-aluno .dm-thread.is-active {border-left:3px solid var(--electric-blue);background:var(--campus-panel-strong)}
+.role-aluno .dm-person-mark {background:var(--electric-blue);border-color:var(--electric-blue);color:#fff}
+.role-aluno .dm-person-mark.is-group {background:var(--electric-violet);border-color:var(--electric-violet)}
+.role-aluno .dm-bubble.is-mine>div {background:var(--electric-blue);border-color:var(--electric-blue)}
+.role-aluno .dm-bubble.is-theirs>div {background:var(--campus-panel);border-color:var(--campus-line)}
+.role-aluno :is(.dm-file-preview strong,.dm-file-preview small,.dm-compose-help,.dm-author) {color:var(--campus-muted)}
+.role-aluno :is(.dm-file-preview button,.dm-reply-preview button,.dm-delete-dialog form>div button,.dm-edit-dialog form>div button) {
+  background:var(--campus-panel-strong);color:var(--campus-text);border-color:var(--campus-line);
+}
+.role-aluno .dm-delete-dialog .dm-confirm-delete {background:var(--electric-danger-panel);color:var(--electric-red);border-color:var(--electric-red)}
+.role-aluno .dm-edit-dialog form>div .academic-button {background:var(--electric-blue);color:#fff}
+/* Legacy !important text colors must not leave deleted messages unreadable. */
+.role-aluno .dm-deleted-copy,.role-aluno .dm-bubble.is-theirs .dm-menu-trigger {color:var(--campus-muted)!important}
+.role-aluno :is(.internship-world,.core-map,.history-map) {background:none;color:var(--campus-text)}
+.role-aluno .internship-opportunity {background:var(--campus-panel);border-color:var(--campus-line)}
+.role-aluno .internship-opportunity:is(:hover,[open]) {background:var(--campus-panel-strong);border-color:var(--campus-accent)}
+.role-aluno .internship-detail {background:var(--electric-field);border-color:var(--campus-line)}
+.role-aluno .internship-filter-set button {background:var(--campus-panel);border-color:var(--campus-line);color:var(--campus-text)}
+.role-aluno .internship-filter-set button[aria-pressed=true] {background:var(--electric-blue);color:#fff}
+.role-aluno .internship-search-field {background:var(--electric-field);border-color:var(--campus-line)}
+.role-aluno .internship-search input {background:transparent}
+.role-aluno .internship-radar::after {content:none}
+.role-aluno :is(.profile-photo-picker:hover,.profile-photo-dialog footer button:hover) {background:var(--campus-panel-strong);color:var(--campus-accent)}
+/* Override old shared focus color without weakening the keyboard outline. */
+.role-aluno.campus-shell :is(button,a,input,select,textarea,summary):focus-visible {outline-color:var(--campus-accent)!important}
+.role-aluno.campus-shell .profile-photo-dialog form:has(#profilePhotoInput:focus-visible) .profile-photo-picker {
+  outline:3px solid var(--campus-accent);outline-offset:3px;
+}
+.role-aluno .campus-transition-hud {display:none} /* Native navigation needs no interstitial card. */
+@media(min-width:1440px){.role-aluno .week-cards{grid-template-columns:repeat(6,minmax(0,1fr))}.role-aluno .week-cards.focused{grid-template-columns:minmax(0,780px)}}
+@media(max-width:1100px){
+  .role-aluno :is(.unified-hero,.ops-hero){grid-template-columns:1fr}
+  .role-aluno .unified-stats{max-width:600px}
+  .role-aluno .mission-card{grid-template-columns:40px minmax(0,1fr) 135px;gap:14px}
+  .role-aluno .mission-action{grid-column:2/-1;justify-self:end}
+}
+@media(max-width:760px){
+  .role-aluno :is(.academic-heading,.dm-heading){align-items:start;flex-wrap:wrap}
+  .role-aluno :is(.unified-hero,.ops-hero,.module-banner){padding:22px 18px;border-radius:14px}
+  .role-aluno .unified-hero h1{font-size:34px}
+  .role-aluno .grade-summary{gap:18px;padding:18px}
+  .role-aluno .grade-summary article{padding:0;gap:12px;border:0}
+  .role-aluno .grade-summary article strong{font-size:30px}
+  .role-aluno .grade-table-toolbar{align-items:start;flex-wrap:wrap}
+  .role-aluno .grade-table-toolbar>span{flex-basis:100%}
+  .role-aluno .grade-summary-icon{width:44px;height:44px}
+  .role-aluno .mission-card{grid-template-columns:40px minmax(0,1fr);gap:14px;padding:18px}
+  .role-aluno .mission-meta{grid-column:2;display:flex;flex-wrap:wrap;align-items:center}
+  .role-aluno .mission-action{grid-column:2;justify-self:stretch}
+  .role-aluno .mission-copy h2{font-size:16px}
+  .role-aluno .unified-stats>div{padding:14px 10px}
+  .role-aluno .unified-stats strong{font-size:25px}
+  .role-aluno .unified-stats span{font-size:10px}
+}
+@media(max-width:540px){
+  .role-aluno .unified-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .role-aluno .grade-summary{grid-template-columns:1fr}
+  .role-aluno .academic .record-day{padding:7px;min-height:50px}
+}
+@media print{
+  .role-aluno .academic-heading,.role-aluno .grade-summary,.role-aluno .grade-table-toolbar{border:0}
+  .electric-grade-meter{display:none}
+  .role-aluno .grade-state{background:none;border:1px solid #777;color:black}
+}

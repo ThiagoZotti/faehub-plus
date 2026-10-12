@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='performance.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='campus-system.css', v=2) }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='campus-bright.css') }}">
-{% if role == 'aluno' %}<link rel="stylesheet" href="{{ url_for('static', filename='campus-electric.css') }}">{% endif %}
+{% if role == 'aluno' %}<link rel="stylesheet" href="{{ url_for('static', filename='campus-electric.css', v=2) }}">{% endif %}
 {% endif %}
 </head>
 <body class="role-{{ role }}{{ ' campus-shell' if role in ['aluno', 'professor', 'admin', 'responsavel'] else '' }}{{ (' view-' ~ current_view) if current_view else '' }}">

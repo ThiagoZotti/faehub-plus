@@ -79,6 +79,8 @@ Um campus em movimento com força e juventude: o mockup enviado em 09/10/2026 é
 
 Os tokens acima descrevem a nova superfície do aluno: fundo azul profundo, painel azul-noite e superfície elevada azul. Azul elétrico identifica navegação ativa; ciano orienta ações e foco; violeta e verde-lima reforçam os indicadores acadêmicos. Atalhos vermelho e verde usam gradientes saturados como no mockup, sempre com texto. Erro mantém significado próprio. Fotografia fica no hero, nunca atrás de tabelas. Impressão mantém fundo branco. Paleta clara permanece nos fluxos ainda não migrados.
 
+O mesmo owner CSS define os adaptadores semânticos dos módulos: `--electric-success` `#79EDB7`, `--electric-warning` `#FFCF7B`, fundos de sucesso `#123C36`, cautela `#433522` e perigo `#49263E`; campos usam `--electric-field` `#0A142B`. Esses estados incluem texto, não apenas cor, e não mudam a situação registrada pelo servidor.
+
 ## Typography
 
 Plus Jakarta Sans variável 400–800, auto-hospedada, conduz títulos e controles do aluno; fallback Segoe UI/Arial durante o carregamento. Títulos do painel têm peso 800 e espaçamento negativo. Cascadia Code continua disponível para códigos técnicos. Demais perfis preservam Segoe UI nesta etapa. Caixa alta é restrita a rótulos curtos.
@@ -112,6 +114,14 @@ A navegação do aluno expõe todos os destinos autorizados na sidebar; no celul
 O sistema não utiliza personagens ou personalização de avatar. A identificação da conta mantém nome e turma, acompanhados por uma fotografia circular opcional. Sem fotografia, são exibidas iniciais; não se atribui uma pessoa fictícia à conta. O menu de conta reúne envio/troca da fotografia, remoção confirmada e saída.
 
 O painel mantém boas-vindas, Seu próximo movimento e Seu ritmo acadêmico, com atalhos coloridos de Comunicados e pendências conforme o mockup aprovado. Pendências abrem atividades já filtradas; mensagem nova aponta para conversas. Dados acadêmicos continuam no backend existente. Mensagens preservam a metáfora de conversa direta e suas confirmações canônicas.
+
+### Espaço do aluno — segunda etapa
+
+A referência multitelas original de 1792×1008 está preservada em `output/branding/student-screens-mockup.png`, sem reedição; não é carregada no app. Boletim, Agenda, Horário, Exercícios, Comunicados, Secretaria, Estágios e Mensagens usam os mesmos painéis azul-noite, tipografia forte, bordas definidas e controles cobalto do painel. As rotas legadas de frequência, calendário e histórico continuam acessíveis e recebem a mesma identidade, sem duplicar destinos no menu.
+
+O boletim mantém tabela semântica e médias numéricas; barras decorativas representam a média real, limitada visualmente a 0–100%, e não substituem o texto. Exercícios usa lista compacta com disciplina, descrição, prazo, situação e ação; no celular os detalhes quebram em blocos sem esconder as ações. Calendário de presenças não trata dias sem chamada como ausência. Secretaria conserva protocolos e histórico; Mensagens conserva balões, menu contextual e confirmação de exclusão lógica.
+
+A área de conta continua sendo o menu com fotografia opcional e diálogo compartilhado. Não foram inventadas telas de preferências, autenticador, login social ou métricas presentes apenas na ilustração. Login, responsáveis, professores e direção continuam com seus owners anteriores; o cartaz dessas outras telas está guardado somente como referência futura.
 
 ### Forms and overlays
 
