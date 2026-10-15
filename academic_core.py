@@ -303,6 +303,8 @@ def mutate(action, data, actor):
                 raise ValueError("Matrícula ativa não encontrada.")
         elif action == "teacher_bind":
             teacher = _required(data, "teacher_username", 50); class_subject_id = int(data.get("class_subject_id", 0))
+            from school_timetable import validate_teacher_binding
+            validate_teacher_binding(conn, teacher, class_subject_id, str(data.get('valid_from') or date.today().isoformat()))
             conn.execute("INSERT INTO teacher_subjects(teacher_username,class_subject_id,valid_from) VALUES(?,?,?)",
                          (teacher, class_subject_id, str(data.get("valid_from", "")).strip() or date.today().isoformat()))
             legacy = conn.execute("""SELECT c.code class_code,s.code subject_code FROM class_subjects cs

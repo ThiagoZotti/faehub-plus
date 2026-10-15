@@ -164,8 +164,21 @@ def manage(section, roster, subjects):
                         if action=='assign':
                             if discipline not in subjects:raise ValueError('Disciplina não está na grade cadastrada.')
                             if not conn.execute("SELECT 1 FROM users WHERE username=? AND role='professor' AND active=TRUE",(teacher,)).fetchone():raise ValueError('Selecione um professor ativo.')
+                            from school_timetable import validate_teacher_binding
+                            target = conn.execute("""SELECT cs.id FROM class_subjects cs JOIN classes c ON c.id=cs.class_id
+                                JOIN subjects s ON s.id=cs.subject_id JOIN academic_years y ON y.id=c.academic_year_id
+                                WHERE c.code=? AND y.status='active' AND (s.code=? OR s.name=?)""", (class_name, discipline, discipline)).fetchone()
+                            if not target:raise ValueError('Vincule a disciplina à grade desta turma antes de atribuir o professor.')
+                            validate_teacher_binding(conn,teacher,target['id'],date.today().isoformat())
                             conn.execute('INSERT OR IGNORE INTO teacher_assignments VALUES(?,?,?)',(teacher,class_name,discipline))
-                        else:conn.execute('DELETE FROM teacher_assignments WHERE teacher=? AND class_name=? AND discipline=?',(teacher,class_name,discipline))
+                            conn.execute("""INSERT INTO teacher_subjects(teacher_username,class_subject_id,valid_from) VALUES(?,?,CURRENT_DATE)
+                                ON CONFLICT(teacher_username,class_subject_id,valid_from) DO UPDATE SET valid_until=NULL""", (teacher,target['id']))
+                        else:
+                            conn.execute('DELETE FROM teacher_assignments WHERE teacher=? AND class_name=? AND discipline=?',(teacher,class_name,discipline))
+                            conn.execute("""UPDATE teacher_subjects SET valid_until=CURRENT_DATE WHERE teacher_username=? AND valid_until IS NULL
+                                AND class_subject_id IN (SELECT cs.id FROM class_subjects cs JOIN classes c ON c.id=cs.class_id
+                                JOIN subjects s ON s.id=cs.subject_id JOIN academic_years y ON y.id=c.academic_year_id
+                                WHERE c.code=? AND y.status='active' AND (s.code=? OR s.name=?))""", (teacher,class_name,discipline,discipline))
                 else:
                     name=field('institution_name',120)
                     try:year=int(request.form.get('year',''))

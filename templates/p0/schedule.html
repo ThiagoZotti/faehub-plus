@@ -1,0 +1,55 @@
+{% set chosen=data.classes|selectattr('id','equalto',selected_class)|first %}
+<section class="core-workspace">
+  <div class="core-list">
+    <header><h2>Grade semanal</h2><span>{{ data.schedule_total }} horários · página {{ data.schedule_page }} de {{ data.schedule_pages }}</span></header>
+    <form method="get" novalidate class="core-inline">
+      <input type="hidden" name="view" value="schedule">
+      <label>Turma e ano<select name="class_id" required>{% for c in data.classes %}<option value="{{ c.id }}" {{ 'selected' if c.id==selected_class }}>{{ c.academic_year }} · {{ c.code }} · {{ c.status|ops_status }}</option>{% endfor %}</select></label>
+      <button type="submit">Consultar grade</button>
+    </form>
+    <p>Aulas da mesma turma, sala ou docente vinculado não podem se sobrepor. Horários arquivados ficam preservados e não aparecem no painel.</p>
+    <div class="core-table-wrap" tabindex="0" role="region" aria-label="Horários da turma">
+      <table><thead><tr><th scope="col">Dia</th><th scope="col">Horário</th><th scope="col">Disciplina</th><th scope="col">Sala</th><th scope="col">Situação</th><th scope="col">Ações</th></tr></thead>
+      <tbody>{% for slot in data.schedule_rows %}<tr>
+        <td>{{ week_days[slot.weekday] }}</td><td>{{ slot.starts_at }}–{{ slot.ends_at }}</td>
+        <td><strong>{{ slot.subject_code }}</strong><small>{{ slot.subject_name }}</small></td><td>{{ slot.room or 'Não informada' }}</td>
+        <td>{{ 'Publicado' if slot.active else 'Arquivado' }}</td>
+        <td>{% if slot.class_status in ['planning','active'] and slot.year_status in ['planning','active'] %}
+          {% if slot.active %}<a class="core-action" href="{{ url_for('estrutura',view='schedule',class_id=selected_class,page=data.schedule_page,edit=slot.id,_anchor='scheduleEditor') }}">Editar</a>{% endif %}
+          <form method="post" novalidate data-schedule-form data-schedule-confirm="{{ 'archive' if slot.active else 'restore' }}">
+            {{ base('schedule_archive' if slot.active else 'schedule_restore','schedule',slot.subject_code) }}
+            <input type="hidden" name="filter_class_id" value="{{ selected_class }}"><input type="hidden" name="return_page" value="{{ data.schedule_page }}">
+            <input type="hidden" name="slot_id" value="{{ slot.id }}"><input type="hidden" name="revision" value="{{ slot.revision }}">
+            <button type="submit">{{ 'Arquivar' if slot.active else 'Restaurar' }}</button>
+          </form>{% else %}<span>Histórico preservado</span>{% endif %}
+        </td>
+      </tr>{% else %}<tr><td colspan="6" class="core-empty">Nenhum horário cadastrado para esta turma. Cadastre a primeira aula ao lado.</td></tr>{% endfor %}</tbody></table>
+    </div>
+    <nav class="core-pagination" aria-label="Paginação dos horários">
+      {% if data.schedule_page>1 %}<a href="{{ url_for('estrutura',view='schedule',class_id=selected_class,page=data.schedule_page-1) }}">← Anterior</a>{% else %}<span></span>{% endif %}
+      <span>{{ data.schedule_total }} horários · {{ data.schedule_page }}/{{ data.schedule_pages }}</span>
+      {% if data.schedule_page<data.schedule_pages %}<a href="{{ url_for('estrutura',view='schedule',class_id=selected_class,page=data.schedule_page+1) }}">Próxima →</a>{% else %}<span></span>{% endif %}
+    </nav>
+  </div>
+  <aside class="core-create">
+    {% set chosen_year=(data.years|selectattr('id','equalto',chosen.academic_year_id)|first) if chosen else none %}
+    {% if chosen and chosen.status in ['planning','active'] and chosen_year and chosen_year.status in ['planning','active'] %}
+    {% set edit=data.edit_slot %}
+    <details open><summary id="scheduleEditorTitle">{{ 'Editar horário' if edit else 'Cadastrar horário' }}</summary>
+      <form method="post" novalidate id="scheduleEditor" data-schedule-form>
+        {{ base('schedule_save','schedule','Grade semanal') }}
+        <input type="hidden" name="slot_id" value="{{ edit.id if edit else '' }}"><input type="hidden" name="revision" value="{{ edit.revision if edit else '' }}">
+        <input type="hidden" name="filter_class_id" value="{{ selected_class }}"><input type="hidden" name="return_page" value="{{ data.schedule_page }}">
+        <label>Disciplina da turma<select name="class_subject_id" required><option value="">Selecione a disciplina</option>{% for cs in data.class_subjects if cs.class_id==selected_class %}<option value="{{ cs.id }}" {{ 'selected' if edit and cs.id==edit.class_subject_id }}>{{ cs.code }} · {{ cs.name }}</option>{% endfor %}</select></label>
+        <label>Dia da semana<select name="weekday" required>{% for day in week_days %}<option value="{{ loop.index0 }}" {{ 'selected' if edit and loop.index0==edit.weekday }}>{{ day }}</option>{% endfor %}</select></label>
+        <label>Início<input name="starts_at" type="time" step="60" value="{{ edit.starts_at if edit else '' }}" required></label>
+        <label>Término<input name="ends_at" type="time" step="60" value="{{ edit.ends_at if edit else '' }}" required></label>
+        <label>Sala<input name="room" maxlength="80" value="{{ edit.room if edit else '' }}" placeholder="Sala da turma, se não informar"></label>
+        <p>Os docentes são os vínculos cadastrados para a disciplina. Altere-os em Vínculos docentes.</p>
+        <button class="core-primary" type="submit">Salvar horário</button>
+        <a class="core-action" href="{{ url_for('estrutura',view='schedule',class_id=selected_class,page=data.schedule_page,_anchor='scheduleEditor') }}">Novo horário</a>
+      </form>
+    </details>
+    {% else %}<p class="core-empty">Selecione uma turma ativa ou em planejamento para cadastrar horários.</p>{% endif %}
+  </aside>
+</section>

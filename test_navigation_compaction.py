@@ -111,6 +111,7 @@ class NavigationCompactionTests(unittest.TestCase):
         self.assertEqual(self.client.get('/usuarios').status_code, 403)
 
     def test_student_grade_meters_and_exercise_list_reuse_real_data(self):
+        db.save_grade('23081', 'LP3', 5, 6)
         self.login("thiago.zotti", "aluno", "23081")
         grades = self.client.get('/boletim').get_data(as_text=True)
         self.assertIn('class="electric-grade-meter" aria-hidden="true"', grades)

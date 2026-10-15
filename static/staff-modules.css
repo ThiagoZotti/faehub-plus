@@ -65,6 +65,7 @@
 .campus-electric .core-hero h1 em{color:var(--campus-accent)}
 .campus-electric :is(.core-map,.history-map){--core-ink:var(--campus-text);--core-muted:var(--campus-muted);--core-panel:var(--campus-panel);--core-line:var(--campus-line);--core-warn:var(--electric-warning)}
 .campus-electric :is(.core-table-wrap table,.director-world table){color:var(--campus-text);background:var(--campus-panel)}
+.campus-electric .core-map table tbody td{background:var(--campus-panel)}
 .campus-electric .history-content>p{color:var(--campus-muted)}
 .campus-electric .ops .ops-field-error{color:var(--electric-red)}
 .campus-electric .ops-status--muted{color:var(--campus-muted);background:var(--campus-panel-strong)}

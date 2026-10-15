@@ -24,6 +24,30 @@
 - Direção: consultar qualquer trajetória; professor não acessa o histórico individual pela rota P0.
 - Encerramento preserva registro e datas; nenhuma ação P0 faz exclusão física.
 
+### Horários configuráveis — 15/10/2026
+
+- Owner: `school_timetable.py`, Estrutura → Horários e o formulário P0 existente.
+  Select e time permanecem nativos, com popup e interação pertencentes à plataforma.
+- Direção cadastra/edita somente em turma/ano em planejamento ou ativo; anos
+  encerrados são consultáveis. Arquivar preserva o registro; restaurar revalida
+  conflitos. Confirmação de arquivamento usa `CampusActions`, sem diálogo nativo.
+- Grade semanal recorrente: intervalos contíguos são aceitos; sobreposição de
+  turma/sala/docentes vinculados é bloqueada, inclusive no vínculo docente criado
+  depois da grade. Campos não sensíveis são preservados após erro.
+- A sala explícita prevalece sobre a sala da turma. Docentes vêm de vínculos
+  persistidos, não dos nomes da imagem de referência. Não se promete agendamento
+  de substituições, exceções de feriados ou atribuição individual em cotutoria.
+- Criação/edição retorna à lista da turma/página selecionadas. Edição tem URL
+  própria na mesma área; Novo horário volta à criação. A listagem mostra até 50
+  registros por página e mantém rolagem natural do documento/formulário.
+- Revisão do registro impede sobrescrever uma edição concorrente. Escritas de
+  grade/vínculos compartilham lock transacional no PostgreSQL. Auditoria conserva
+  os valores anteriores/novos; não há exclusão física de horários.
+- Painel/horário do aluno depende da matrícula ativa e da grade publicada; o
+  professor vê somente horários de seus vínculos vigentes. Vazio não herda 3110.
+- Cadastro escolar e nome de exibição são distintos: nome/matrícula/turma vêm
+  do banco. Perfis sem notas ou presenças não recebem os números das demos.
+
 A interface oculta rotas não autorizadas, mas o servidor sempre revalida sessão, perfil, propriedade e vínculo. Downloads de anexos verificam remetente/destinatário, turma, estudante, professor ou direção.
 
 ### Mensagens e privacidade familiar

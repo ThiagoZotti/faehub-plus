@@ -25,7 +25,7 @@ from internships import MODALITIES, present_internship, validate_internship
 import p1_operations as operations
 import profile_photos
 import account_enrollment as enrollment
-from school_roster import KNOWN_IDS, ROSTER, ROSTER_NAMES
+from school_roster import ROSTER  # Legacy test/seed import only; never a runtime roster fallback.
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FAEHUB_SECRET_KEY") or secrets.token_hex(32)
@@ -97,6 +97,7 @@ def local_datetime(value, output_format="%d/%m/%Y · %Hh%M"):
 
 init_db()
 import academic_core
+import school_timetable
 from database import get_teacher_assignments, seed_teacher_assignments
 from teacher_dashboard import teacher_overview
 from teacher_workflow import scoped_roster, validated_grades, validated_attendance
@@ -116,8 +117,7 @@ academic_core.sync_all_legacy_grades()
 
 def live_roster():
     """Normalized roster is canonical; the module constant is seed compatibility only."""
-    rows = academic_core.roster()
-    return rows or ROSTER
+    return academic_core.roster()
 
 # ==========================================================================
 # Ícones (SVG inline, reutilizados nos templates via |safe)
@@ -205,69 +205,9 @@ for _role in NAV:
 
 FAENET_PUBLIC_URL = 'https://faenet.onrender.com'
 
-# Horário e avisos são os mesmos para toda a turma 3110
-from school_schedule import SCHEDULE_3110
-AVISOS_3110 = [
-    {"titulo": "Entrega do Projeto Integrador", "desc": "Prazo final para envio do repositório e apresentação em sala.", "quando": "28/08 · 23h59"},
-    {"titulo": "Recuperação — Física", "desc": "Revise os conteúdos trabalhados e confirme a sala com a professora.", "quando": "02/09 · 08h00"},
-    {"titulo": "Semana de provas bimestrais", "desc": "Consulte o quadro de horários atualizado no mural da secretaria.", "quando": "08 a 12/09"},
-]
-
-AULAS_DADAS_3110 = 76
-
-
 def _situacao(media):
     return "Recuperação" if media < 6 else "Aprovado"
 
-
-def _grades(pares):
-    """pares: lista de (disciplina, n1, n2) -> calcula média e situação."""
-    out = []
-    for disciplina, n1, n2 in pares:
-        media = round((n1 + n2) / 2, 2)
-        out.append({"disciplina": disciplina, "n1": n1, "n2": n2, "media": media, "situacao": _situacao(media)})
-    return out
-
-
-# Perfil completo de cada aluno da turma 3110, indexado pela matrícula
-ALUNOS_DB = {
-    "23081": {
-        "nome": "Thiago Zotti", "matricula": "23081", "turma": "3110",
-        "grades": _grades([
-            ("Matemática", 8.5, 7.8), ("BD", 6.4, 7.0),
-            ("PDM", 9.0, 8.6), ("Física", 5.5, 6.0),
-            ("Biologia", 7.2, 7.6),
-        ]),
-        "frequencia": 96, "faltas": 3, "aulas_dadas": AULAS_DADAS_3110,
-    },
-    "23092": {
-        "nome": "Jonathan Samuel", "matricula": "23092", "turma": "3110",
-        "grades": _grades([
-            ("Matemática", 6.0, 6.4), ("BD", 5.5, 5.0),
-            ("PDM", 6.8, 7.0), ("Física", 5.0, 5.8),
-            ("Biologia", 6.5, 6.0),
-        ]),
-        "frequencia": 78, "faltas": 17, "aulas_dadas": AULAS_DADAS_3110,
-    },
-    "23104": {
-        "nome": "Pablo Sousa", "matricula": "23104", "turma": "3110",
-        "grades": _grades([
-            ("Matemática", 9.0, 9.2), ("BD", 8.8, 9.0),
-            ("PDM", 9.5, 9.3), ("Física", 8.6, 9.0),
-            ("Biologia", 9.0, 9.4),
-        ]),
-        "frequencia": 99, "faltas": 1, "aulas_dadas": AULAS_DADAS_3110,
-    },
-    "23117": {
-        "nome": "Marlon Eduardo", "matricula": "23117", "turma": "3110",
-        "grades": _grades([
-            ("Matemática", 7.2, 7.6), ("BD", 6.8, 7.0),
-            ("PDM", 7.8, 8.0), ("Física", 6.5, 7.0),
-            ("Biologia", 7.6, 7.8),
-        ]),
-        "frequencia": 88, "faltas": 9, "aulas_dadas": AULAS_DADAS_3110,
-    },
-}
 
 PROFILE_FALLBACKS = {"professor": "Professor", "admin": "Direção", "responsavel": "Responsável"}
 
@@ -277,37 +217,38 @@ def initials(nome):
     return "".join(p[0] for p in partes[:2]).upper()
 
 
-def current_aluno():
-    """Retorna o perfil completo do aluno logado nesta sessão."""
-    cached = getattr(g, "student_profile", None) if has_request_context() else None
-    if cached is not None:
-        return cached
-    sid=canonical_student_id(session['aluno_id'])
-    name=session.get('display_name','Aluno')
-    if sid in ALUNOS_DB:
-        result=dict(ALUNOS_DB[sid])
-        result['grades']=[dict(grade) for grade in ALUNOS_DB[sid]['grades']]
-    else:
-        roster=live_roster()
-        student=next((s for s in roster if s['id']==sid),None)
-        if not student:
-            student=next((s for s in roster if s['nome'].casefold()==name.casefold()),None)
-        grades=[]
-        for grade in load_grades(student_id=sid):
-            media=round((grade['n1']+grade['n2'])/2,2)
-            grades.append(dict(disciplina=grade['discipline'],n1=grade['n1'],n2=grade['n2'],
-                               media=media,situacao=_situacao(media)))
-        result=dict(nome=name,matricula=sid,turma=student['turma'] if student else '',grades=grades,
-                    frequencia=0,faltas=0,aulas_dadas=0)
-
+def student_profile(student_id):
+    """School identity comes from registrations, never name matching or demos."""
+    sid = canonical_student_id(student_id)
+    cache = getattr(g, 'student_profiles', {}) if has_request_context() else {}
+    if sid in cache:
+        return cache[sid]
+    with db.connection() as conn:
+        student = conn.execute("""SELECT s.full_name,c.code class_name FROM students s
+             LEFT JOIN enrollments e ON e.student_id=s.id AND e.status='active'
+             LEFT JOIN classes c ON c.id=e.class_id
+             LEFT JOIN academic_years y ON y.id=c.academic_year_id
+             WHERE s.registration=? ORDER BY e.id DESC LIMIT 1""", (sid,)).fetchone()
+    grades = []
+    for grade in load_grades(student_id=sid):
+        media = round((grade['n1'] + grade['n2']) / 2, 2)
+        grades.append(dict(disciplina=grade['discipline'], n1=grade['n1'], n2=grade['n2'], media=media, situacao=_situacao(media)))
+    result = dict(nome=student['full_name'] if student else 'Estudante', matricula=sid,
+                  turma=student['class_name'] or '' if student else '', grades=grades,
+                  frequencia=0, faltas=0, aulas_dadas=0)
     records=current_student_attendance(sid)
     if records:
         absent=sum(record['status']=='ausente' for record in records)
         result.update(frequencia=round((len(records)-absent)*100/len(records)),
                       faltas=absent,aulas_dadas=len(records))
     if has_request_context():
-        g.student_profile = result
+        cache[sid] = result
+        g.student_profiles = cache
     return result
+
+
+def current_aluno():
+    return student_profile(session['aluno_id'])
 
 
 def current_student_attendance(student_id):
@@ -322,22 +263,9 @@ def current_student_attendance(student_id):
 
 
 def apply_persisted_grades():
-    if has_request_context() and getattr(g, "persisted_grades_applied", False):
-        return
-    student_id = session.get('aluno_id') if has_request_context() and session.get('role') == 'aluno' else None
-    for saved in load_grades(student_id=student_id):
-        aluno = ALUNOS_DB.get(saved["student_id"])
-        if not aluno:
-            continue
-        if not any(g['disciplina']==saved['discipline'] for g in aluno['grades']):
-            aluno['grades'].append(dict(disciplina=saved['discipline'],n1=saved['n1'],n2=saved['n2'],media=0,situacao=''))
-        for grade in aluno["grades"]:
-            if grade["disciplina"] == saved["discipline"]:
-                grade.update(n1=saved["n1"], n2=saved["n2"])
-                grade["media"] = round((saved["n1"] + saved["n2"]) / 2, 2)
-                grade["situacao"] = _situacao(grade["media"])
+    """Compatibility hook: invalidate only this request's persisted profile."""
     if has_request_context():
-        g.persisted_grades_applied = True
+        g.student_profiles = {}
 
 
 apply_persisted_grades()
@@ -576,20 +504,20 @@ def painel():
     if role == "aluno":
         apply_persisted_grades()
         aluno = current_aluno()
-        d = dict(aluno, avisos=student_notices(aluno['turma'],AVISOS_3110))
+        d = dict(aluno, avisos=student_notices(aluno['turma'],[]))
         media_geral = round(sum(g["media"] for g in d["grades"]) / len(d["grades"]), 1) if d['grades'] else 0
         recuperacoes = sum(1 for g in d["grades"] if g["situacao"] == "Recuperação")
         message_stats=dashboard_message_summary(session['username'])
         return render_template("aluno_painel.html", d=d, media_geral=media_geral, recuperacoes=recuperacoes,
                                summary=student_summary(d, get_exercises(class_name=aluno['turma']), get_submissions(session['username']),
-                                   message_stats['messages'], SCHEDULE_3110, message_stats=message_stats))
+                                   message_stats['messages'], school_timetable.grid(school_timetable.slots(student_id=aluno['matricula'])), message_stats=message_stats))
     if role == "professor":
         assignments=get_teacher_assignments(session['username'])
         roster=live_roster()
         classes={assignment['class_name'] for assignment in assignments}
         message_stats=dashboard_message_summary(session['username'])
         overview = teacher_overview(session['username'], assignments,
-                                    SCHEDULE_3110, roster, get_exercises(teacher=session['username']),
+                                    school_timetable.grid(school_timetable.slots(teacher=session['username'])), roster, get_exercises(teacher=session['username']),
                                     get_submissions(teacher=session['username']),
                                     load_grades(student_ids=[s['id'] for s in roster if s['turma'] in classes]),
                                     message_stats['messages'], unread_count=message_stats['unread_count'])
@@ -599,7 +527,7 @@ def painel():
         links = operations.guardian_students(session["username"])
         students = []
         for link in links:
-            profile = dict(ALUNOS_DB.get(link["student_id"], {}))
+            profile = dict(student_profile(link['student_id']))
             if profile:
                 records = student_attendance(link["student_id"])
                 if records:
@@ -670,9 +598,10 @@ def agenda():
 def horario():
     if session.get("role") != "aluno":
         return redirect(url_for("painel"))
-    d = dict(current_aluno(), schedule=SCHEDULE_3110)
+    aluno = current_aluno()
+    d = dict(aluno, schedule=school_timetable.grid(school_timetable.slots(student_id=aluno['matricula'])))
     from dashboard import upcoming_lessons
-    return render_template("aluno_horario.html", d=d, upcoming=upcoming_lessons(SCHEDULE_3110))
+    return render_template("aluno_horario.html", d=d, upcoming=upcoming_lessons(d['schedule']))
 
 
 # ==========================================================================
@@ -691,7 +620,7 @@ def faenet():
 def avisos():
     role = session.get("role")
     if role == "aluno":
-        return render_template("aluno_avisos.html", avisos=student_notices(current_aluno()['turma'],AVISOS_3110), username=session['username'])
+        return render_template("aluno_avisos.html", avisos=student_notices(current_aluno()['turma'],[]), username=session['username'])
     if role == "professor":
         return studio('avisos')
     return redirect(url_for("painel"))
@@ -705,7 +634,7 @@ def comunicados():
         return redirect(url_for("notificacoes"))
     error = None
     username = session["username"]
-    notices = student_notices(current_aluno()["turma"], AVISOS_3110)
+    notices = student_notices(current_aluno()["turma"], [])
     notifications = [
         item for item in request_notifications(username, "aluno")
         if item.get("category") != "mensagem"
@@ -813,10 +742,13 @@ def estrutura():
         if not secrets.compare_digest(session["p0_token"], request.form.get("token", "")):
             return "Sessão expirada. Atualize a página.", 400
         try:
-            academic_core.mutate(request.form.get("action", ""), request.form, session["username"])
-            academic_core.sync_teacher_assignments()
+            if request.form.get('action', '').startswith('schedule_'):
+                school_timetable.save_slot(request.form, session['username'])
+            else:
+                academic_core.mutate(request.form.get("action", ""), request.form, session["username"])
+                academic_core.sync_teacher_assignments()
             flash("Estrutura acadêmica atualizada. O histórico foi preservado.")
-            return redirect(url_for("estrutura", view=request.form.get("return_view", "overview")))
+            return redirect(url_for("estrutura", view=request.form.get("return_view", "overview"), class_id=request.form.get('filter_class_id') or None, page=request.form.get('return_page') or None))
         except ValueError as exc:
             error = str(exc)
         except Exception as exc:
@@ -824,6 +756,21 @@ def estrutura():
                 raise
             error = "Já existe um cadastro com esses dados ou o vínculo informado é inválido."
     snapshot = academic_core.structure_snapshot()
+    selected_class = request.form.get('filter_class_id', type=int) if error else request.args.get('class_id', type=int)
+    available_classes = snapshot['classes']
+    if selected_class not in {row['id'] for row in available_classes}:
+        selected_class = next((row['id'] for row in available_classes if row['status']=='active'), available_classes[0]['id'] if available_classes else None)
+    if request.args.get('view') == 'schedule' or request.form.get('return_view') == 'schedule':
+        snapshot['schedule_rows'] = school_timetable.slots(class_id=selected_class, include_archived=True) if selected_class else []
+        snapshot['edit_slot'] = next((row for row in snapshot['schedule_rows'] if row['id']==request.args.get('edit', type=int) and row['active']), None)
+        snapshot['schedule_total'] = len(snapshot['schedule_rows'])
+        snapshot['schedule_pages'] = max(1, (snapshot['schedule_total'] + 49) // 50)
+        try:
+            snapshot['schedule_page'] = max(1, min(int(request.form.get('return_page') or request.args.get('page') or 1), snapshot['schedule_pages']))
+        except ValueError:
+            snapshot['schedule_page'] = 1
+        start = (snapshot['schedule_page'] - 1) * 50
+        snapshot['schedule_rows'] = snapshot['schedule_rows'][start:start + 50]
     query = request.args.get("q", "").strip()[:80]
     try:
         page = max(1, int(request.args.get("page", "1")))
@@ -839,7 +786,8 @@ def estrutura():
     snapshot["enrollment_rows"] = filtered[(page - 1) * page_size:page * page_size]
     return render_template(
         "p0/estrutura.html", data=snapshot, token=session["p0_token"],
-        error=error, active_view=request.args.get("view", "overview"),
+        error=error, active_view=request.form.get('return_view', 'overview') if error else request.args.get("view", "overview"),
+        selected_class=selected_class, week_days=school_timetable.DAYS,
         retry={key: value for key, value in request.form.items() if key != "token"} if error else None,
         today=date.today().isoformat(), query=query, page=page, pages=pages, filtered_total=len(filtered),
     ), 422 if error else 200
@@ -1167,10 +1115,12 @@ def coordenacao():
             error = str(exc)
     apply_persisted_grades()
     risk = []
-    for student_id, profile in ALUNOS_DB.items():
+    for registration in live_roster():
+        student_id = registration['id']
+        profile = student_profile(student_id)
         average = round(sum(row["media"] for row in profile["grades"]) / len(profile["grades"]), 1) if profile["grades"] else 0
         reasons = []
-        if average < 6:
+        if profile['grades'] and average < 6:
             reasons.append("média abaixo de 6")
         records = student_attendance(student_id)
         frequency = round(100 * sum(row['status']=='presente' for row in records) / len(records)) if records else None
@@ -1219,7 +1169,7 @@ def calendario():
     class_name = current_aluno()["turma"] if role == "aluno" else ""
     if role == "responsavel":
         linked = operations.guardian_students(session["username"])
-        profile = ALUNOS_DB.get(linked[0]["student_id"], {}) if linked else {}
+        profile = student_profile(linked[0]["student_id"]) if linked else {}
         class_name = profile.get("turma", "")
     error = None
     if request.method == "POST":

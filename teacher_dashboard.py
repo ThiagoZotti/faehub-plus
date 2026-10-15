@@ -16,13 +16,16 @@ def teacher_overview(username, assignments, schedule, roster, exercises, submiss
     for offset in range(8):
         day=now.date()+timedelta(days=offset)
         if day.weekday()>=len(schedule['dias']):continue
-        for row,clock in enumerate(schedule['horarios']):
-            subject=schedule['grade'][row][day.weekday()]
-            if ('3110',subject) not in allowed:continue
+        rows = [row for row in schedule['slots'] if row['weekday'] == day.weekday()] if 'slots' in schedule else [
+            dict(subject=schedule['grade'][index][day.weekday()], starts_at=clock, ends_at=schedule['fins'][index], class_name='3110')
+            for index,clock in enumerate(schedule['horarios'])]
+        for row in rows:
+            subject,clock=row['subject'],row['starts_at']
+            if not any((row['class_name'], name) in allowed for name in (subject, row.get('subject_name', subject))):continue
             start=datetime.combine(day,datetime.strptime(clock,'%H:%M').time(),tzinfo=CAMPUS_TZ)
-            end=datetime.combine(day,datetime.strptime(schedule['fins'][row],'%H:%M').time(),tzinfo=CAMPUS_TZ)
+            end=datetime.combine(day,datetime.strptime(row['ends_at'],'%H:%M').time(),tzinfo=CAMPUS_TZ)
             if end<=now:continue
-            lessons.append(dict(subject=subject,class_name='3110',time=clock,end=schedule['fins'][row],
+            lessons.append(dict(subject=subject,class_name=row['class_name'],time=clock,end=row['ends_at'],
                                 date=day.strftime('%d/%m'),day='Hoje' if offset==0 else ('Amanhã' if offset==1 else DAY_NAMES[day.weekday()]),
                                 live=start<=now<end))
     return dict(assignments=assignments,classes=classes,student_count=len(students),

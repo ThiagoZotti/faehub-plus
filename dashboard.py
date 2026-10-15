@@ -12,8 +12,11 @@ def upcoming_lessons(schedule, now=None):
         day = now.date() + timedelta(days=offset)
         if day.weekday() >= len(schedule['dias']):
             continue
-        for index, clock in enumerate(schedule['horarios']):
-            subject = schedule['grade'][index][day.weekday()]
+        rows = [row for row in schedule['slots'] if row['weekday'] == day.weekday()] if 'slots' in schedule else [
+            dict(subject=schedule['grade'][index][day.weekday()], starts_at=clock)
+            for index, clock in enumerate(schedule['horarios'])]
+        for row in rows:
+            subject, clock = row['subject'], row['starts_at']
             if not subject:
                 continue
             hour, minute = map(int, clock.split(':'))

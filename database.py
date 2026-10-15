@@ -572,6 +572,8 @@ def init_db():
     init_operations()
     from academic_core import init_academic_core
     init_academic_core()
+    from school_timetable import init_timetable
+    init_timetable()
 
 
 def authenticate(username, password):
