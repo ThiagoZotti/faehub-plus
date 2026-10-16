@@ -84,6 +84,31 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 
 ## Fluxos críticos
 
+### Chamada por aula e segurança — 16/10/2026
+
+- Fonte de política/limites: `docs/attendance-security-backup.md`. A aula é
+  turma/disciplina/data/início/término, com vínculo docente e matrícula vigentes.
+  Não se converte o histórico diário em aulas fictícias. O histórico anterior
+  fica em consulta separada; calendário com registros diferentes mostra ± e
+  histórico por horário. Período/ano da aula efetiva controla bloqueio.
+- Chamada reutiliza `teacher-workspace.js` + `CampusActions`: consulta GET com
+  filtros na URL, confirmação ao substituir, revisão contra janela antiga,
+  validação inline, valores preservados e nenhum save antes de escolher a aula.
+- Segurança da conta reutiliza shell/tokens Electric nos três perfis e o shell
+  claro do responsável. `account-security.js` adapta formulários ao owner
+  `CampusActions`, sem sistema de confirmação/validação paralelo. Select,
+  date/time continuam nativos, com popup pertencente à plataforma.
+- Ativação exige senha, QR/chave temporária e prova TOTP antes de habilitar;
+  chaves/códigos mascarados e sem armazenamento persistente no navegador. Lista
+  de recuperação aparece uma vez; download somente após ação explícita. Falha
+  preserva apenas campos não secretos. Login parcial não recebe perfil/sessão
+  autenticada; mantém entrada explícita após o segundo fator.
+- Desativar/gerar nova lista exige senha+TOTP ou outro código de recuperação e
+  confirmação do app. Revoga outras sessões. Secretaria não remove MFA e não
+  pode modificar a propriedade. Sem chave privada, UI anuncia a pendência.
+- Backup e autorização Google são ferramentas privadas do operador, não ações
+  expostas aos perfis escolares. Não afirmar envio/recuperação sem comprovação.
+
 | Operação | Pendente | Sucesso | Falha/recuperação |
 |---|---|---|---|
 | Diário | bloquear envio duplicado | redirect + flash, registro no histórico | 422, conteúdo preservado |

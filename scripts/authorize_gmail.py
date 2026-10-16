@@ -22,7 +22,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--client', required=True, type=Path)
     parser.add_argument('--output-dir', required=True, type=Path)
+    parser.add_argument('--service', choices=('gmail','drive','both'), default='gmail')
     args = parser.parse_args()
+    drive_scope='https://www.googleapis.com/auth/drive.file'
+    scopes=({SCOPE} if args.service=='gmail' else {drive_scope} if args.service=='drive' else {SCOPE,drive_scope})
     client = json.loads(args.client.read_text(encoding='utf-8-sig')).get('installed', {})
     if not client.get('client_id') or not client.get('client_secret'):
         raise SystemExit('Selecione um JSON de cliente OAuth para computador.')
@@ -64,7 +67,7 @@ def main():
                     with urlopen(request, timeout=15) as response:
                         token = json.loads(response.read(16384))
                     if (not isinstance(token.get('refresh_token'), str) or not token['refresh_token']
-                            or set(token.get('scope', '').split()) != {SCOPE}):
+                            or set(token.get('scope', '').split()) != scopes):
                         raise ValueError('Incomplete or excessive authorization')
                     values = {
                         'FAEHUB_MAIL_PROVIDER':'gmail',
@@ -73,6 +76,20 @@ def main():
                         'FAEHUB_GMAIL_CLIENT_SECRET':client['client_secret'],
                         'FAEHUB_GMAIL_REFRESH_TOKEN':token['refresh_token'],
                     }
+                    if args.service=='drive':
+                        values={}
+                    if args.service in ('drive','both'):
+                        values.update(FAEHUB_DRIVE_CLIENT_ID=client['client_id'],
+                                      FAEHUB_DRIVE_CLIENT_SECRET=client['client_secret'],
+                                      FAEHUB_DRIVE_REFRESH_TOKEN=token['refresh_token'])
+                        folder_request=Request('https://www.googleapis.com/drive/v3/files?fields=id',
+                            data=json.dumps({'name':'FaeHub+ — Backups privados','mimeType':'application/vnd.google-apps.folder'}).encode(),
+                            headers={'Authorization':'Bearer '+token['access_token'],'Content-Type':'application/json'},method='POST')
+                        with urlopen(folder_request,timeout=15) as result:
+                            folder=json.loads(result.read(16384))
+                        if not isinstance(folder.get('id'),str) or not folder['id']:
+                            raise ValueError('Folder creation not confirmed')
+                        values['FAEHUB_DRIVE_FOLDER_ID']=folder['id']
                     if any('\n' in value or '\r' in value for value in values.values()):
                         raise ValueError('Invalid configuration')
                     with (output / 'render.env').open('x', encoding='utf-8') as saved:
@@ -97,7 +114,7 @@ def main():
     redirect = 'http://127.0.0.1:' + str(server.server_port) + '/callback'
     authorization = 'https://accounts.google.com/o/oauth2/v2/auth?' + urlencode({
         'client_id':client['client_id'], 'redirect_uri':redirect, 'response_type':'code',
-        'scope':SCOPE, 'state':state, 'code_challenge':challenge,
+        'scope':' '.join(sorted(scopes)), 'state':state, 'code_challenge':challenge,
         'code_challenge_method':'S256', 'access_type':'offline',
         'prompt':'consent select_account', 'login_hint':'faetech.sc@gmail.com',
         'include_granted_scopes':'false',

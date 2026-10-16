@@ -2,7 +2,17 @@
 
 Este arquivo segue o roteiro aprovado em 25/09/2026. Ele é a fonte de verdade para prioridade e escopo.
 
-## Situação revisada em 15/10/2026
+## Situação revisada em 16/10/2026
+
+- **Implementado em 16/10:** chamada por aula/disciplina/horário em modelo
+  normalizado, revisão/auditoria e histórico diário separado; autenticador TOTP
+  opcional com recuperação e proteção do login. Gmail ganhou diagnóstico privado;
+  backup criptografado com manifesto, ferramenta de restauração isolada e envio
+  ao Drive foi preparado. Ativação privada Gmail/MFA e backup real/agendamento
+  dependem de configuração; não estão comprovados por testes simulados.
+  Detalhes: [docs/attendance-security-backup.md](docs/attendance-security-backup.md).
+- Corrigida a causa do deploy anterior falhar: restrição PostgreSQL dos dias da
+  semana não correspondia ao código. Migração e teste com rollback aplicados.
 
 - **Entregue nesta etapa:** Direção → Estrutura → Horários, com cadastro, edição,
   arquivamento/restauração, detecção de conflitos de turma/sala/docente,
@@ -19,9 +29,9 @@ Este arquivo segue o roteiro aprovado em 25/09/2026. Ele é a fonte de verdade p
 - Redesign completo dos módulos de professor/direção, login em tela cheia,
   primeira otimização da navegação, tela compartilhada FaeNet e anexos de
   atividades já foram entregues. O atalho FaeNet não é login unificado.
-- **Ainda pendentes:** avaliações/pesos e períodos explícitos, frequência por
-  aula/disciplina, unificação dos bloqueios de fechamento e retirada das demais
-  pontes legadas, entrega real de convites Gmail, autenticador/recuperação e
+- **Ainda pendentes:** avaliações/pesos e períodos explícitos,
+  unificação dos bloqueios de fechamento e retirada das demais
+  pontes legadas, entrega real de convites Gmail, configuração privada de MFA e
   política de backup com restauração comprovada. As demos continuam abertas por
   decisão explícita do usuário; esta atualização não muda contas ou senhas.
 
@@ -32,7 +42,7 @@ Detalhes operacionais e verificação: [docs/school-timetable.md](docs/school-ti
 - Aluno: login individual, painel, boletim, agenda, horário, comunicados, exercícios, secretaria, estágios e mensagens.
 - Professor: painel, turmas, chamada, notas, avisos, atividades, mensagens e estágios.
 - Direção: usuários, turmas, vínculos docentes, relatórios e configurações.
-- Dados: SQLite local como fallback e Supabase PostgreSQL com migrações versionadas.
+- Dados: Supabase PostgreSQL com migrações versionadas; SQLite somente em testes descartáveis.
 
 ## P0 — Fundação acadêmica e banco de dados
 
@@ -41,7 +51,7 @@ Detalhes operacionais e verificação: [docs/school-timetable.md](docs/school-ti
 - Migração segura do legado e banco único no Supabase.
 - Criação completa de turmas, matrículas e vínculos pela Direção.
 
-Status: **parcial — fundação ainda não concluída**. A estrutura normalizada e os horários configuráveis estão operacionais; notas e chamada ainda mantêm fluxos legados. O checklist histórico de 03/10 não deve ser usado para concluir o estado atual da migração.
+Status: **parcial — fundação ainda não concluída**. A estrutura normalizada, horários e nova chamada por aula estão implementados; notas ainda mantêm pontes legadas. O checklist histórico de 03/10 não deve ser usado para concluir o estado atual da migração.
 
 Evidências, critérios de aceite e situação dos dez itens aprovados: [P0-AUDIT.md](P0-AUDIT.md).
 

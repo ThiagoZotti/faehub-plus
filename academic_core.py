@@ -67,7 +67,7 @@ def init_academic_core():
               valid_until TEXT,UNIQUE(teacher_username,class_subject_id,valid_from));
             CREATE TABLE IF NOT EXISTS schedule_slots (
               id INTEGER PRIMARY KEY AUTOINCREMENT,class_subject_id INTEGER NOT NULL REFERENCES class_subjects(id),
-              weekday INTEGER NOT NULL,starts_at TEXT NOT NULL,ends_at TEXT NOT NULL,room TEXT,
+              weekday INTEGER NOT NULL CHECK(weekday BETWEEN 0 AND 6),starts_at TEXT NOT NULL,ends_at TEXT NOT NULL,room TEXT,
               UNIQUE(class_subject_id,weekday,starts_at));
             CREATE TABLE IF NOT EXISTS assessments (
               id INTEGER PRIMARY KEY AUTOINCREMENT,class_subject_id INTEGER NOT NULL REFERENCES class_subjects(id),
@@ -86,7 +86,8 @@ def init_academic_core():
               topic TEXT,status TEXT NOT NULL DEFAULT 'scheduled');
             CREATE TABLE IF NOT EXISTS attendance_records (
               id INTEGER PRIMARY KEY AUTOINCREMENT,lesson_id INTEGER NOT NULL REFERENCES lessons(id),
-              enrollment_id INTEGER NOT NULL REFERENCES enrollments(id),status TEXT NOT NULL,note TEXT,
+              enrollment_id INTEGER NOT NULL REFERENCES enrollments(id),status TEXT NOT NULL
+              CHECK(status IN ('present','absent','late','excused','dismissed')),note TEXT,
               recorded_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,UNIQUE(lesson_id,enrollment_id));
             """)
         _seed(conn)

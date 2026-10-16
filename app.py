@@ -98,6 +98,8 @@ def local_datetime(value, output_format="%d/%m/%Y · %Hh%M"):
 init_db()
 import academic_core
 import school_timetable
+import lesson_attendance
+import account_mfa
 from database import get_teacher_assignments, seed_teacher_assignments
 from teacher_dashboard import teacher_overview
 from teacher_workflow import scoped_roster, validated_grades, validated_attendance
@@ -202,6 +204,7 @@ VIEW_TITLES = {
 for _role in NAV:
     NAV[_role].append(('faenet', 'FaeNet', 'network'))
     VIEW_TITLES[_role]['faenet'] = 'FaeNet'
+    VIEW_TITLES[_role]['seguranca'] = 'Segurança da conta'
 
 FAENET_PUBLIC_URL = 'https://faenet.onrender.com'
 
@@ -342,7 +345,8 @@ def login_required(view_name_map):
             access = account_access(session.get("username"))
             expected_role = "diretor" if role == "admin" else role
             if (not access or not access["active"] or access["role"] != expected_role
-                    or session.get("auth_version", 0) != access["auth_version"]):
+                    or session.get("auth_version", 0) != access["auth_version"]
+                    or (access.get('mfa_enabled') and not session.get('mfa_verified'))):
                 session.clear()
                 return redirect(url_for("login"))
             g.current_view = view_name_map
@@ -387,18 +391,111 @@ def entrar():
         return render_template('login.html', token=session['login_token'], username=usuario,
                                error='Usuário ou senha inválidos.', demos_enabled=enrollment.demos_enabled()), 401
 
+    if account_mfa.enabled(conta['username']):
+        import time
+        session.clear()
+        session.update(mfa_pending_user=conta['username'],mfa_pending_version=access_version(conta['username']),
+                       mfa_pending_until=int(time.time())+300,mfa_token=secrets.token_hex(24))
+        if wants_json:
+            return {'mfa_required':True,'destination':url_for('verificar_autenticador')}
+        return redirect(url_for('verificar_autenticador'))
+    return complete_login(conta,wants_json)
+
+
+def complete_login(conta,wants_json=False,*,mfa_verified=False):
     session.clear()
     session["role"] = "admin" if conta["role"] == "diretor" else conta["role"]
     usuario = conta['username']  # E-mail is an alias; academic records use the immutable school ID.
     session["username"] = usuario
     session["display_name"] = conta["name"]
     session["auth_version"] = access_version(usuario)
+    session['mfa_verified']=mfa_verified
     if conta["role"] == "aluno":
         session["aluno_id"] = conta["student_id"]
     log_action(usuario, "login", f"Acesso como {conta['role']}")
     if wants_json:
         return {'name': conta['name'], 'role': conta['role'], 'destination': url_for('painel')}
     return redirect(url_for("painel"))
+
+
+@app.route('/entrar/autenticador',methods=['GET','POST'])
+def verificar_autenticador():
+    import time
+    username=session.get('mfa_pending_user')
+    access=account_access(username) if username else None
+    if (not access or not access['active'] or not access['mfa_enabled']
+            or session.get('mfa_pending_until',0)<time.time()
+            or session.get('mfa_pending_version')!=access['auth_version']):
+        session.clear()
+        flash('A confirmação expirou. Entre novamente com sua senha.')
+        return redirect(url_for('login'))
+    error=None
+    if request.method=='POST':
+        if not secrets.compare_digest(session.get('mfa_token',''),request.form.get('token','')):
+            return 'Sessão expirada. Volte ao login.',400
+        try:
+            if not enrollment.consume_rate_limit('mfa-login',username,limit=10):
+                raise ValueError('Muitas tentativas. Aguarde 15 minutos e entre novamente.')
+            recovery=request.form.get('method')=='recovery'
+            if not account_mfa.verify(username,request.form.get('code',''),recovery):
+                raise ValueError('Código inválido ou já utilizado. Confira e tente novamente.')
+            # Re-check after consuming the code, before granting any role.
+            fresh=account_access(username)
+            if not fresh or not fresh['active'] or fresh['auth_version']!=session['mfa_pending_version']:
+                session.clear()
+                return redirect(url_for('login'))
+            with db.connection() as conn:
+                conta=dict(conn.execute('SELECT username,name,student_id FROM users WHERE username=?',(username,)).fetchone())
+            conta['role']=fresh['role']
+            complete_login(conta,mfa_verified=True)
+            return render_template('account_mfa_challenge.html',confirmed=True,name=conta['name'])
+        except ValueError as exc:error=str(exc)
+    return render_template('account_mfa_challenge.html',confirmed=False,token=session['mfa_token'],error=error),422 if error else 200
+
+
+@app.route('/conta/seguranca',methods=['GET','POST'])
+@login_required('seguranca')
+def seguranca_conta():
+    username=session['username']; error=None; codes=None
+    session.setdefault('security_token',secrets.token_hex(24))
+    if request.method=='POST':
+        if not secrets.compare_digest(session['security_token'],request.form.get('token','')):
+            return 'Sessão expirada. Atualize a página.',400
+        try:
+            permitted=enrollment.consume_rate_limit('mfa-settings',username,limit=15)
+            # A rejected password/setup must not roll back its attempt counter.
+            # No business mutation has happened in this request yet.
+            with db.connection() as conn:conn.commit()
+            if not permitted:
+                raise ValueError('Muitas tentativas. Aguarde 15 minutos antes de tentar novamente.')
+            action=request.form.get('action')
+            if action=='begin':
+                account_mfa.begin(username,request.form.get('password',''))
+                return redirect(url_for('seguranca_conta'))
+            elif action=='activate':
+                codes=account_mfa.activate(username,request.form.get('code',''))
+                session['mfa_verified']=True
+            elif action in ('disable','regenerate'):
+                codes=account_mfa.manage(username,request.form.get('password',''),request.form.get('code',''),action,
+                                         recovery=request.form.get('method')=='recovery')
+                session['mfa_verified']=action!='disable'
+            elif action=='cancel':
+                with db.connection() as conn:
+                    conn.execute('UPDATE account_mfa SET pending_ciphertext=NULL,pending_until=NULL WHERE username=? AND enabled=FALSE',(username,))
+                return redirect(url_for('seguranca_conta'))
+            else:raise ValueError('Ação inválida.')
+            session['auth_version']=access_version(username)
+            if not codes:
+                flash('Autenticador desativado. As outras sessões foram encerradas.')
+                return redirect(url_for('seguranca_conta'))
+        except ValueError as exc:error=str(exc)
+    secret=None
+    if account_mfa.configured() and not account_mfa.enabled(username):
+        try:secret=account_mfa.pending(username)
+        except ValueError as exc:error=str(exc)
+    return render_template('account_security.html',token=session['security_token'],error=error,codes=codes,
+        active=account_mfa.enabled(username),configured=account_mfa.configured(),secret=secret,
+        qr=account_mfa.provisioning(secret,username) if secret else None),422 if error else 200
 
 
 @app.route('/ativar', methods=['GET', 'POST'])
@@ -571,9 +668,15 @@ def frequencia():
     if session.get("role") != "aluno":
         return redirect(url_for("painel"))
     d = current_aluno()
+    legacy=request.args.get('base')=='diaria'
+    records=db.legacy_student_attendance(session['aluno_id']) if legacy else current_student_attendance(session['aluno_id'])
+    if legacy:
+        d=dict(d)
+        absent=sum(r['status']=='ausente' for r in records)
+        d.update(faltas=absent,aulas_dadas=len(records),frequencia=round((len(records)-absent)*100/len(records)) if records else 0)
     presencas = d["aulas_dadas"] - d["faltas"]
-    calendar_data = attendance_calendar(current_student_attendance(session['aluno_id']), request.args.get('month'))
-    return render_template("aluno_frequencia.html", d=d, presencas=presencas, cal=calendar_data)
+    calendar_data = attendance_calendar(records, request.args.get('month'))
+    return render_template("aluno_frequencia.html", d=d, presencas=presencas, cal=calendar_data,legacy=legacy)
 
 
 @app.get("/agenda")
@@ -852,23 +955,40 @@ def chamada():
     selected_date=source.get('data',ctx['today'])
     try: date.fromisoformat(selected_date)
     except ValueError:return 'Data inválida.',400
-    persisted=load_attendance(selected_date)
-    marks={s['id']:persisted.get(s['id']) for s in ctx['roster']}
+    subjects=lesson_attendance.subjects_for(session['username'],selected_date)
+    subjects=[s for s in subjects if s['class_name']==ctx['selected']]
+    subject_id=source.get('class_subject_id',str(subjects[0]['id']) if subjects else '')
+    start,end=source.get('inicio',''),source.get('fim','')
+    selection=dict(data=selected_date,class_subject_id=subject_id,inicio=start,fim=end,revision=source.get('revision','0'))
+    persisted={}; revision=0
     error=None
+    valid_subject=any(str(s['id'])==str(subject_id) for s in subjects)
+    if subject_id and not valid_subject:
+        error='Selecione uma disciplina da turma consultada.'
+    if valid_subject and start and end:
+        try:
+            lesson_ctx=lesson_attendance.context(session['username'],selection)
+            ctx['roster']=lesson_ctx['roster']
+            persisted=lesson_ctx['attendance']; revision=lesson_ctx['revision']
+        except ValueError as exc:error=str(exc)
+    marks={s['id']:persisted.get(s['id']) for s in ctx['roster']}
+    ready=bool(valid_subject and start and end and not error)
     if request.method=='POST':
         if not teacher_token_valid():return 'Sessão expirada. Atualize a página.',400
         marks={s['id']:request.form.get('presenca_'+s['id']) for s in ctx['roster']}
+        revision=request.form.get('revision','0')  # Do not silently adopt a newer revision after conflict.
         try:
-            if operations.period_is_closed(selected_date):
-                raise ValueError('O período desta chamada está fechado. Solicite reabertura à coordenação.')
-            valid=validated_attendance(ctx['roster'],selected_date,marks,date.fromisoformat(ctx['today']))
-            save_attendance_batch(selected_date,valid)
-            log_action(session['username'],'chamada_registrada',f"{ctx['selected']} · {selected_date}")
-            flash('Chamada salva para '+selected_date+'.')
-            return redirect(url_for('chamada',turma=ctx['selected'],data=selected_date))
+            if not valid_subject:raise ValueError('Selecione uma disciplina da turma consultada.')
+            lesson_attendance.lesson_key(selection)
+            validated_attendance(ctx['roster'],selected_date,marks,date.fromisoformat(ctx['today']))
+            lesson_attendance.save(session['username'],selection,marks)
+            flash('Chamada da aula salva.')
+            return redirect(url_for('chamada',turma=ctx['selected'],data=selected_date,
+                                    class_subject_id=subject_id,inicio=start,fim=end))
         except ValueError as exc:error=str(exc)
     return render_template('professor_chamada.html',**ctx,selected_date=selected_date,attendance=marks,
-                           registered=sum(s['id'] in persisted for s in ctx['roster']),error=error),422 if error else 200
+                           registered=len(persisted),error=error,subjects=subjects,subject_id=str(subject_id),
+                           start=start,end=end,revision=revision,ready=ready),422 if error else 200
 
 
 # ==========================================================================

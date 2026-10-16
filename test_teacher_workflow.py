@@ -32,15 +32,18 @@ class TeacherWorkflowTests(unittest.TestCase):
         with self.assertRaises(ValueError):validated_attendance(ROSTER,'2027-01-01',{},date(2026,9,3))
 
     @patch('app.log_action')
-    @patch('app.save_attendance_batch')
+    @patch('app.lesson_attendance.save')
     def test_attendance_post(self,save,log):
-        data=dict(token='test-token',turma='3110',data='2026-09-01')
+        from lesson_attendance import subjects_for
+        today=date.today().isoformat()
+        subject=subjects_for('aline',today)[0]
+        data=dict(token='test-token',turma='3110',data=today,class_subject_id=subject['id'],inicio='07:00',fim='07:50',revision='0')
         self.assertEqual(self.client.post('/chamada',data=data).status_code,422)
         save.assert_not_called()
         data.update({'presenca_'+s['id']:'presente' for s in ROSTER})
         self.assertEqual(self.client.post('/chamada',data=data).status_code,302)
-        self.assertEqual(len(save.call_args.args[1]),34)
-        save.assert_called_once()
+        self.assertEqual(len(save.call_args.args[2]),34)
+        self.assertEqual(save.call_args.args[0],'aline')
 
     @patch('app.log_action')
     @patch('app.apply_persisted_grades')

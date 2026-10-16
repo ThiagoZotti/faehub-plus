@@ -75,7 +75,7 @@ O encerramento desativa somente as sete contas demo conhecidas que ainda não fo
 
 - Ainda não é uma migração para Supabase Auth: o backend Flask mantém o controle de sessões/perfis e usa PostgreSQL Supabase para persistência. Nenhuma chave `service_role` é exposta.
 - Recuperação atual continua mediada pela secretaria, agora aceitando e-mail confirmado ou identificação interna. Não afirmar que existe recuperação automática por e-mail.
-- Autenticador TOTP, códigos de recuperação, telefone/SMS e painel de sessões são **próximas etapas**, não funcionalidades já habilitadas. Não guardar telefone como se fosse verificado.
+- Autenticador TOTP e códigos de recuperação foram implementados em 16/10, sujeitos à chave privada estável no servidor e ativação voluntária por conta verificada. Ver [operação e limites](docs/attendance-security-backup.md). Telefone/SMS e painel de sessões continuam pendentes; não guardar telefone como verificado.
 - Envio síncrono tem timeout de dez segundos. Se o processo cair durante o envio, a direção pode reenviar após o cooldown; o novo link invalida o anterior. Não há retentativa automática de efeito externo.
 - A integração foi testada com transporte simulado, sem enviar convites a pessoas reais. Exige um teste real de entrega/ativação após configurar o remetente.
 

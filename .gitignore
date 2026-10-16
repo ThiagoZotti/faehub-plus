@@ -19,3 +19,7 @@ static/campus-hero.png
 client_secret*.json
 credentials.json
 token.json
+.backup-private/
+.google-private/
+*.fhbackup
+*.dump

@@ -38,7 +38,7 @@ def account_access(username):
     """Return all request-auth state in one database round-trip."""
     with db.connection() as conn:
         row=conn.execute('''SELECT u.active,u.name,COALESCE(ar.role,u.role) role,
-                                   COALESCE(av.version,0) auth_version,
+                                   COALESCE(av.version,0) auth_version,COALESCE(mfa.enabled,FALSE) mfa_enabled,
                                    CASE WHEN u.active=TRUE AND COALESCE(ar.role,u.role)='diretor'
                                      AND EXISTS (
                                        SELECT 1 FROM enrollment_settings s
@@ -51,6 +51,7 @@ def account_access(username):
                             FROM users u
                             LEFT JOIN account_roles ar ON ar.username=u.username
                             LEFT JOIN auth_versions av ON av.username=u.username
+                            LEFT JOIN account_mfa mfa ON mfa.username=u.username
                             WHERE u.username=?''',(username,)).fetchone()
         result = dict(row) if row else None
         if result:
@@ -203,19 +204,21 @@ def manage(section, roster, subjects):
     with db.connection() as conn:
         assignments=[dict(r) for r in conn.execute('SELECT a.*,u.name FROM teacher_assignments a JOIN users u ON u.username=a.teacher ORDER BY class_name,discipline')] if section in ('painel','turmas') else []
         metadata={r['class_name']:dict(r) for r in conn.execute('SELECT * FROM class_settings')} if section=='turmas' else {}
-        attendance=[dict(r) for r in conn.execute('SELECT * FROM attendance ORDER BY class_date DESC')] if section=='relatorios' else []
     start=request.args.get('start','');end=request.args.get('end','')
     try:
         if start:date.fromisoformat(start)
         if end:date.fromisoformat(end)
         if start and end and start>end:raise ValueError()
     except ValueError:return 'Período inválido.',400
-    records=[r for r in attendance if (not start or r['class_date']>=start) and (not end or r['class_date']<=end)]
+    from lesson_attendance import export_records
+    records=export_records(start,end) if section=='relatorios' else []
     grades=db.load_grades() if section=='relatorios' else []
     if request.args.get('export'):
         if section!='relatorios':return 'Exportação indisponível.',400
         kind=request.args['export'];output=io.StringIO();writer=csv.writer(output,delimiter=';')
-        if kind=='attendance':headers=['Matrícula','Data','Presença'];values=[[r['student_id'],r['class_date'],r['status']] for r in records]
+        if kind=='attendance':
+            headers=['Matrícula','Data','Presença','Unidade','Disciplina','Horário']
+            values=[[r['student_id'],r['class_date'],r['status'],r['count_unit'],r['discipline'],r['time_label']] for r in records]
         elif kind=='grades':headers=['Matrícula','Disciplina','N1','N2'];values=[[r['student_id'],r['discipline'],r['n1'],r['n2']] for r in grades]
         elif kind=='documents':
             headers=['Protocolo','Matrícula','Documento','Situação','Solicitante','Data']
@@ -230,9 +233,11 @@ def manage(section, roster, subjects):
         writer.writerow(headers)
         for row in values:writer.writerow([("'"+str(v)) if str(v).lstrip().startswith(('=','+','-','@')) else v for v in row])
         return Response('\ufeff'+output.getvalue(),mimetype='text/csv',headers={'Content-Disposition':f'attachment; filename="faehub-{kind}.csv"','Cache-Control':'no-store'})
+    frequency_records=[r for r in records if r['count_unit']=='aula'] or records
     stats=dict(accounts=len(users),active=sum(u['active'] for u in users),teachers=sum(u['role']=='professor' and u['active'] for u in users),
                students=len(roster),classes=len(classes),grades=len(grades),records=len(records),
-               frequency=round(100*sum(r['status']=='presente' for r in records)/len(records),1) if records else None)
+               frequency_unit=frequency_records[0]['count_unit'] if frequency_records else 'aula',
+               frequency=round(100*sum(r['status']=='presente' for r in frequency_records)/len(frequency_records),1) if frequency_records else None)
     class_rows=[dict(name=c,count=sum(s['turma']==c for s in roster),capacity=metadata.get(c,{}).get('capacity'),shift=metadata.get(c,{}).get('shift','Manhã')) for c in classes]
     return render_template('director.html',section=section,token=token,error=error,users=users,roster=roster,
                            classes=class_rows,assignments=assignments,subjects=subjects,stats=stats,settings=settings(),

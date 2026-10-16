@@ -15,8 +15,8 @@ def configured():
         'FAEHUB_GMAIL_REFRESH_TOKEN', 'FAEHUB_GMAIL_SENDER'))
 
 
-def send(email, subject, text, html):
-    """Refresh authorization, then send once. Never blindly retry delivery."""
+def access_token():
+    """Authorization health check has no mail-delivery side effect."""
     try:
         body = urlencode({
             'client_id': os.environ['FAEHUB_GMAIL_CLIENT_ID'],
@@ -32,6 +32,15 @@ def send(email, subject, text, html):
         access = authorization.get('access_token') if isinstance(authorization, dict) else None
         if not isinstance(access, str) or not access or '\r' in access or '\n' in access:
             raise ValueError('A autorização do Gmail precisa ser revisada pelo proprietário.')
+        return access
+    except (URLError, TimeoutError, OSError, json.JSONDecodeError, KeyError):
+        raise ValueError('A autorização do Gmail não foi confirmada. Revise a configuração privada e autorize novamente se necessário.') from None
+
+
+def send(email, subject, text, html):
+    """Refresh authorization, then send once. Never blindly retry delivery."""
+    try:
+        access = access_token()
         message = EmailMessage(policy=SMTP)
         message['From'] = 'FaeHub+ <' + os.environ['FAEHUB_GMAIL_SENDER'].strip() + '>'
         message['To'] = email

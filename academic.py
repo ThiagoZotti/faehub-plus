@@ -13,7 +13,10 @@ def attendance_calendar(records, month=None, today=None):
             raise ValueError('Unsupported year')
     except ValueError:
         selected = today.replace(day=1)
-    by_date = {r['class_date']: r['status'] for r in records}
+    grouped = {}
+    for row in records:
+        grouped.setdefault(row['class_date'], set()).add(row['status'])
+    by_date = {day: next(iter(states)) if len(states)==1 else 'mixed' for day,states in grouped.items()}
     weeks = []
     for week in calendar.Calendar().monthdayscalendar(selected.year, selected.month):
         weeks.append([{'day': n, 'date': selected.replace(day=n).isoformat(),

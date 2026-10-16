@@ -574,6 +574,10 @@ def init_db():
     init_academic_core()
     from school_timetable import init_timetable
     init_timetable()
+    from lesson_attendance import init_lesson_attendance
+    init_lesson_attendance()
+    from account_mfa import init_mfa
+    init_mfa()
 
 
 def authenticate(username, password):
@@ -645,8 +649,17 @@ def save_attendance(student_id, class_date, status):
 
 def student_attendance(student_id):
     student_id = canonical_student_id(student_id)
+    from lesson_attendance import records_for_student
+    lessons = records_for_student(student_id)
+    if lessons:
+        return lessons  # Different units must never be added into one percentage.
+    return legacy_student_attendance(student_id)
+
+
+def legacy_student_attendance(student_id):
+    student_id=canonical_student_id(student_id)
     with connection() as db:
-        return [dict(row) for row in db.execute(
+        return [dict(row, count_unit='dia', discipline='Registro diário anterior', time_label='') for row in db.execute(
             'SELECT class_date, status FROM attendance WHERE student_id = ? ORDER BY class_date DESC',
             (student_id,))]
 

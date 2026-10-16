@@ -29,6 +29,6 @@
     const dateOutput = document.getElementById('recordDate');
     if (dateOutput) dateOutput.textContent = `${day}/${month}/${year}`;
     const statusOutput = document.getElementById('recordStatus');
-    if (statusOutput) statusOutput.textContent = {presente:'Presença confirmada na chamada deste dia.', ausente:'Falta registrada na chamada deste dia.', unrecorded:'Nenhuma chamada salva para este dia. Isso não indica ausência.'}[button.dataset.recordStatus];
+    if (statusOutput) statusOutput.textContent = {presente:'Presença em todas as chamadas registradas neste dia.', ausente:'Falta em todas as chamadas registradas neste dia.', mixed:'Este dia tem presenças e faltas em aulas diferentes. Confira os horários no histórico abaixo.', unrecorded:'Nenhuma chamada salva para este dia. Isso não indica ausência.'}[button.dataset.recordStatus];
   }));
 })();

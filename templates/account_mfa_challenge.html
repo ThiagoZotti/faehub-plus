@@ -1,0 +1,12 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>Confirmar autenticador · FaeHub+</title><link rel="stylesheet" href="{{ url_for('static',filename='p1/operations.css') }}"><link rel="stylesheet" href="{{ url_for('static',filename='campus-system.css') }}"><link rel="stylesheet" href="{{ url_for('static',filename='campus-bright.css') }}"><link rel="stylesheet" href="{{ url_for('static',filename='account-security.css') }}"></head>
+<body class="enrollment-page"><main class="ops enrollment-card"><section class="ops-card">
+<a class="enrollment-brand" href="{{ url_for('login') }}"><img src="{{ url_for('static',filename='logo-faehub.webp') }}" width="38" height="38" alt="">FaeHub+</a>
+{% if confirmed %}<h1>Identidade confirmada.</h1><p>{{ name }}, seu espaço está pronto.</p><a class="ops-btn ops-btn--primary" href="{{ url_for('painel') }}">Entrar no campus →</a>
+{% else %}<h1>Confirme no autenticador.</h1><p>Abra seu aplicativo autenticador e informe o código de seis dígitos. Esta confirmação vale por cinco minutos.</p>
+<form novalidate method="post" data-security-form>
+<input type="hidden" name="token" value="{{ token }}">
+<label for="method">Método de confirmação</label><select name="method" id="method"><option value="totp">Código do autenticador</option><option value="recovery" {{ 'selected' if request.form.get('method')=='recovery' }}>Código de recuperação</option></select>
+<label for="code">Código</label><div class="enrollment-password"><input id="code" name="code" type="password" autocomplete="one-time-code" required maxlength="64" autofocus aria-describedby="securityError"><button type="button" data-reveal="code" aria-label="Mostrar código">Mostrar</button></div>
+<p class="ops-error" id="securityError" role="alert">{{ error or '' }}</p><button type="submit" class="ops-btn ops-btn--primary">Confirmar acesso</button>
+</form><p>Perdeu o celular? Selecione Código de recuperação e use um dos códigos que guardou ao ativar o autenticador.</p><a href="{{ url_for('sair') }}">Cancelar e voltar ao login</a>{% endif %}
+</section></main><script src="{{ url_for('static',filename='campus-actions.js') }}"></script><script src="{{ url_for('static',filename='account-security.js') }}"></script></body></html>
