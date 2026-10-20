@@ -72,3 +72,13 @@ falha de envio e limites. FaeNet: `tests/test_federation.py` e suíte de perform
 Fluxo real local em dois servidores e bancos descartáveis: entrada → FaeHub →
 confirmação → senha antiga → feed com publicação preservada → logout → reentrada.
 Desktop e 390px, campos inválidos, erro de senha e consentimento foram conferidos.
+
+## Personalização da FaeNet — 20/10/2026
+
+A FaeNet passa a solicitar @, nome de exibição com sobrenome e, opcionalmente,
+foto, capa, bio, curso e turma após confirmar a identidade no FaeHub. A chave de
+vínculo permanece imutável: personalizar o perfil social não muda conta, senha,
+autenticador, permissões ou registros escolares. Contas geradas automaticamente
+concluem esse fluxo na próxima entrada, preservando posts, mensagens e relações.
+Implementação, migration e testes estão no repositório FaeNet, contrato
+`docs/faehub-sso.md`. Nenhum segredo novo é necessário no FaeHub.
