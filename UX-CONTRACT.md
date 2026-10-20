@@ -220,6 +220,18 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 
 ## Verificação obrigatória
 
+### Identidade central e recuperação — decisão de 19/10/2026
+
+Fonte atual: `docs/faenet-sso.md`; supersede as regras históricas abaixo sobre
+contas independentes e recuperação mediada. Todos os quatro perfis verificados
+podem entrar na FaeNet com FaeHub, incluindo MFA e revogação. Exceção documentada:
+callback contém código opaco de uso único protegido por PKCE, nunca bearer/senha.
+Recuperação de senha/usuário recebe apenas e-mail confirmado, sem direção; código
+por e-mail redefine senha com MFA preservado. `static/p1/operations.js` é owner
+de validação/busy, `account-recovery.js` de revelação/foco; serviços em
+`account_recovery.py`, mail compartilhado com convites. Nenhum token vai para
+storage do navegador. Conferir `test_account_recovery.py` e `test_faenet_sso.py`.
+
 ### Primeiro acesso por convite
 
 - Conforme `AUTH-ROLLOUT.md`, a central identifica o **Proprietário do sistema**, distinguindo-o do **Responsável pelo aluno**. A conta protegida aparece somente para consulta pelos diretores, sem ações de alteração. O titular vê a reserva pendente e o convite com endereço fixo; após confirmar, o cabeçalho exibe sua autoridade. A seleção de novos cadastros não permite criar proprietários.

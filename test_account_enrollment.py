@@ -226,11 +226,13 @@ class EnrollmentTests(unittest.TestCase):
         _,_,digest=self.delivered();enrollment.complete_invitation(digest,'a secure starting phrase','a secure starting phrase')
         username=enrollment.login_identifier('TEACHER@EXAMPLE.COM')
         self.assertEqual(username,'invited.teacher')
-        operations.request_password_recovery(username)
-        request_id=operations.list_recovery_requests()[0]['id']
-        code=operations.issue_recovery_code(request_id,'gilberto')
-        with self.assertRaises(ValueError):operations.use_recovery_code(username,code,'1234567')
-        operations.use_recovery_code(username,code,'Pass123!')
+        import account_recovery as recovery
+        with app.app_context(), patch.object(enrollment,'mail_configured',return_value=True), patch.object(enrollment,'send_account_email') as sender:
+            recovery.request_recovery('teacher@example.com','password','fixture')
+        code=sender.call_args.args[2].split(': ',1)[1].split('\n',1)[0]
+        with app.app_context():
+            with self.assertRaises(ValueError):recovery.reset_password('teacher@example.com',code,'1234567','1234567','fixture')
+            recovery.reset_password('teacher@example.com',code,'Pass123!','Pass123!','fixture')
         self.assertIsNotNone(db.authenticate('teacher@example.com','Pass123!'))
 
     def test_password_boundaries_and_display_names(self):

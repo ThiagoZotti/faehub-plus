@@ -202,6 +202,13 @@ A voz é direta, encorajadora e escolar, sem mencionar IA, mockup ou implementa�
 
 ## Do's and Don'ts
 
+### Acesso unificado e recuperação — 19/10/2026
+
+O portal FaeNet mantém seu visual e passa a apontar para a entrada central quando
+configurado. Recuperação reutiliza os controles e estados de ativação, sem uma
+nova identidade visual. Fluxos e rollout: `docs/faenet-sso.md`. A decisão atual
+substitui os registros históricos de recuperação aprovada pela secretaria.
+
 - **Do:** usar o cenário e a sinalização do campus como contexto visual reconhecível.
 - **Do:** reutilizar tokens, navegação, foco e feedback já existentes.
 - **Don't:** transformar cada informação em um cartão de vidro independente.

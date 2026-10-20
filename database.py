@@ -578,6 +578,8 @@ def init_db():
     init_lesson_attendance()
     from account_mfa import init_mfa
     init_mfa()
+    from faenet_sso import init_sso
+    init_sso()
 
 
 def authenticate(username, password):

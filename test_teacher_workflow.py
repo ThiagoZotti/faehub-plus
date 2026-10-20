@@ -1,13 +1,33 @@
 import unittest
 from unittest.mock import patch
 from datetime import date
+from pathlib import Path
+import shutil
+import tempfile
+import database as db
+import academic_core
+from director import init_director
 from app import app, ROSTER
 from teacher_workflow import validated_grades, validated_attendance, scoped_roster
 
 ASSIGN=[dict(class_name='3110',discipline='LP3')]
 
 class TeacherWorkflowTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.temp=tempfile.TemporaryDirectory();cls.base=Path(cls.temp.name)/'base.db'
+        with patch.object(db,'DB_PATH',cls.base):
+            db.init_db();init_director();db.seed_teacher_assignments();academic_core.sync_teacher_assignments()
+            # SQLite CURRENT_DATE is UTC; local date.today() may be the previous
+            # day. Keep fixture bindings valid independently of execution time.
+            with db.connection() as conn:conn.execute("UPDATE teacher_subjects SET valid_from='2026-01-01'")
+
+    @classmethod
+    def tearDownClass(cls):cls.temp.cleanup()
+
     def setUp(self):
+        self.path=Path(self.temp.name)/'case.db';shutil.copyfile(self.base,self.path)
+        override=patch.object(db,'DB_PATH',self.path);override.start();self.addCleanup(override.stop)
         self.client=app.test_client()
         with self.client.session_transaction() as s:
             s.update(role='professor',username='aline',display_name='Profa. Aline',teacher_token='test-token')

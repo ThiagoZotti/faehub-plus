@@ -4,6 +4,7 @@
 import os
 import secrets
 import hashlib
+import time
 import database as db
 from io import BytesIO
 from dashboard import student_summary
@@ -100,6 +101,7 @@ import academic_core
 import school_timetable
 import lesson_attendance
 import account_mfa
+import faenet_sso
 from database import get_teacher_assignments, seed_teacher_assignments
 from teacher_dashboard import teacher_overview
 from teacher_workflow import scoped_roster, validated_grades, validated_attendance
@@ -362,6 +364,54 @@ def login_required(view_name_map):
 # ==========================================================================
 # Autenticação
 # ==========================================================================
+@app.get('/sso/faenet/authorize')
+def faenet_authorize():
+    if not faenet_sso.configured():
+        return 'A integração com a FaeNet aguarda configuração do servidor.', 503
+    try:
+        if not request.args and session.get('sso_resume', {}).get('_expires', 0) < time.time():
+            session.pop('sso_resume', None)
+            return 'A entrada expirou. Reabra a FaeNet para tentar novamente.', 400
+        args = faenet_sso.validate_authorization(request.args if request.args else session.get('sso_resume', {}))
+    except ValueError as exc:
+        return str(exc), 400
+    access = account_access(session.get('username')) if session.get('username') else None
+    role = 'diretor' if session.get('role') == 'admin' else session.get('role')
+    if (not access or not access['active'] or access['role'] != role
+            or access['auth_version'] != session.get('auth_version', 0)
+            or (access['mfa_enabled'] and not session.get('mfa_verified'))):
+        session.clear()
+        session['sso_resume'] = dict(args, _expires=int(time.time())+600)
+        return redirect(url_for('login'))
+    try:
+        if not enrollment.consume_rate_limit('faenet-authorize', session['username'], limit=30):
+            return 'Muitas tentativas. Aguarde 15 minutos.', 429
+        destination = faenet_sso.issue(session['username'], access['auth_version'], args)
+    except ValueError as exc:
+        return str(exc), 403
+    session.pop('sso_resume', None)
+    response = redirect(destination)
+    response.headers['Referrer-Policy'] = 'no-referrer'
+    return response
+
+
+@app.post('/sso/faenet/token')
+def faenet_token():
+    if not faenet_sso.client_authenticated(request.headers.get('Authorization', '')):
+        return {'error': 'Cliente não autorizado.'}, 401
+    try:
+        return faenet_sso.exchange(request.form)
+    except ValueError as exc:
+        return {'error': str(exc)}, 400
+
+
+@app.post('/sso/faenet/introspect')
+def faenet_introspect():
+    if not faenet_sso.client_authenticated(request.headers.get('Authorization', '')):
+        return {'active': False}, 401
+    return faenet_sso.introspect(request.form.get('token'))
+
+
 @app.route("/")
 def login():
     # Visiting the entrance never skips the user's explicit action.
@@ -393,7 +443,9 @@ def entrar():
 
     if account_mfa.enabled(conta['username']):
         import time
+        resume = session.get('sso_resume')
         session.clear()
+        if resume: session['sso_resume'] = resume
         session.update(mfa_pending_user=conta['username'],mfa_pending_version=access_version(conta['username']),
                        mfa_pending_until=int(time.time())+300,mfa_token=secrets.token_hex(24))
         if wants_json:
@@ -403,7 +455,9 @@ def entrar():
 
 
 def complete_login(conta,wants_json=False,*,mfa_verified=False):
+    resume = session.get('sso_resume')
     session.clear()
+    if resume: session['sso_resume'] = resume
     session["role"] = "admin" if conta["role"] == "diretor" else conta["role"]
     usuario = conta['username']  # E-mail is an alias; academic records use the immutable school ID.
     session["username"] = usuario
@@ -414,8 +468,8 @@ def complete_login(conta,wants_json=False,*,mfa_verified=False):
         session["aluno_id"] = conta["student_id"]
     log_action(usuario, "login", f"Acesso como {conta['role']}")
     if wants_json:
-        return {'name': conta['name'], 'role': conta['role'], 'destination': url_for('painel')}
-    return redirect(url_for("painel"))
+        return {'name': conta['name'], 'role': conta['role'], 'destination': url_for('faenet_authorize') if resume else url_for('painel')}
+    return redirect(url_for('faenet_authorize') if resume else url_for('painel'))
 
 
 @app.route('/entrar/autenticador',methods=['GET','POST'])
@@ -448,7 +502,8 @@ def verificar_autenticador():
                 conta=dict(conn.execute('SELECT username,name,student_id FROM users WHERE username=?',(username,)).fetchone())
             conta['role']=fresh['role']
             complete_login(conta,mfa_verified=True)
-            return render_template('account_mfa_challenge.html',confirmed=True,name=conta['name'])
+            return render_template('account_mfa_challenge.html',confirmed=True,name=conta['name'],
+                                   destination=url_for('faenet_authorize') if session.get('sso_resume') else url_for('painel'))
         except ValueError as exc:error=str(exc)
     return render_template('account_mfa_challenge.html',confirmed=False,token=session['mfa_token'],error=error),422 if error else 200
 
@@ -715,7 +770,7 @@ def horario():
 def faenet():
     if session.get('role') not in NAV:
         return 'Acesso restrito.', 403
-    return render_template('faenet.html', faenet_url=FAENET_PUBLIC_URL)
+    return render_template('faenet.html', faenet_url=FAENET_PUBLIC_URL, faenet_sso_enabled=faenet_sso.configured())
 
 
 @app.route("/avisos", methods=["GET", "POST"])
@@ -1143,10 +1198,7 @@ def secretaria():
                             action_url=url_for("secretaria"), created_by=session["username"],
                         )
                 elif action == "issue_recovery":
-                    recovery_id = request.form.get("id", type=int)
-                    session["issued_recovery_code"] = operations.issue_recovery_code(recovery_id, session["username"])
-                    flash("Código emitido. Ele será mostrado uma única vez nesta sessão.")
-                    return redirect(url_for("secretaria"))
+                    raise ValueError('A recuperação é feita pelo e-mail confirmado do titular, sem aprovação da direção.')
                 else:
                     raise ValueError("Ação de secretaria inválida.")
                 log_action(session["username"], "secretaria_" + action, str(request.form.get("id", "")))
@@ -1375,6 +1427,7 @@ def notificacoes():
 
 @app.route("/recuperar-senha", methods=["GET", "POST"])
 def recuperar_senha():
+    import account_recovery as recovery
     session.setdefault("recovery_token", secrets.token_hex(24))
     message = error = None
     if request.method == "POST":
@@ -1383,22 +1436,23 @@ def recuperar_senha():
         action = request.form.get("action", "request")
         try:
             if action == "request":
-                operations.request_password_recovery(enrollment.login_identifier(request.form.get("username", "")[:254]))
-                message = "Se a conta estiver ativa, a secretaria recebeu a solicitação. O código é entregue após confirmação de identidade."
+                message = recovery.request_recovery(request.form.get('email',''), request.form.get('purpose','password'), request.remote_addr or '')
             elif action == "reset":
                 new_password = request.form.get("new_password", "")
                 if new_password != request.form.get("confirm_password", ""):
                     raise ValueError("As novas senhas não coincidem.")
-                operations.use_recovery_code(
-                    enrollment.login_identifier(request.form.get("username", "")[:254]), request.form.get("code", ""), new_password
-                )
+                recovery.reset_password(request.form.get('email',''), request.form.get('code',''), new_password,
+                                        request.form.get('confirm_password',''), request.remote_addr or '')
                 flash("Senha redefinida. Entre novamente com a nova senha.")
                 return redirect(url_for("login"))
             else:
                 raise ValueError("Ação inválida.")
         except ValueError as exc:
             error = str(exc)
-    return render_template("p1/recuperar_senha.html", message=message, error=error, token=session["recovery_token"])
+    response = app.make_response((render_template("p1/recuperar_senha.html", message=message, error=error, token=session["recovery_token"]), 422 if error else 200))
+    response.headers['Cache-Control']='no-store'
+    response.headers['Referrer-Policy']='no-referrer'
+    return response
 
 
 @app.get("/anexos/<int:attachment_id>")

@@ -574,6 +574,8 @@ def issue_recovery_code(request_id: int, admin: str):
     expires = (datetime.now(timezone.utc) + timedelta(minutes=30)).isoformat()
     with db.connection() as conn:
         target = conn.execute('SELECT username FROM password_recovery_requests WHERE id=?', (request_id,)).fetchone()
+        if target and conn.execute('SELECT 1 FROM account_identities WHERE username=? AND verified_at IS NOT NULL AND verified_at<>0', (target['username'],)).fetchone():
+            raise ValueError('A recuperação é feita diretamente pelo e-mail confirmado, sem aprovação da direção.')
         if target and is_protected(conn, target['username']):
             raise ValueError('A recuperação do proprietário não pode ser realizada pela secretaria.')
         result = conn.execute(
@@ -595,6 +597,8 @@ def use_recovery_code(username: str, code: str, new_password: str):
     with db.connection() as conn:
         if is_protected(conn, username.strip().lower()):
             raise ValueError('Código inválido ou expirado.')
+        if conn.execute('SELECT 1 FROM account_identities WHERE username=? AND verified_at IS NOT NULL AND verified_at<>0', (username.strip().lower(),)).fetchone():
+            raise ValueError('Use a recuperação pelo seu e-mail confirmado.')
         row = conn.execute(
             """SELECT id FROM password_recovery_requests
                WHERE username=? AND token_hash=? AND status='issued' AND expires_at>=?

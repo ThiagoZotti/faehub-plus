@@ -107,7 +107,11 @@ Status: aguardando o cardápio real da escola.
 
 ### Outras frentes P2
 
-- Apresentação e atalhos para a FaeNet entregues; integração de identidade/sessões ainda não implementada.
+- Acesso FaeHub → FaeNet implementado com vínculo comprovado, MFA e revogação;
+  ativação em produção depende da importação coordenada das configurações privadas
+  nos dois serviços Render. Contrato e testes: `docs/faenet-sso.md`.
+- Recuperação de senha/usuário autônoma por e-mail confirmado, sem direção;
+  depende do transporte Gmail já configurado no servidor.
 - Biblioteca, patrimônio, transporte, ocorrências e atendimentos.
 - Fotografia de perfil opcional entregue; não existe sistema de personagens.
 

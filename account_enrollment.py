@@ -115,6 +115,15 @@ def send_invitation_email(email, token, invitation_id):
                 'Seu perfil e seus vínculos foram definidos pela escola. '
                 'Se não esperava este convite, ignore esta mensagem. Nunca compartilhe o link.'
     }
+    send_account_email(email, content['subject'], content['text'], content['html'],
+                       'invitation-' + invitation_id + '-' + hashlib.sha256(token.encode()).hexdigest())
+
+
+def send_account_email(email, subject, text, html, delivery_id):
+    """One server-only mail transport for invitations and account recovery."""
+    if not mail_configured():
+        raise ValueError('O envio de e-mails está indisponível. Tente novamente mais tarde.')
+    content = dict(to=[email], subject=subject, text=text, html=html)
     if os.getenv('FAEHUB_MAIL_PROVIDER', 'resend').strip().lower() == 'gmail':
         gmail_mail.send(email, content['subject'], content['text'], content['html'])
         return
@@ -124,7 +133,7 @@ def send_invitation_email(email, token, invitation_id):
     req = Request('https://api.resend.com/emails', data=payload, method='POST', headers={
         'Authorization': 'Bearer ' + os.environ['FAEHUB_RESEND_API_KEY'],
         'Content-Type': 'application/json', 'User-Agent': 'FaeHub/1.0',
-        'Idempotency-Key': 'invitation-' + invitation_id + '-' + hashlib.sha256(token.encode()).hexdigest()
+        'Idempotency-Key': delivery_id
     })
     try:
         with urlopen(req, timeout=10) as response:

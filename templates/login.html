@@ -44,7 +44,7 @@
           <p class="arrival-error" id="arrivalError" role="alert">{{ error or '' }}{% for message in get_flashed_messages() %}{{ message }}{% endfor %}</p><button class="arrival-primary" type="submit" id="authenticate"><span>Validar acesso</span><b>→</b></button>
         </form>
         <section class="credential-confirmed" id="credentialConfirmed" hidden aria-live="polite"><span class="confirm-icon">✓</span><small>IDENTIDADE CONFIRMADA</small><h3 id="confirmedName"></h3><p><span id="confirmedRole"></span> · seu espaço está pronto.</p><a class="arrival-primary" id="enterCampus" href="{{ url_for('painel') }}"><span>Entrar no campus</span><b>→</b></a></section>
-        <a class="credential-recovery" href="{{ url_for('recuperar_senha') }}">Esqueci minha senha</a>
+        <a class="credential-recovery" href="{{ url_for('recuperar_senha') }}">Recuperar senha ou usuário</a>
         <a class="credential-recovery" href="{{ url_for('ativar_conta') }}">Primeiro acesso? Abra o convite da escola</a>
         {% if demos_enabled %}<p class="credential-recovery">Contas anteriores continuam disponíveis durante a transição.</p>{% endif %}
         <footer class="credential-footer"><span><i></i> AMBIENTE SEGURO</span><span>FAEHUB / 2026</span></footer>
