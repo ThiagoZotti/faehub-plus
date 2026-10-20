@@ -86,3 +86,8 @@ Implementação, migration e testes estão no repositório FaeNet, contrato
 Correção de envio em 20/10/2026: o cadastro FaeNet resolve o destino pelo atributo
 HTML/URL atual, sem usar a propriedade form.action que o campo oculto mascarava.
 Regressão cliente: `node --test tests/test_identity_client.js` na FaeNet.
+
+Ensaio da prévia: correções adicionais de atualização do feed e roteamento de
+Mensagens com destinatário, preservando aparência e permissões. Regressões em
+`tests/test_feed_client.js` e `tests/test_router_client.js` no repositório FaeNet.
+Escopo e limitações da checagem em `docs/previa-checklist.md`.
