@@ -82,3 +82,7 @@ autenticador, permissões ou registros escolares. Contas geradas automaticamente
 concluem esse fluxo na próxima entrada, preservando posts, mensagens e relações.
 Implementação, migration e testes estão no repositório FaeNet, contrato
 `docs/faehub-sso.md`. Nenhum segredo novo é necessário no FaeHub.
+
+Correção de envio em 20/10/2026: o cadastro FaeNet resolve o destino pelo atributo
+HTML/URL atual, sem usar a propriedade form.action que o campo oculto mascarava.
+Regressão cliente: `node --test tests/test_identity_client.js` na FaeNet.
