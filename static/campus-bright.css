@@ -2827,17 +2827,28 @@ body.campus-shell {
   display: flex;
   gap: 8px;
   align-items: center;
+  min-width: 0;
 }
 .enrollment-password input {
   min-width: 0;
+  flex: 1 1 0;
+  width: 0;
 }
 .enrollment-password button {
+  flex: 0 0 auto;
+  white-space: nowrap;
   min-height: 44px;
   padding: 8px 12px;
   background: var(--campus-panel-strong);
   border: 1px solid var(--campus-line);
   border-radius: 12px;
   color: var(--campus-text);
+}
+.enrollment-card [data-activation-form] > button[type="submit"] {
+  display: flex;
+  margin-top: 20px;
+  max-width: 100%;
+  white-space: normal;
 }
 .enrollment-card button:disabled {
   opacity: 0.6;
