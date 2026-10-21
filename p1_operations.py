@@ -476,6 +476,31 @@ def notification_unread_count(username: str, role: str):
     return row['total']
 
 
+def mark_inbox_read(username: str, role: str, *, notice_keys=(), exclude_messages=False):
+    """Read the account's displayed inbox, not other accounts or discarded items.
+
+    Notice keys must come from the server's authorized class-notice resolver.
+    Both read stores share one transaction; no per-notification query loop.
+    """
+    with db.connection() as conn:
+        notice_states = db.get_communication_states(username, 'notice')
+        notification_states = db.get_communication_states(username, 'notification')
+        notices = [key for key in set(notice_keys) if not notice_states.get(key, {}).get('is_read')
+                   and not notice_states.get(key, {}).get('dismissed_at')]
+        notifications = [item for item in list_notifications(username, role) if not item['is_read']
+                         and not notification_states.get(str(item['id']), {}).get('dismissed_at')
+                         and not (exclude_messages and item['category'] == 'mensagem')]
+        states = [(username, 'notice', key, True) for key in notices]
+        states += [(username, 'notification', str(item['id']), True) for item in notifications]
+        if states:
+            conn.executemany('''INSERT INTO communication_states(username,kind,item_key,is_read) VALUES(?,?,?,?)
+                ON CONFLICT(username,kind,item_key) DO UPDATE SET is_read=excluded.is_read,updated_at=CURRENT_TIMESTAMP''', states)
+        if notifications:
+            conn.executemany('''INSERT INTO notification_reads(notification_id,username) VALUES(?,?)
+                ON CONFLICT(notification_id,username) DO NOTHING''', [(item['id'], username) for item in notifications])
+    return len(states)
+
+
 def mark_notification(notification_id: int, username: str, read: bool, role: str):
     if notification_id not in {item['id'] for item in list_notifications(username, role)}:
         raise ValueError("Notificação indisponível para esta conta.")

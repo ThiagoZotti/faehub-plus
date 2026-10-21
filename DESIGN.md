@@ -86,14 +86,20 @@ de composição e geometria dos demais módulos; `campus-electric.css` continua
 dono das cores e da tipografia. Responsáveis passam a usar Electric nos módulos,
 preservando o próprio painel. Nenhuma permissão ou dado muda com o tema.
 
-Cabeçalhos dos módulos usam faixa fotográfica diagonal do campus já existente,
-com contraste protegido; o conteúdo continua opaco e legível. Cards de registros
+O usuário rejeitou a faixa fotográfica repetida nos módulos. Fotografia fica no
+login, painéis e portal FaeNet aprovados. Módulos usam composição própria:
+Horário tem eixo temporal com lacunas explícitas; Agenda combina calendário,
+trilha de eventos e histórico separado; Comunicados tem cabeçalho editorial,
+barra de leitura e dois canais; Boletim tem resumo contínuo e tabela comparativa;
+Exercícios preserva o estúdio de entregas; Secretaria usa protocolos com faixa
+de situação; Mensagens tem cabeçalho compacto para priorizar a conversa.
+Cards de registros
 compartilham bordas, raio de 18px e ritmo de 24px (18px no celular). Botões e links
 de ação têm a mesma caixa, fonte e altura mínima de 44px, inclusive variantes
 compactas; rótulos longos podem quebrar sem cortar conteúdo. Status continuam
 estáticos, mas nas linhas de protocolo alinham a altura com as ações adjacentes.
 Não se transforma toda a interface em dashboards nem se criam indicadores
-fictícios para preencher espaços. A imagem é reutilizada e cacheável; sem novas
+fictícios para preencher espaços. Composições usam HTML/CSS; sem novas
 dependências, efeitos de blur contínuo ou animações de fundo.
 
 Os tokens acima descrevem a nova superfície do aluno: fundo azul profundo, painel azul-noite e superfície elevada azul. Azul elétrico identifica navegação ativa; ciano orienta ações e foco; violeta e verde-lima reforçam os indicadores acadêmicos. Atalhos vermelho e verde usam gradientes saturados como no mockup, sempre com texto. Erro mantém significado próprio. Fotografia fica no hero, nunca atrás de tabelas. Impressão mantém fundo branco. Paleta clara permanece nos fluxos ainda não migrados.

@@ -217,6 +217,14 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
 - Botões são desabilitados após submit; falha não apaga entradas não sensíveis.
 - Senhas, códigos e tokens não entram em logs, flashes, URL ou armazenamento do navegador.
 - O status de leitura fica no banco e acompanha a conta em outros dispositivos.
+- “Marcar tudo como lido” em Comunicados atua nos avisos autorizados da turma e
+  nas atualizações visíveis da conta (até 100, como a central existente), sem
+  mensagens privadas nem itens descartados. É reversível por item e usa POST
+  com CSRF, transação e envio único. Não altera a leitura de outras contas.
+- Horário conserva os horários publicados, com eixo comum no desktop e lista
+  cronológica no celular. Lacunas são “Sem aula”/“Tempo livre”, nunca intervalos
+  oficiais presumidos. Sábado/domingo aparecem somente com aula publicada.
+  O calendário mensal continua exibindo todos os dias para consulta de registros.
 - Comunicados lidos podem ser descartados sem apagar a publicação original. O descarte é individual, persistente e reversível pela área `Descartados`; itens não lidos não podem ser descartados.
 - Abrir uma conversa marca como lidas somente as mensagens recebidas daquele participante. A tela mantém lista de conversas, histórico cronológico em balões e envio no próprio contexto; o assunto legado não é exigido em novas mensagens.
 - `prefers-reduced-motion` remove transformações e reduz transições.

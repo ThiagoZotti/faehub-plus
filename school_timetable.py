@@ -80,6 +80,42 @@ def grid(rows):
                 professores=[[cells.get((day, start, end), {}).get('teacher_names', '') for day in range(7)] for start, end in times])
 
 
+def week_view(rows):
+    """Presentation only: shared time axis, honest gaps, optional weekend days.
+
+    Keep grid()'s seven-day contract for dashboard date calculations. Never
+    infer, move or shorten a published lesson to fill a visual hole.
+    """
+    rows = list(rows)
+    boundaries = sorted({str(r[key])[:5] for r in rows for key in ('starts_at', 'ends_at')})
+    names = ('Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo')
+    days = []
+    def minutes(value):
+        hour, minute = map(int, value.split(':'))
+        return hour * 60 + minute
+    for weekday, name in enumerate(names):
+        lessons = sorted((r for r in rows if r['weekday'] == weekday), key=lambda r: r['starts_at'])
+        if weekday >= 5 and not lessons:
+            continue
+        segments = []
+        cursor = boundaries[0] if boundaries else None
+        for lesson in lessons:
+            start, end = lesson['starts_at'], lesson['ends_at']
+            if cursor < start:
+                segments.append(dict(kind='free', starts_at=cursor, ends_at=start))
+            segments.append(dict(lesson, kind='lesson'))
+            cursor = end
+        if boundaries and cursor < boundaries[-1]:
+            segments.append(dict(kind='free', starts_at=cursor, ends_at=boundaries[-1]))
+        for segment in segments:
+            segment.update(row=boundaries.index(segment['starts_at']) + 2,
+                           span=boundaries.index(segment['ends_at']) - boundaries.index(segment['starts_at']),
+                           minutes=minutes(segment['ends_at']) - minutes(segment['starts_at']))
+        days.append(dict(weekday=weekday, name=name, short=DAYS[weekday], lessons=len(lessons), segments=segments))
+    return dict(days=days, bands=max(len(boundaries)-1, 0), count=len(rows),
+                starts_at=boundaries[0] if boundaries else '', ends_at=boundaries[-1] if boundaries else '')
+
+
 def _time(value):
     value = str(value or '').strip()
     if not re.fullmatch(r'(?:[01]\d|2[0-3]):[0-5]\d', value):

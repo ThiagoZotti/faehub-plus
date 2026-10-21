@@ -3,9 +3,10 @@
 {% block content %}
 <main class="academic module-world unified-page communications-page">
   <header class="unified-hero">
-    <div><span class="unified-kicker">Central de comunicados</span><h1>Fique por dentro.<br><em>Faça parte.</em></h1><p>Avisos da turma e atualizações da sua conta. Leia e acompanhe o que acontece no campus.</p></div>
+    <div><span class="unified-kicker">Central de comunicados</span><h1>O campus<br><em>tem novidades.</em></h1><p>Avisos da turma e atualizações da sua conta, separados para você encontrar o que importa.</p></div>
     <div class="unified-stats"><div><strong>{{ avisos|length }}</strong><span>da turma</span></div><div><strong>{{ notifications|length }}</strong><span>da conta</span></div><div><strong>{{ unread }}</strong><span>não lidas</span></div></div>
   </header>
+  <section class="inbox-toolbar" aria-label="Leitura dos comunicados"><div><strong>{{ unread }} {{ 'comunicado não lido' if unread == 1 else 'comunicados não lidos' }}</strong><p>A leitura fica salva na sua conta. Descartados e conversas não são alterados.</p></div><form method="post" novalidate data-inbox-read-all><input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="action" value="read_all"><button class="unified-action" type="submit" {% if not unread %}disabled{% endif %}>Marcar tudo como lido</button></form></section>
   {% if error %}<p class="ops-error" role="alert">{{ error }}</p>{% endif %}
   <section class="unified-comms">
     <article class="unified-panel">
@@ -41,4 +42,5 @@
   {% if dismissed %}<details class="communications-discarded unified-panel"><summary>Descartados <span>{{ dismissed|length }}</span></summary><div class="communications-discarded__list">{% for item in dismissed %}<article><div><small>{{ 'Aviso da turma' if item.kind == 'notice' else 'Atualização da conta' }}</small><strong>{{ item.titulo if item.kind == 'notice' else item.title }}</strong></div><form method="post" novalidate><input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="kind" value="{{ item.kind }}"><input type="hidden" name="item_key" value="{{ item.item_key }}"><input type="hidden" name="action" value="restore">{% if item.kind == 'notification' %}<input type="hidden" name="id" value="{{ item.id }}">{% endif %}<button class="unified-action" type="submit">Restaurar</button></form></article>{% endfor %}</div></details>{% endif %}
   <p id="moduleStatus" role="status" aria-live="polite"></p>
 </main>
+<script src="{{ url_for('static',filename='inbox-actions.js') }}"></script>
 {% endblock %}

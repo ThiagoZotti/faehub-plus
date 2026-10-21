@@ -1,8 +1,23 @@
-{% extends "base.html" %}{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='academic.css') }}"><link rel="stylesheet" href="{{ url_for('static',filename='campus-modules.css') }}">{% endblock %}{% block content %}
-<main class="academic module-world">
-<header class="academic-heading"><div><span class="academic-kicker">CAMPUS / SEU RITMO</span><h1>Uma semana.<br><em>Novas possibilidades.</em></h1><p>{{ 'Turma ' + d.turma if d.turma else 'Sem matrícula ativa' }} · Grade semanal</p></div><a class="academic-button" href="{{ url_for('exercicios') }}">Preparar minhas entregas ↗</a></header>
-<section class="module-banner"><div><span class="academic-kicker">PRÓXIMA AULA NA GRADE</span>{% if upcoming %}<h2>{{ upcoming[0].subject }}</h2><p>{{ upcoming[0].day }} · {{ upcoming[0].date }} · {{ upcoming[0].time }}</p>{% else %}<h2>Nenhuma aula prevista</h2><p>A grade aparecerá após a publicação pela direção.</p>{% endif %}</div>{% if d.schedule.horarios %}<div class="banner-stat"><strong>{{ d.schedule.horarios|min }}</strong><span>primeiro horário da semana</span></div><div class="banner-stat"><strong>{{ d.schedule.fins|max }}</strong><span>último horário da semana</span></div>{% endif %}</section>
-<div class="module-filter" role="group" aria-label="Selecionar dia"><button type="button" data-day-filter="all" aria-pressed="true">Semana completa</button>{% for day in d.schedule.dias %}<button type="button" data-day-filter="{{ loop.index0 }}" aria-pressed="false">{{ day }}</button>{% endfor %}</div>
-<section class="week-cards">{% for day in ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'] %}{% set col=loop.index0 %}<article class="day-card" data-week-day="{{ col }}" style="--day-color:{{ ['#8fe5dc','#d6b2ff','#9dccff','#ffcaa0','#a4e5b6','#c1c5ff','#8fe5dc'][col] }}"><header><span class="academic-kicker">DIA {{ '%02d'|format(loop.index) }}</span><h2>{{ day }}</h2></header>{% for lesson in d.schedule.slots if lesson.weekday==col %}<div class="lesson-block"><time>{{ lesson.starts_at }} — {{ lesson.ends_at }}</time><h3>{{ lesson.subject_name }}</h3><p>{{ lesson.teacher_names or 'Docente não vinculado' }}</p>{% if lesson.room %}<small>Sala {{ lesson.room }}</small>{% endif %}</div>{% else %}<p class="core-empty">Nenhuma aula publicada neste dia.</p>{% endfor %}</article>{% endfor %}</section>
-<footer class="academic-footnote">Confirme alterações de aula com a secretaria.</footer>
-</main><script src="{{ url_for('static',filename='campus-modules.js') }}"></script>{% endblock %}
+{% extends "base.html" %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='academic.css') }}"><link rel="stylesheet" href="{{ url_for('static',filename='campus-modules.css') }}">{% endblock %}
+{% block content %}
+<main class="academic module-world timetable-page">
+  <header class="academic-heading timetable-heading">
+    <div><span class="academic-kicker">HORÁRIO / {{ 'TURMA ' ~ d.turma if d.turma else 'SEM MATRÍCULA ATIVA' }}</span><h1>Sua semana,<br><em>hora por hora.</em></h1><p>Aulas publicadas em ordem de horário. Os espaços sem aula também aparecem na grade.</p></div>
+    <div class="timetable-window"><span>Grade semanal</span><strong>{{ week.starts_at ~ ' — ' ~ week.ends_at if week.count else 'A publicar' }}</strong><small>{{ week.count }} aulas · {{ week.days|length }} dias exibidos</small></div>
+  </header>
+  <section class="timetable-next" aria-label="Próxima aula"><span class="timetable-next__icon" aria-hidden="true">{{ icons['calendar']|safe }}</span><div><span class="academic-kicker">PRÓXIMA AULA NA GRADE</span>{% if upcoming %}<h2>{{ upcoming[0].subject }}</h2><p>{{ upcoming[0].day }} · {{ upcoming[0].date }} · {{ upcoming[0].time }}</p>{% else %}<h2>Nenhuma aula prevista</h2><p>A grade aparecerá após a publicação pela direção.</p>{% endif %}</div><a class="academic-button" href="{{ url_for('exercicios') }}">Preparar minhas entregas ↗</a></section>
+  <div class="module-filter" role="group" aria-label="Selecionar dia"><button type="button" data-day-filter="all" aria-pressed="true">Semana completa</button>{% for day in week.days %}<button type="button" data-day-filter="{{ day.weekday }}" aria-pressed="false">{{ day.short }}</button>{% endfor %}</div>
+  {% if week.count %}<section class="week-cards timetable-board" style="--week-days:{{ week.days|length }};--time-bands:{{ week.bands }}" aria-label="Grade semanal publicada">
+    {% for day in week.days %}<article class="day-card timetable-day" data-week-day="{{ day.weekday }}" style="--day-color:{{ ['#23CEFF','#A890FF','#79EDB7','#FFCF7B','#23CEFF','#A890FF','#79EDB7'][day.weekday] }}">
+      <header><h2>{{ day.name }}</h2><span>{{ day.lessons }} {{ 'aula' if day.lessons == 1 else 'aulas' }}</span></header>
+      {% for segment in day.segments %}<div class="timetable-segment {{ 'lesson-block' if segment.kind == 'lesson' else 'timetable-free' }}" style="grid-row:{{ segment.row }} / span {{ segment.span }}">
+        <time>{{ segment.starts_at }} — {{ segment.ends_at }}</time>
+        {% if segment.kind == 'lesson' %}<h3>{{ segment.subject_name }}</h3><p>{{ segment.teacher_names or 'Docente não vinculado' }}</p>{% if segment.room %}<small>Sala {{ segment.room }}</small>{% endif %}
+        {% else %}<strong>{{ 'Tempo livre' if segment.minutes >= 40 else 'Sem aula' }}</strong><small>{{ segment.minutes }} min sem aula publicada</small>{% endif %}
+      </div>{% endfor %}
+    </article>{% endfor %}
+  </section>{% else %}<p class="academic-empty">Nenhuma aula publicada para sua matrícula. A secretaria precisa publicar a grade da turma.</p>{% endif %}
+  <footer class="academic-footnote">Horários vêm da grade publicada pela escola. “Tempo livre” indica ausência de aula cadastrada, não um intervalo oficial. Dias de fim de semana só aparecem quando têm aula publicada. Confirme alterações de aula com a secretaria.</footer>
+</main><script src="{{ url_for('static',filename='campus-modules.js') }}"></script>
+{% endblock %}

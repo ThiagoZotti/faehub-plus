@@ -759,7 +759,12 @@ def horario():
     aluno = current_aluno()
     d = dict(aluno, schedule=school_timetable.grid(school_timetable.slots(student_id=aluno['matricula'])))
     from dashboard import upcoming_lessons
-    return render_template("aluno_horario.html", d=d, upcoming=upcoming_lessons(d['schedule']))
+    upcoming = upcoming_lessons(d['schedule'])
+    subject_names = {row['subject_code']: row['subject_name'] for row in d['schedule']['slots']}
+    for lesson in upcoming:
+        lesson['subject'] = subject_names.get(lesson['subject'], lesson['subject'])
+    return render_template("aluno_horario.html", d=d, upcoming=upcoming,
+                           week=school_timetable.week_view(d['schedule']['slots']))
 
 
 # ==========================================================================
@@ -804,7 +809,11 @@ def comunicados():
             action = request.form.get("action", "read")
             kind = request.form.get("kind", "notification")
             item_key = request.form.get("item_key", "").strip()
-            if kind == "notice":
+            if action == "read_all":
+                count = operations.mark_inbox_read(username, "aluno", notice_keys=[item['key'] for item in notices], exclude_messages=True)
+                flash(f"{count} comunicado marcado como lido." if count == 1 else
+                      (f"{count} comunicados marcados como lidos." if count else "Todos os comunicados já estão lidos."))
+            elif kind == "notice":
                 if item_key not in {item["key"] for item in notices}:
                     raise ValueError("Aviso indisponível para esta conta.")
                 if action in {"read", "unread"}:
@@ -1200,7 +1209,7 @@ def secretaria():
                     record = next((row for row in operations.list_document_requests() if row["id"] == request_id), None)
                     if record:
                         operations.create_notification(
-                            "Documento atualizado", f"O protocolo {record['protocol']} agora está: {status}.",
+                            "Documento atualizado", f"O protocolo {record['protocol']} agora está: {ops_status(status)}.",
                             recipient=record["requester"], category="documento",
                             action_url=url_for("secretaria"), created_by=session["username"],
                         )
@@ -1407,7 +1416,11 @@ def notificacoes():
             return "Sessão expirada. Atualize a página.", 400
         try:
             action = request.form.get("action", "read")
-            if action in {"read", "unread"}:
+            if action == "read_all":
+                count = operations.mark_inbox_read(session["username"], role)
+                flash(f"{count} notificação marcada como lida." if count == 1 else
+                      (f"{count} notificações marcadas como lidas." if count else "Todas as notificações já estão lidas."))
+            elif action in {"read", "unread"}:
                 operations.mark_notification(request.form.get("id", type=int), session["username"], action == "read", role)
             elif action == "publish" and role == "admin":
                 target = request.form.get("role_target", "todos")

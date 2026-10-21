@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='academic.css') }}"><link rel="stylesheet" href="{{ url_for('static',filename='unified-sections.css') }}">{% endblock %}
 {% block content %}
-<main class="academic unified-page">
-  <p><a href="{{ url_for('frequencia',base='diaria') }}">Consultar histórico diário anterior →</a></p>
+<main class="academic unified-page agenda-page">
   <header class="unified-hero">
     <div><span class="unified-kicker">Agenda acadêmica</span><h1>Sua agenda.<br><em>Seu ritmo.</em></h1><p>Suas presenças e os próximos acontecimentos da escola, no mesmo lugar.</p></div>
     <div class="unified-stats" aria-label="Resumo da agenda"><div><strong>{{ d.frequencia }}%</strong><span>frequência</span></div><div><strong>{{ cal.rows|length }}</strong><span>chamadas no mês</span></div><div><strong>{{ events|length }}</strong><span>eventos visíveis</span></div></div>
@@ -15,7 +14,7 @@
     </article>
     <aside class="unified-panel"><header class="unified-panel__head"><div><span class="unified-kicker">Eventos escolares</span><h2>O que vem pela frente</h2><p>Agenda publicada para sua turma.</p></div></header><div class="unified-events">{% for event in events %}<article class="unified-event"><time>{{ event.starts_at|local_datetime('%d/%m · %Hh%M') }}</time><h3>{{ event.title }}</h3><p>{{ event.description or 'Sem detalhes adicionais.' }}</p><p>{{ event.location or 'Local a confirmar' }} · {{ event_types.get(event.event_type,event.event_type) }}</p></article>{% else %}<p class="unified-empty">Nenhum evento escolar publicado para sua turma.</p>{% endfor %}</div></aside>
   </section>
-<section class="unified-panel"><h2>Chamadas de {{ cal.title }}</h2><p>As novas chamadas são por aula. Registros diários anteriores continuam preservados e não são misturados ao percentual por aula.</p><div class="record-history">{% for row in cal.rows %}<div><time datetime="{{ row.class_date }}">{{ row.class_date[8:10] }}/{{ row.class_date[5:7] }}</time><span>{{ row.discipline }} {{ row.time_label }}</span><strong>{{ 'Presença' if row.status=='presente' else 'Falta' }}</strong></div>{% else %}<p class="unified-empty">Ainda não há chamadas salvas neste mês.</p>{% endfor %}</div></section>
+<section class="unified-panel agenda-history"><header class="unified-panel__head"><div><span class="unified-kicker">SEU REGISTRO, AULA POR AULA</span><h2>Chamadas de {{ cal.title }}</h2><p>Registros anteriores por dia continuam preservados em uma consulta separada.</p></div><a class="unified-link" href="{{ url_for('frequencia',base='diaria') }}">Histórico diário anterior →</a></header><div class="record-history">{% for row in cal.rows %}<div><time datetime="{{ row.class_date }}">{{ row.class_date[8:10] }}/{{ row.class_date[5:7] }}</time><span>{{ row.discipline }} {{ row.time_label }}</span><strong>{{ 'Presença' if row.status=='presente' else 'Falta' }}</strong></div>{% else %}<p class="unified-empty">Ainda não há chamadas salvas neste mês.</p>{% endfor %}</div></section>
 </main>
 <script src="{{ url_for('static',filename='academic.js') }}"></script>
 {% endblock %}
