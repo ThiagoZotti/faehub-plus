@@ -1,6 +1,6 @@
 {
   "profile": "product-admin",
-  "sourceRoots": ["templates/p0", "static/p0"],
+  "sourceRoots": ["templates/p0", "static/p0", "templates/professor_chamada.html", "templates/p1/secretaria.html", "static/teacher-workspace.js", "static/module-system.css"],
   "locale": "pt-BR",
   "canonicalMap": "UX-CONTRACT.md",
   "requiredCapabilities": ["Select/Listbox", "Date", "Form", "Scrollbar", "Toast", "CRUD"],
@@ -14,7 +14,7 @@
   },
   "requiredCommands": ["unit"],
   "commands": {
-    "unit": "python -m unittest discover -v"
+    "unit": "python tools/run_tests.py"
   },
   "evidence": {
     "crudFullFlow": "test_p0_academic_core.py",

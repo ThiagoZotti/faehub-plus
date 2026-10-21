@@ -3,6 +3,7 @@ import tempfile
 import unittest
 from datetime import datetime
 from pathlib import Path
+from html.parser import HTMLParser
 from unittest.mock import patch
 
 import database as db
@@ -108,6 +109,81 @@ class LessonAttendanceTests(unittest.TestCase):
         self.assertEqual(stale.status_code,422)
         self.assertIn(b'name="revision" value="0"',stale.data)
         self.assertNotIn(b'tw-primary" type="submit" disabled',stale.data)
+
+    def teacher_client(self):
+        client=app.test_client()
+        with client.session_transaction() as session:
+            session.update(username='aline',role='professor',auth_version=access_version('aline'),teacher_token='csrf')
+        return client
+
+    def test_initial_form_can_mark_and_save_without_a_hidden_consultation_gate(self):
+        class Controls(HTMLParser):
+            def __init__(self):super().__init__();self.form=None;self.controls=[]
+            def handle_starttag(self,tag,attrs):
+                attrs=dict(attrs)
+                if tag=='form':self.form=attrs.get('id')
+                if tag in ('input','select','button'):self.controls.append((self.form,tag,attrs))
+            def handle_endtag(self,tag):
+                if tag=='form':self.form=None
+        result=self.teacher_client().get('/chamada?turma=3110&data=2026-09-01')
+        self.assertEqual(result.status_code,200)
+        parsed=Controls();parsed.feed(result.get_data(as_text=True))
+        marks=[attrs for form,tag,attrs in parsed.controls if attrs.get('name','').startswith('presenca_')]
+        self.assertEqual(len(marks),len(self.students)*2)
+        self.assertTrue(all('disabled' not in attrs for attrs in marks))
+        for name in ('class_subject_id','inicio','fim'):
+            fields=[(form,attrs) for form,tag,attrs in parsed.controls if attrs.get('name')==name]
+            self.assertEqual(len(fields),1)
+            self.assertEqual(fields[0][0],'attendanceForm')
+            self.assertIn('required',fields[0][1])
+        save=next(attrs for form,tag,attrs in parsed.controls if attrs.get('value')=='salvar')
+        self.assertNotIn('disabled',save)
+
+    def test_http_consultation_does_not_save_or_require_marks(self):
+        client=self.teacher_client()
+        result=client.post('/chamada',data=dict(self.data,turma='3110',token='csrf',action='consultar'),follow_redirects=True)
+        self.assertEqual(result.status_code,200)
+        with db.connection() as conn:
+            self.assertEqual(conn.execute('SELECT count(*) FROM lessons').fetchone()[0],0)
+        self.save()
+        result=client.post('/chamada',data=dict(self.data,turma='3110',token='csrf',action='consultar'),follow_redirects=True)
+        self.assertEqual(result.status_code,200)
+        self.assertIn(b'name="revision" value="1"',result.data)
+        self.assertIn(b'value="presente" checked',result.data)
+        with db.connection() as conn:
+            self.assertEqual(conn.execute('SELECT attendance_revision FROM lessons').fetchone()[0],1)
+
+    def test_missing_time_preserves_marks_and_explains_error_without_saving(self):
+        payload=dict(self.data,turma='3110',token='csrf',fim='',action='salvar',
+                     **{'presenca_'+sid:value for sid,value in self.marks.items()})
+        result=self.teacher_client().post('/chamada',data=payload)
+        self.assertEqual(result.status_code,422)
+        self.assertIn('Informe início e fim'.encode(),result.data)
+        self.assertEqual(result.data.count(b'value="presente" checked'),len(self.students))
+        with db.connection() as conn:
+            self.assertEqual(conn.execute('SELECT count(*) FROM lessons').fetchone()[0],0)
+
+    def test_revision_is_bound_to_the_consulted_lesson(self):
+        self.save();self.save(inicio='08:00',fim='08:50')
+        wrong_key='|'.join((str(self.subject['id']),'2026-09-01','07:00','07:50'))
+        payload=dict(self.data,turma='3110',token='csrf',inicio='08:00',fim='08:50',revision='1',revision_key=wrong_key,
+                     **{'presenca_'+sid:'ausente' for sid in self.marks})
+        client=self.teacher_client()
+        result=client.post('/chamada',data=payload)
+        self.assertEqual(result.status_code,422)
+        self.assertIn('A aula selecionada mudou'.encode(),result.data)
+        self.assertTrue(all(row['status']=='presente' for row in db.student_attendance(self.students[0]['id'])))
+        payload['revision_key']='|'.join((str(self.subject['id']),'2026-09-01','08:00','08:50'))
+        self.assertEqual(client.post('/chamada',data=payload).status_code,302)
+        self.assertEqual({row['status'] for row in db.student_attendance(self.students[0]['id'])},{'presente','ausente'})
+
+    def test_missing_binding_is_actionable_instead_of_a_disabled_roll(self):
+        with db.connection() as conn:
+            conn.execute("UPDATE teacher_subjects SET valid_until='2026-08-31' WHERE teacher_username='aline'")
+        result=self.teacher_client().get('/chamada?turma=3110&data=2026-09-01')
+        self.assertEqual(result.status_code,200)
+        self.assertIn('Nenhuma disciplina vinculada nesta data'.encode(),result.data)
+        self.assertNotIn(b'id="attendanceForm"',result.data)
 
 
 if __name__=='__main__':unittest.main()

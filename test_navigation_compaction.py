@@ -146,15 +146,20 @@ class NavigationCompactionTests(unittest.TestCase):
         self.assertNotIn('arrival-bright.css', public_login)
         self.assertIn('campus-electric.css', public_login)
 
-    def test_guardian_theme_remains_outside_staff_rollout(self):
+    def test_guardian_modules_share_electric_but_dashboard_stays_approved(self):
         self.login('responsavel.thiago','responsavel')
         for route in ('/painel','/secretaria','/calendario','/notificacoes','/mensagens'):
             with self.subTest(route=route):
                 response = self.client.get(route)
                 self.assertEqual(response.status_code, 200)
                 html = response.get_data(as_text=True)
-                self.assertNotIn('campus-electric.css', html)
-                self.assertNotIn('class="electric-sidebar"', html)
+                if route == '/painel':
+                    self.assertNotIn('campus-electric.css', html)
+                    self.assertNotIn('class="electric-sidebar"', html)
+                else:
+                    self.assertIn('campus-electric.css', html)
+                    self.assertIn('module-system.css', html)
+                    self.assertIn('class="electric-sidebar"', html)
 
     def test_electric_dashboard_keeps_empty_lesson_state_honest(self):
         self.login("thiago.zotti", "aluno", "23081")

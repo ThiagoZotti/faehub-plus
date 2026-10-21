@@ -1,0 +1,266 @@
+/* Cross-module composition and control geometry. Electric remains the token owner. */
+.campus-modules {
+  --module-control-height: 44px;
+  --module-control-radius: 10px;
+  --module-card-radius: 18px;
+}
+.campus-modules .app__content > main {
+  width: 100%;
+  min-width: 0;
+}
+.campus-modules :is(.academic-heading, .unified-hero, .dm-heading, .ops-hero, .ops-header, .core-hero, .director-heading, .history-map > header, .internship-heading) {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+  min-height: 176px;
+  margin: 0 0 24px;
+  padding: 28px 32px;
+  border: 1px solid var(--campus-line);
+  border-radius: var(--module-card-radius);
+  background: linear-gradient(115deg, var(--campus-panel-strong), var(--campus-ink));
+  box-shadow: var(--campus-shadow);
+  overflow: hidden;
+}
+.campus-modules :is(.academic-heading, .unified-hero, .dm-heading, .ops-hero, .ops-header, .core-hero, .director-heading, .history-map > header, .internship-heading)::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 0 auto;
+  width: 40%;
+  background: linear-gradient(90deg, var(--campus-panel-strong), transparent 65%), linear-gradient(0deg, #070d2480, #144bff20), url("campus-plaza-v2.webp") center / cover;
+  clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%);
+  opacity: .55;
+  pointer-events: none;
+}
+.campus-modules .ops-hero::before { display: none; }
+.campus-modules .dm-heading { min-height: 120px; padding-block: 22px; }
+.campus-modules :is(.academic-heading, .unified-hero, .dm-heading, .ops-hero, .ops-header, .core-hero, .director-heading, .history-map > header, .internship-heading) > div:first-child {
+  flex: 1 1 440px;
+  min-width: 0;
+  max-width: 760px;
+}
+.campus-modules :is(.academic-heading, .unified-hero, .dm-heading, .ops-hero, .ops-header, .core-hero, .director-heading, .history-map > header, .internship-heading) h1 {
+  max-width: 760px;
+  margin: 8px 0 12px;
+  color: var(--campus-text);
+  font: 800 clamp(28px, 3vw, 42px)/1.14 var(--font-display);
+  letter-spacing: -.045em;
+}
+.campus-modules :is(.academic-heading, .unified-hero, .dm-heading, .ops-hero, .ops-header, .core-hero, .director-heading, .history-map > header, .internship-heading) p {
+  max-width: 640px;
+  margin: 0;
+  color: var(--campus-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.campus-modules :is(.academic-kicker, .unified-kicker, .ops-kicker, .internship-kicker) {
+  color: var(--campus-accent);
+  font: 700 10px/1.5 var(--font-body);
+  letter-spacing: .14em;
+}
+.campus-modules :is(.academic-heading, .unified-hero, .dm-heading, .core-hero) em {
+  color: var(--campus-accent);
+  font-style: normal;
+}
+.campus-modules .ops-score {
+  flex: 0 0 auto;
+  min-width: 180px;
+  padding: 16px 22px;
+  border-radius: 14px;
+  background: var(--campus-panel);
+  border-color: var(--campus-line);
+  backdrop-filter: none;
+}
+.campus-modules .ops-score strong { font-size: 34px; color: var(--campus-accent); }
+.campus-modules .ops-score i { display: none; } /* No invented progress behind a real count. */
+
+/* Links and buttons use the same box model, type scale, and hit area. */
+.campus-modules .app__content :is(.academic-button, .ops-btn, .unified-link, .unified-action, .director-primary, .director-secondary, .core-map button, .core-nav a, .studio-tabs button, .internship-button, .grade-filters button, .module-filter button, .ops-tab) {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 8px;
+  min-height: var(--module-control-height);
+  max-width: 100%;
+  padding: 10px 16px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: var(--module-control-radius);
+  font: 700 13px/1.45 var(--font-body);
+  text-align: center;
+  text-decoration: none;
+  white-space: normal;
+  cursor: pointer;
+  transition: border-color .16s ease, background-color .16s ease, color .16s ease, box-shadow .16s ease;
+  transform: none;
+}
+.campus-modules .app__content :is(.academic-button, .ops-btn, .unified-link, .unified-action, .director-primary, .director-secondary, .core-map button, .core-nav a, .studio-tabs button, .internship-button, .grade-filters button, .module-filter button, .ops-tab):hover {
+  transform: none;
+  box-shadow: 0 0 0 1px var(--campus-line);
+}
+.campus-modules .app__content :is(.tw-primary, .director-primary, .ops-btn--primary, .core-primary) {
+  color: #fff;
+  background: var(--electric-blue);
+  border-color: var(--electric-blue);
+}
+.campus-modules .app__content :is(.tw-primary, .director-primary, .ops-btn--primary, .core-primary):hover {
+  color: #fff;
+  background: var(--electric-blue);
+  border-color: var(--campus-accent);
+}
+.campus-modules .app__content :is(.academic-button, .ops-btn, .unified-link, .unified-action, .director-primary, .director-secondary, .core-map button, .core-nav a, .studio-tabs button, .internship-button):focus-visible {
+  outline: 3px solid var(--campus-accent);
+  outline-offset: 3px;
+}
+.campus-modules .app__content :is(button, input, select, textarea):disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
+.campus-modules .app__content :is(button, input, select, textarea)[aria-busy="true"],
+.campus-modules .app__content [aria-busy="true"] button:disabled { cursor: progress; }
+.campus-modules .app__content :is(.academic-button, .ops-btn, .unified-action) svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+.campus-modules .ops-row__meta > :is(.ops-btn, .ops-status) {
+  min-height: var(--module-control-height);
+  min-width: 92px;
+  padding: 10px 14px;
+  margin: 0;
+  box-sizing: border-box;
+  justify-content: center;
+}
+.campus-modules .ops-row__meta > .ops-status {
+  font: 700 11px/1.45 var(--font-body);
+  letter-spacing: .03em;
+  border-radius: var(--module-control-radius);
+  cursor: default;
+}
+.campus-modules .ops-row__meta { gap: 10px; }
+
+/* One rhythm for the real records, not a second dashboard of decorative cards. */
+.campus-modules :is(.ops-card, .tw-panel, .studio-card, .director-panel, .unified-panel, .core-table-wrap, .history-line article) {
+  border: 1px solid var(--campus-line);
+  border-radius: var(--module-card-radius);
+  background: var(--campus-panel);
+  box-shadow: var(--campus-shadow);
+  backdrop-filter: none;
+}
+.campus-modules :is(.ops-card, .tw-panel, .director-panel, .unified-panel) {
+  padding: 24px;
+}
+.campus-modules :is(.ops-card__head, .tw-panel-head, .unified-panel__head) {
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.campus-modules :is(.ops-card h2, .tw-panel h2, .unified-panel h2, .director-panel h2) {
+  color: var(--campus-text);
+  font: 800 20px/1.35 var(--font-display);
+  letter-spacing: -.035em;
+}
+.campus-modules :is(.ops-row, .ops-notice, .unified-message) {
+  background: linear-gradient(110deg, var(--campus-panel-strong), var(--campus-panel));
+  border: 1px solid var(--campus-line);
+  border-radius: 12px;
+  padding: 18px;
+  transform: none;
+}
+.campus-modules :is(.ops-row, .ops-notice, .unified-message):hover {
+  transform: none;
+  border-color: var(--campus-accent);
+}
+.campus-modules :is(.ops-row h3, .ops-notice h3, .unified-message h3) {
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: -.02em;
+}
+.campus-modules :is(.ops-count, .unified-count) {
+  background: var(--campus-panel-strong);
+  border-color: var(--campus-line);
+  color: var(--campus-accent);
+  border-radius: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.campus-modules .app__content :is(input:not([type=hidden]):not([type=radio]):not([type=checkbox]):not([type=range]):not([type=file]), select) {
+  box-sizing: border-box;
+  min-height: var(--module-control-height);
+  min-width: 0;
+  border-radius: var(--module-control-radius);
+  font-family: var(--font-body);
+}
+.campus-modules :is(.ops-field, .tw-selector) :is(input, select, textarea):focus-visible {
+  outline: 2px solid var(--campus-accent);
+  outline-offset: 3px;
+}
+.campus-modules :is(.ops-row > div, .ops-card__head > div, .tw-selector label, .tw-roll-name) { min-width: 0; }
+.campus-modules :is(.ops-row p, .ops-notice p, .tw-roll-name strong) { overflow-wrap: anywhere; }
+.campus-modules .tw-selector { flex-wrap: wrap; }
+.campus-modules .tw-selector label { flex: 1 1 150px; }
+.campus-modules .tw-selector :is(input, select) { width: 100%; }
+.campus-modules .tw-help { max-width: 720px; }
+.campus-modules :is(.ops-empty, .academic-empty, .unified-empty, .core-empty) {
+  border-color: var(--campus-line);
+  color: var(--campus-muted);
+  border-radius: 12px;
+  line-height: 1.8;
+}
+@media (max-width: 980px) {
+  .campus-modules .ops-row { grid-template-columns: minmax(0, 1fr); }
+  .campus-modules .ops-row__meta { justify-content: flex-start; }
+}
+@media (max-width: 760px) {
+  .campus-modules :is(.academic-heading, .unified-hero, .dm-heading, .ops-hero, .ops-header, .core-hero, .director-heading, .history-map > header, .internship-heading) {
+    min-height: 160px;
+    padding: 24px 20px;
+    gap: 18px;
+  }
+  .campus-modules :is(.academic-heading, .unified-hero, .dm-heading, .ops-hero, .ops-header, .core-hero, .director-heading, .history-map > header, .internship-heading)::after { width: 55%; opacity: .22; }
+  .campus-modules :is(.ops-card, .tw-panel, .director-panel, .unified-panel) { padding: 18px; }
+  .campus-modules :is(.ops-card__head, .unified-panel__head) { flex-wrap: wrap; }
+  .campus-modules .tw-selector label { flex-basis: 100%; }
+  .campus-modules .ops-row__meta > :is(.ops-btn, .ops-status) { flex: 1 1 88px; min-width: 0; }
+  .campus-modules.view-secretaria .ops-row__meta {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+  .campus-modules.view-secretaria .ops-row__meta > :is(.ops-btn, .ops-status) { padding-inline: 6px; font-size: 12px; }
+  .campus-modules .ops-score {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 4px 16px;
+    width: 100%;
+    min-width: 0;
+    padding: 14px 16px;
+  }
+  .campus-modules .ops-score strong { grid-column: 2; grid-row: 1 / 3; margin: 0; font-size: 30px; }
+  .campus-modules .ops-score small { grid-column: 1; }
+  .campus-modules .dm-heading { min-height: 112px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Older module sheets declare their own transitions; this shared override wins. */
+  .campus-modules .app__content * { transition: none !important; }
+}
+@media (forced-colors: active) {
+  .campus-modules :is(.academic-heading, .unified-hero, .dm-heading, .ops-hero, .ops-header, .core-hero, .director-heading, .history-map > header, .internship-heading)::after { display: none; }
+}
+@media print {
+  .campus-modules :is(.academic-heading, .unified-hero, .dm-heading, .ops-hero, .ops-header, .core-hero, .director-heading, .history-map > header, .internship-heading) {
+    color: #000;
+    background: #fff;
+    box-shadow: none;
+    min-height: 0;
+    padding: 12px 0;
+    border: 0;
+  }
+  .campus-modules :is(.academic-heading, .unified-hero, .dm-heading, .ops-hero, .ops-header, .core-hero, .director-heading, .history-map > header, .internship-heading)::after { display: none; }
+}

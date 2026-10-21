@@ -77,6 +77,25 @@ Um campus em movimento com força e juventude: o mockup enviado em 09/10/2026 é
 
 ## Colors
 
+### Coerência dos módulos — decisão de 21/10/2026
+
+O usuário aprovou a revisão de todas as telas internas, mantendo o painel como
+referência e a identidade forte atual. Login, painéis e portal FaeNet conservam
+sua composição aprovada. `static/module-system.css` é o adaptador compartilhado
+de composição e geometria dos demais módulos; `campus-electric.css` continua
+dono das cores e da tipografia. Responsáveis passam a usar Electric nos módulos,
+preservando o próprio painel. Nenhuma permissão ou dado muda com o tema.
+
+Cabeçalhos dos módulos usam faixa fotográfica diagonal do campus já existente,
+com contraste protegido; o conteúdo continua opaco e legível. Cards de registros
+compartilham bordas, raio de 18px e ritmo de 24px (18px no celular). Botões e links
+de ação têm a mesma caixa, fonte e altura mínima de 44px, inclusive variantes
+compactas; rótulos longos podem quebrar sem cortar conteúdo. Status continuam
+estáticos, mas nas linhas de protocolo alinham a altura com as ações adjacentes.
+Não se transforma toda a interface em dashboards nem se criam indicadores
+fictícios para preencher espaços. A imagem é reutilizada e cacheável; sem novas
+dependências, efeitos de blur contínuo ou animações de fundo.
+
 Os tokens acima descrevem a nova superfície do aluno: fundo azul profundo, painel azul-noite e superfície elevada azul. Azul elétrico identifica navegação ativa; ciano orienta ações e foco; violeta e verde-lima reforçam os indicadores acadêmicos. Atalhos vermelho e verde usam gradientes saturados como no mockup, sempre com texto. Erro mantém significado próprio. Fotografia fica no hero, nunca atrás de tabelas. Impressão mantém fundo branco. Paleta clara permanece nos fluxos ainda não migrados.
 
 O mesmo owner CSS define os adaptadores semânticos dos módulos: `--electric-success` `#79EDB7`, `--electric-warning` `#FFCF7B`, fundos de sucesso `#123C36`, cautela `#433522` e perigo `#49263E`; campos usam `--electric-field` `#0A142B`. Esses estados incluem texto, não apenas cor, e não mudam a situação registrada pelo servidor.

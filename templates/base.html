@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-{% set electric_view = role in ['aluno','professor','admin'] or current_view == 'faenet' %}
+{% set electric_view = role in ['aluno','professor','admin'] or (role == 'responsavel' and current_view != 'painel') or current_view == 'faenet' %}
+{% set module_view = electric_view and current_view not in ['painel','faenet'] %}
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
@@ -21,9 +22,10 @@
 {% if role in ['professor','admin'] and current_view == 'painel' %}<link rel="stylesheet" href="{{ url_for('static', filename='staff-reference.css', v=1) }}">{% endif %}
 {% if role in ['professor','admin'] %}<link rel="stylesheet" href="{{ url_for('static', filename='staff-modules.css', v=1) }}"><script src="{{ url_for('static', filename='campus-actions.js', v=1) }}"></script>{% endif %}
 {% if current_view == 'faenet' %}<link rel="stylesheet" href="{{ url_for('static', filename='faenet-portal.css') }}">{% endif %}
+{% if module_view %}<link rel="stylesheet" href="{{ url_for('static', filename='module-system.css', v=2) }}">{% endif %}
 {% endif %}
 </head>
-<body class="role-{{ role }}{{ ' campus-shell' if role in ['aluno', 'professor', 'admin', 'responsavel'] else '' }}{{ ' campus-electric' if electric_view else '' }}{{ (' view-' ~ current_view) if current_view else '' }}">
+<body class="role-{{ role }}{{ ' campus-shell' if role in ['aluno', 'professor', 'admin', 'responsavel'] else '' }}{{ ' campus-electric' if electric_view else '' }}{{ ' campus-modules' if module_view else '' }}{{ (' view-' ~ current_view) if current_view else '' }}">
 <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
 <div class="app" data-view="{{ current_view }}">
   <div class="app-aurora app-aurora--one"></div><div class="app-aurora app-aurora--two"></div>

@@ -1015,6 +1015,7 @@ def chamada():
     subject_id=source.get('class_subject_id',str(subjects[0]['id']) if subjects else '')
     start,end=source.get('inicio',''),source.get('fim','')
     selection=dict(data=selected_date,class_subject_id=subject_id,inicio=start,fim=end,revision=source.get('revision','0'))
+    selection_key='|'.join((str(subject_id),selected_date,start,end))
     persisted={}; revision=0
     error=None
     valid_subject=any(str(s['id'])==str(subject_id) for s in subjects)
@@ -1035,6 +1036,11 @@ def chamada():
         try:
             if not valid_subject:raise ValueError('Selecione uma disciplina da turma consultada.')
             lesson_attendance.lesson_key(selection)
+            if request.form.get('action') == 'consultar':
+                return redirect(url_for('chamada',turma=ctx['selected'],data=selected_date,
+                                        class_subject_id=subject_id,inicio=start,fim=end))
+            if str(revision) != '0' and request.form.get('revision_key') != selection_key:
+                raise ValueError('A aula selecionada mudou. Carregue a chamada salva antes de atualizar os registros.')
             validated_attendance(ctx['roster'],selected_date,marks,date.fromisoformat(ctx['today']))
             lesson_attendance.save(session['username'],selection,marks)
             flash('Chamada da aula salva.')
@@ -1043,7 +1049,8 @@ def chamada():
         except ValueError as exc:error=str(exc)
     return render_template('professor_chamada.html',**ctx,selected_date=selected_date,attendance=marks,
                            registered=len(persisted),error=error,subjects=subjects,subject_id=str(subject_id),
-                           start=start,end=end,revision=revision,ready=ready),422 if error else 200
+                           start=start,end=end,revision=revision,ready=ready,
+                           revision_key=request.form.get('revision_key','') if request.method=='POST' else selection_key),422 if error else 200
 
 
 # ==========================================================================

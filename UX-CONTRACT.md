@@ -59,6 +59,17 @@ A interface oculta rotas não autorizadas, mas o servidor sempre revalida sessã
 
 ## Componentes e estados
 
+### Módulos coerentes — 21/10/2026
+
+Fonte visual: `DESIGN.md`, seção Coerência dos módulos. `module-system.css`
+unifica composição e geometria das telas internas dos quatro perfis. Painéis,
+login e portal FaeNet ficam fora desse adaptador. Âncoras e botões de ação usam
+a mesma tipografia e caixa; o tamanho compacto não pode reduzir a área de toque.
+Situações de documentos são texto estático, alinhado com as ações, sem eventos
+de clique. Permissões, formulários, diálogos, URLs e owners de validação continuam
+os mesmos. Evidência de alcance: `test_module_system.py`; geometria é conferida
+no navegador com protocolo descartável, não por comparação somente de CSS.
+
 ### Canonical UI Map
 
 | Capability | Canonical owner | Source of truth | Allowed variants | Verification |
@@ -92,8 +103,12 @@ Uploads aceitam PDF, PNG, JPG, TXT e ZIP, um arquivo por ação, até 5 MB. O se
   fica em consulta separada; calendário com registros diferentes mostra ± e
   histórico por horário. Período/ano da aula efetiva controla bloqueio.
 - Chamada reutiliza `teacher-workspace.js` + `CampusActions`: consulta GET com
-  filtros na URL, confirmação ao substituir, revisão contra janela antiga,
-  validação inline, valores preservados e nenhum save antes de escolher a aula.
+  turma/data na URL. Disciplina, início e término pertencem ao mesmo formulário
+  POST das presenças; marcar não depende de uma consulta oculta. Salvar valida a
+  aula e todos os alunos. Carregar chamada salva não escreve registros e exige
+  confirmação se houver alterações não salvas. Revisão fica vinculada à aula
+  consultada, com confirmação ao substituir e preservação de valores no erro.
+  Sem vínculo vigente, explicar a pendência em vez de mostrar uma lista morta.
 - Segurança da conta reutiliza shell/tokens Electric nos três perfis e o shell
   claro do responsável. `account-security.js` adapta formulários ao owner
   `CampusActions`, sem sistema de confirmação/validação paralelo. Select,
