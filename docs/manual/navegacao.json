@@ -1,0 +1,337 @@
+{
+  "data": "2026-10-22",
+  "ambiente": "Cópia local descartável do FaeHub+",
+  "metodo": "Leitura da interface e navegação pelo navegador; capturas sem alteração de dados de produção",
+  "telas": [
+    {
+      "key": "01-login",
+      "profile": "Público",
+      "url": "http://127.0.0.1:5323/",
+      "title": "FaeHub+ · Seu campus começa aqui"
+    },
+    {
+      "key": "02-recuperacao",
+      "profile": "Público",
+      "url": "http://127.0.0.1:5323/recuperar-senha",
+      "title": "Recuperar acesso · FaeHub+"
+    },
+    {
+      "key": "03-ativacao",
+      "profile": "Público",
+      "url": "http://127.0.0.1:5323/ativar",
+      "title": "Ativar minha conta · FaeHub+"
+    },
+    {
+      "key": "04-aluno-painel",
+      "profile": "Aluno",
+      "url": "http://127.0.0.1:5323/painel",
+      "title": "Painel · FaeHub+"
+    },
+    {
+      "key": "05-aluno-boletim",
+      "profile": "Aluno",
+      "url": "http://127.0.0.1:5323/boletim",
+      "title": "Boletim · FaeHub+"
+    },
+    {
+      "key": "06-aluno-agenda",
+      "profile": "Aluno",
+      "url": "http://127.0.0.1:5323/agenda",
+      "title": "Agenda · FaeHub+"
+    },
+    {
+      "key": "07-aluno-horario",
+      "profile": "Aluno",
+      "url": "http://127.0.0.1:5323/horario",
+      "title": "Horário · FaeHub+"
+    },
+    {
+      "key": "08-aluno-exercicios",
+      "profile": "Aluno",
+      "url": "http://127.0.0.1:5323/exercicios",
+      "title": "Exercícios · FaeHub+"
+    },
+    {
+      "key": "09-aluno-comunicados",
+      "profile": "Aluno",
+      "url": "http://127.0.0.1:5323/comunicados",
+      "title": "Comunicados · FaeHub+"
+    },
+    {
+      "key": "10-aluno-secretaria",
+      "profile": "Aluno",
+      "url": "http://127.0.0.1:5323/secretaria",
+      "title": "Secretaria · FaeHub+"
+    },
+    {
+      "key": "11-aluno-estagios",
+      "profile": "Aluno",
+      "url": "http://127.0.0.1:5323/estagios",
+      "title": "Estágios · FaeHub+"
+    },
+    {
+      "key": "12-aluno-mensagens",
+      "profile": "Aluno",
+      "url": "http://127.0.0.1:5323/mensagens",
+      "title": "Mensagens · FaeHub+"
+    },
+    {
+      "key": "13-faenet",
+      "profile": "Todos",
+      "url": "http://127.0.0.1:5323/faenet",
+      "title": "FaeNet · FaeHub+"
+    },
+    {
+      "key": "14-seguranca",
+      "profile": "Todos",
+      "url": "http://127.0.0.1:5323/conta/seguranca",
+      "title": "Segurança da conta · FaeHub+"
+    },
+    {
+      "key": "15-entrega",
+      "profile": "Aluno",
+      "url": "http://127.0.0.1:5323/exercicios",
+      "title": "Exercícios · FaeHub+"
+    },
+    {
+      "key": "16-mensagens-grupo",
+      "profile": "Aluno",
+      "url": "http://127.0.0.1:5323/mensagens?group=1",
+      "title": "Mensagens · FaeHub+"
+    },
+    {
+      "key": "17-frequencia-anterior",
+      "profile": "Aluno",
+      "url": "http://127.0.0.1:5323/frequencia?base=diaria",
+      "title": "Frequência · FaeHub+"
+    },
+    {
+      "key": "18-professor-painel",
+      "profile": "Professor",
+      "url": "http://127.0.0.1:5323/painel",
+      "title": "Painel · FaeHub+"
+    },
+    {
+      "key": "19-professor-turmas",
+      "profile": "Professor",
+      "url": "http://127.0.0.1:5323/turmas",
+      "title": "Minhas turmas · FaeHub+"
+    },
+    {
+      "key": "20-professor-notas",
+      "profile": "Professor",
+      "url": "http://127.0.0.1:5323/notas",
+      "title": "Lançar notas · FaeHub+"
+    },
+    {
+      "key": "21-professor-chamada",
+      "profile": "Professor",
+      "url": "http://127.0.0.1:5323/chamada",
+      "title": "Chamada · FaeHub+"
+    },
+    {
+      "key": "22-professor-diario",
+      "profile": "Professor",
+      "url": "http://127.0.0.1:5323/diario",
+      "title": "Diário · FaeHub+"
+    },
+    {
+      "key": "23-professor-exercicios",
+      "profile": "Professor",
+      "url": "http://127.0.0.1:5323/exercicios",
+      "title": "Exercícios · FaeHub+"
+    },
+    {
+      "key": "24-professor-avisos",
+      "profile": "Professor",
+      "url": "http://127.0.0.1:5323/avisos",
+      "title": "Avisos · FaeHub+"
+    },
+    {
+      "key": "25-professor-estagios",
+      "profile": "Professor",
+      "url": "http://127.0.0.1:5323/estagios",
+      "title": "Estágios · FaeHub+"
+    },
+    {
+      "key": "26-professor-calendario",
+      "profile": "Professor",
+      "url": "http://127.0.0.1:5323/calendario",
+      "title": "Calendário · FaeHub+"
+    },
+    {
+      "key": "27-notificacoes",
+      "profile": "Professor",
+      "url": "http://127.0.0.1:5323/notificacoes",
+      "title": "Notificações · FaeHub+"
+    },
+    {
+      "key": "28-diretor-painel",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/painel",
+      "title": "Painel · FaeHub+"
+    },
+    {
+      "key": "29-diretor-usuarios",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/usuarios",
+      "title": "Usuários · FaeHub+"
+    },
+    {
+      "key": "30-diretor-estrutura",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/estrutura",
+      "title": "Estrutura acadêmica · FaeHub+"
+    },
+    {
+      "key": "31-diretor-secretaria",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/secretaria",
+      "title": "Secretaria · FaeHub+"
+    },
+    {
+      "key": "32-diretor-coordenacao",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/coordenacao",
+      "title": "Coordenação · FaeHub+"
+    },
+    {
+      "key": "33-diretor-relatorios",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/relatorios",
+      "title": "Relatórios · FaeHub+"
+    },
+    {
+      "key": "34-diretor-periodos",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/periodos",
+      "title": "Períodos · FaeHub+"
+    },
+    {
+      "key": "35-diretor-calendario",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/calendario",
+      "title": "Calendário · FaeHub+"
+    },
+    {
+      "key": "36-diretor-configuracoes",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/configuracoes",
+      "title": "Configurações · FaeHub+"
+    },
+    {
+      "key": "37-diretor-diario",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/diario",
+      "title": "Diário · FaeHub+"
+    },
+    {
+      "key": "38-estrutura-anos",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/estrutura?view=years",
+      "title": "Estrutura acadêmica · FaeHub+"
+    },
+    {
+      "key": "39-estrutura-catalogo",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/estrutura?view=catalog",
+      "title": "Estrutura acadêmica · FaeHub+"
+    },
+    {
+      "key": "40-estrutura-turmas",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/estrutura?view=classes",
+      "title": "Estrutura acadêmica · FaeHub+"
+    },
+    {
+      "key": "41-estrutura-matriculas",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/estrutura?view=students",
+      "title": "Estrutura acadêmica · FaeHub+"
+    },
+    {
+      "key": "42-estrutura-docentes",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/estrutura?view=teachers",
+      "title": "Estrutura acadêmica · FaeHub+"
+    },
+    {
+      "key": "43-estrutura-horarios",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/estrutura?view=schedule",
+      "title": "Estrutura acadêmica · FaeHub+"
+    },
+    {
+      "key": "44-diretor-historico",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/historico",
+      "title": "Histórico · FaeHub+"
+    },
+    {
+      "key": "45-secretaria-atualizar",
+      "profile": "Direção",
+      "url": "http://127.0.0.1:5323/secretaria",
+      "title": "Secretaria · FaeHub+"
+    },
+    {
+      "key": "46-documento-emitido",
+      "profile": "Direção e solicitante",
+      "url": "http://127.0.0.1:5323/secretaria/documentos/1/imprimir",
+      "title": "Secretaria · FaeHub+"
+    },
+    {
+      "key": "47-responsavel-painel",
+      "profile": "Responsável",
+      "url": "http://127.0.0.1:5323/painel",
+      "title": "Portal do responsável · FaeHub+"
+    },
+    {
+      "key": "48-responsavel-secretaria",
+      "profile": "Responsável",
+      "url": "http://127.0.0.1:5323/secretaria",
+      "title": "Documentos · FaeHub+"
+    },
+    {
+      "key": "49-responsavel-calendario",
+      "profile": "Responsável",
+      "url": "http://127.0.0.1:5323/calendario",
+      "title": "Calendário · FaeHub+"
+    },
+    {
+      "key": "50-responsavel-mensagens",
+      "profile": "Responsável",
+      "url": "http://127.0.0.1:5323/mensagens",
+      "title": "Mensagens · FaeHub+"
+    },
+    {
+      "key": "51-nova-conversa",
+      "profile": "Responsável",
+      "url": "http://127.0.0.1:5323/mensagens",
+      "title": "Mensagens · FaeHub+"
+    },
+    {
+      "key": "52-criar-atividade",
+      "profile": "Professor",
+      "url": "http://127.0.0.1:5323/exercicios",
+      "title": "Exercícios · FaeHub+"
+    },
+    {
+      "key": "53-criar-aviso",
+      "profile": "Professor",
+      "url": "http://127.0.0.1:5323/avisos",
+      "title": "Avisos · FaeHub+"
+    },
+    {
+      "key": "54-criar-estagio",
+      "profile": "Professor",
+      "url": "http://127.0.0.1:5323/estagios",
+      "title": "Estágios · FaeHub+"
+    },
+    {
+      "key": "55-professor-entregas",
+      "profile": "Professor",
+      "url": "http://127.0.0.1:5323/exercicios",
+      "title": "Exercícios · FaeHub+"
+    }
+  ]
+}

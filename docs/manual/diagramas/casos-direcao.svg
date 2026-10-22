@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<svg width="675.0" height="391.5" preserveAspectRatio="xMinYMin meet" viewBox="0 0 675 391" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>Casos de uso da gestão escolar</title>
+	<desc>A direção mantém cadastros e atende os fluxos institucionais. O titular acompanha o documento solicitado. Algumas elipses agrupam casos relacionados para manter a visão legível; os identificadores individuais constam do catálogo. Não há uma etapa de aprovação da direção na recuperação por e-mail.</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="675.0" height="391.5"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-391)" style="clip-path: url(#clip)">
+		<g transform=" matrix(0.9,0,0,0.9,0,0)">
+			<rect x="115" y="12" width="515" height="414" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="130" y="405" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 12px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,810) scale(1,-1)">FaeHub+</text>
+			<polyline points="64 245, 205 370" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="64 245, 205 324" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="64 245, 205 278" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="64 245, 205 232" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="64 245, 205 186" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="64 245, 205 140" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="64 245, 205 94" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="64 245, 205 48" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="684 145, 545 186" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<ellipse cx="375.0" cy="370.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="363.75078125" y="375" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,750) scale(1,-1)">UC25</text>
+			<text x="336.92626953125" y="361" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,722) scale(1,-1)">Gerenciar contas</text>
+			<ellipse cx="375.0" cy="324.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="363.75078125" y="329" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,658) scale(1,-1)">UC26</text>
+			<text x="338.31787109375" y="315" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,630) scale(1,-1)">Manter estrutura</text>
+			<ellipse cx="375.0" cy="278.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="363.75078125" y="283" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,566) scale(1,-1)">UC27</text>
+			<text x="334.98779296875" y="269" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,538) scale(1,-1)">Manter matrículas</text>
+			<ellipse cx="375.0" cy="232.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="351.2791015625" y="237" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,474) scale(1,-1)">UC28 UC29</text>
+			<text x="330.25390625" y="223" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,446) scale(1,-1)">Docentes e horários</text>
+			<ellipse cx="375.0" cy="186.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="363.75078125" y="191" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,382) scale(1,-1)">UC30</text>
+			<text x="328.85986328125" y="177" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,354) scale(1,-1)">Atender documentos</text>
+			<ellipse cx="375.0" cy="140.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="351.2791015625" y="145" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,290) scale(1,-1)">UC31 UC20</text>
+			<text x="326.3623046875" y="131" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,262) scale(1,-1)">Acompanhar e validar</text>
+			<ellipse cx="375.0" cy="94.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="351.2791015625" y="99" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,198) scale(1,-1)">UC32 UC33</text>
+			<text x="331.91650390625" y="85" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,170) scale(1,-1)">Períodos e eventos</text>
+			<ellipse cx="375.0" cy="48.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="338.807421875" y="53" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,106) scale(1,-1)">UC34 UC35 UC36</text>
+			<text x="328.30810546875" y="39" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,78) scale(1,-1)">Relatórios e consulta</text>
+			<circle cx="48" cy="268" r="8" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<path d="M 48,260 L 48,234 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 34,250 L 62,250 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 48,234 L 36,218 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 48,234 L 60,218 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="29.65771484375" y="203" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,406) scale(1,-1)">Direção</text>
+			<circle cx="700" cy="168" r="8" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<path d="M 700,160 L 700,134 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 686,150 L 714,150 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 700,134 L 688,118 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 700,134 L 712,118 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="684.7216796875" y="103" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,206) scale(1,-1)">Titular</text>
+		</g>
+	</g>
+</svg>

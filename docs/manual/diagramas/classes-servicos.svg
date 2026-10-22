@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<svg width="675.0" height="405.0" preserveAspectRatio="xMinYMin meet" viewBox="0 0 675 405" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>Classes de aprendizagem e serviços</title>
+	<desc>Recorte conceitual dos principais registros de database.py e p1_operations.py. Anexo é polimórfico: tipoEntidade e entidadeId identificam mensagem, atividade ou entrega; as linhas tracejadas não são FKs diretas. Usuario também aparece nos atributos de autoria, solicitação e destinatário. Os vínculos auxiliares e o controle de leitura são detalhados na página seguinte.</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="675.0" height="405.0"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-405)" style="clip-path: url(#clip)">
+		<g transform=" matrix(0.9,0,0,0.9,0,0)">
+			<polyline points="210 375, 260 375" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<rect x="218.5340576171875" y="381" width="32.931884765625" height="12" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="221.5340576171875" y="384" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.5px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,768) scale(1,-1)">1    0..*</text>
+			<polyline points="470 375, 520 375" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<rect x="478.5340576171875" y="381" width="32.931884765625" height="12" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="481.5340576171875" y="384" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.5px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,768) scale(1,-1)">1    0..*</text>
+			<polyline points="105 320, 105 275" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<rect x="122.8470458984375" y="294" width="52.305908203125" height="12" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="125.8470458984375" y="297" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.5px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,594) scale(1,-1)">autor 1 / 0..*</text>
+			<polyline points="210 220, 260 220" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd; stroke-dasharray: 4, 3;"/>
+			<rect x="210.7354736328125" y="226" width="48.529052734375" height="12" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="213.7354736328125" y="229" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.5px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,458) scale(1,-1)">0..* anexos</text>
+			<polyline points="365 275, 365 297, 625 297, 625 320" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd; stroke-dasharray: 4, 3;"/>
+			<rect x="470.917236328125" y="294" width="72.16552734375" height="12" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="473.917236328125" y="297" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.5px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,594) scale(1,-1)">entidade: entrega</text>
+			<polyline points="365 320, 365 305, 495 305, 495 220, 470 220" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd; stroke-dasharray: 4, 3;"/>
+			<rect x="471.2303466796875" y="267" width="39.539306640625" height="12" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="474.2303466796875" y="270" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.5px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,540) scale(1,-1)">exercicio</text>
+			<rect x="0" y="320" width="210" height="110" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="0" y="401" width="210" height="29" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<path d="M 0,401 L 210,401 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.6;"/>
+			<text x="86.38427734375" y="412" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,824) scale(1,-1)">Usuario</text>
+			<text x="9" y="386" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,772) scale(1,-1)">username, nome: texto</text>
+			<text x="9" y="374" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,748) scale(1,-1)">papel: texto</text>
+			<text x="9" y="362" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,724) scale(1,-1)">ativo: booleano</text>
+			<text x="9" y="328" style="font-family: Arial, Helvetica, sans-serif; font-style: italic; font-size: 7.7px;fill: rgb(29%,33%,38%); stroke:none;" transform="translate(0,656) scale(1,-1)">users</text>
+			<rect x="260" y="320" width="210" height="110" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="260" y="401" width="210" height="29" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<path d="M 260,401 L 470,401 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.6;"/>
+			<text x="342.763671875" y="412" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,824) scale(1,-1)">Exercicio</text>
+			<text x="269" y="386" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,772) scale(1,-1)">id: inteiro</text>
+			<text x="269" y="374" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,748) scale(1,-1)">autor: username</text>
+			<text x="269" y="362" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,724) scale(1,-1)">turma, disciplina, titulo: texto</text>
+			<text x="269" y="350" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,700) scale(1,-1)">prazo: data</text>
+			<text x="269" y="328" style="font-family: Arial, Helvetica, sans-serif; font-style: italic; font-size: 7.7px;fill: rgb(29%,33%,38%); stroke:none;" transform="translate(0,656) scale(1,-1)">exercises</text>
+			<rect x="520" y="320" width="210" height="110" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="520" y="401" width="210" height="29" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<path d="M 520,401 L 730,401 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.6;"/>
+			<text x="606.38427734375" y="412" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,824) scale(1,-1)">Entrega</text>
+			<text x="529" y="386" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,772) scale(1,-1)">id, exercicioId: inteiro</text>
+			<text x="529" y="374" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,748) scale(1,-1)">estudante: username</text>
+			<text x="529" y="362" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,724) scale(1,-1)">resposta: texto</text>
+			<text x="529" y="350" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,700) scale(1,-1)">enviadoEm: instante</text>
+			<text x="529" y="328" style="font-family: Arial, Helvetica, sans-serif; font-style: italic; font-size: 7.7px;fill: rgb(29%,33%,38%); stroke:none;" transform="translate(0,656) scale(1,-1)">submissions</text>
+			<rect x="0" y="165" width="210" height="110" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="0" y="246" width="210" height="29" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<path d="M 0,246 L 210,246 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.6;"/>
+			<text x="79.15771484375" y="257" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,514) scale(1,-1)">Mensagem</text>
+			<text x="9" y="231" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,462) scale(1,-1)">id: inteiro</text>
+			<text x="9" y="219" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,438) scale(1,-1)">remetente, destinatario: texto</text>
+			<text x="9" y="207" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,414) scale(1,-1)">assunto, corpo: texto</text>
+			<text x="9" y="195" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,390) scale(1,-1)">enviadoEm: instante</text>
+			<text x="9" y="173" style="font-family: Arial, Helvetica, sans-serif; font-style: italic; font-size: 7.7px;fill: rgb(29%,33%,38%); stroke:none;" transform="translate(0,346) scale(1,-1)">messages</text>
+			<rect x="260" y="165" width="210" height="110" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="260" y="246" width="210" height="29" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<path d="M 260,246 L 470,246 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.6;"/>
+			<text x="349.71923828125" y="257" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,514) scale(1,-1)">Anexo</text>
+			<text x="269" y="231" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,462) scale(1,-1)">id, entidadeId: inteiro</text>
+			<text x="269" y="219" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,438) scale(1,-1)">tipoEntidade: discriminador</text>
+			<text x="269" y="207" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,414) scale(1,-1)">nome, mime, tamanho: dados</text>
+			<text x="269" y="195" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,390) scale(1,-1)">conteudo: binario privado</text>
+			<text x="269" y="173" style="font-family: Arial, Helvetica, sans-serif; font-style: italic; font-size: 7.7px;fill: rgb(29%,33%,38%); stroke:none;" transform="translate(0,346) scale(1,-1)">file_attachments</text>
+			<rect x="520" y="165" width="210" height="110" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="520" y="246" width="210" height="29" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<path d="M 520,246 L 730,246 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.6;"/>
+			<text x="573.6083984375" y="257" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,514) scale(1,-1)">DocumentoSolicitado</text>
+			<text x="529" y="231" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,462) scale(1,-1)">id: inteiro</text>
+			<text x="529" y="219" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,438) scale(1,-1)">solicitante: username</text>
+			<text x="529" y="207" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,414) scale(1,-1)">registroAluno, tipo: texto</text>
+			<text x="529" y="195" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,390) scale(1,-1)">protocolo, situacao: texto</text>
+			<text x="529" y="173" style="font-family: Arial, Helvetica, sans-serif; font-style: italic; font-size: 7.7px;fill: rgb(29%,33%,38%); stroke:none;" transform="translate(0,346) scale(1,-1)">document_requests</text>
+			<rect x="0" y="10" width="210" height="110" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="0" y="91" width="210" height="29" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<path d="M 0,91 L 210,91 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.6;"/>
+			<text x="78.04931640625" y="102" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,204) scale(1,-1)">Notificacao</text>
+			<text x="9" y="76" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,152) scale(1,-1)">id: inteiro</text>
+			<text x="9" y="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,128) scale(1,-1)">destinatario: opcional</text>
+			<text x="9" y="52" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,104) scale(1,-1)">publico, titulo, corpo: texto</text>
+			<text x="9" y="40" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,80) scale(1,-1)">acaoUrl: texto</text>
+			<text x="9" y="18" style="font-family: Arial, Helvetica, sans-serif; font-style: italic; font-size: 7.7px;fill: rgb(29%,33%,38%); stroke:none;" transform="translate(0,36) scale(1,-1)">notifications</text>
+			<rect x="260" y="10" width="210" height="110" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="260" y="91" width="210" height="29" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<path d="M 260,91 L 470,91 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.6;"/>
+			<text x="324.16015625" y="102" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,204) scale(1,-1)">GrupoMensagem</text>
+			<text x="269" y="76" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,152) scale(1,-1)">id: inteiro</text>
+			<text x="269" y="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,128) scale(1,-1)">nome, turma: texto</text>
+			<text x="269" y="52" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,104) scale(1,-1)">criador: username</text>
+			<text x="269" y="18" style="font-family: Arial, Helvetica, sans-serif; font-style: italic; font-size: 7.7px;fill: rgb(29%,33%,38%); stroke:none;" transform="translate(0,36) scale(1,-1)">message_groups</text>
+			<rect x="520" y="10" width="210" height="110" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="520" y="91" width="210" height="29" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<path d="M 520,91 L 730,91 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.6;"/>
+			<text x="568.86962890625" y="102" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,204) scale(1,-1)">IntervencaoPedagogica</text>
+			<text x="529" y="76" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,152) scale(1,-1)">id: inteiro</text>
+			<text x="529" y="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,128) scale(1,-1)">registroAluno: texto</text>
+			<text x="529" y="52" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,104) scale(1,-1)">autor: username</text>
+			<text x="529" y="40" style="font-family: Arial, Helvetica, sans-serif; font-size: 8.8px;fill: rgb(6%,9%,15%); stroke:none;" transform="translate(0,80) scale(1,-1)">resumo, plano, situacao: texto</text>
+			<text x="529" y="18" style="font-family: Arial, Helvetica, sans-serif; font-style: italic; font-size: 7.7px;fill: rgb(29%,33%,38%); stroke:none;" transform="translate(0,36) scale(1,-1)">pedagogical_interventions</text>
+		</g>
+	</g>
+</svg>

@@ -1,0 +1,180 @@
+{
+  "edition": "2026-10-22",
+  "baseline": "7c5b9a0",
+  "pdf": "output/pdf/FaeHub_documentacao_e_manual.pdf",
+  "pdf_sha256": "71dd48fa0723675d11e15f727fda36ffaf50ed77b875d1748549440b05eb2cad",
+  "screenshots_in_manual": 42,
+  "captured_viewports": 55,
+  "use_cases": 39,
+  "diagrams": 6,
+  "assets": [
+    {
+      "file": "01-login.jpg",
+      "sha256": "ad9068e9eb1fed55abae949a89645bd3191653035c45f050128e2536d878e1e8"
+    },
+    {
+      "file": "03-ativacao.jpg",
+      "sha256": "b805b23587bc8472cefe2324639bc2cec8fe3c7067376e3a12bc0620fe803ca8"
+    },
+    {
+      "file": "02-recuperacao.jpg",
+      "sha256": "73321e9b0ae17d99c480973d7987066c1484911a712c263a079d8c9eda00020b"
+    },
+    {
+      "file": "14-seguranca.jpg",
+      "sha256": "9bcff98242f28d721992af6b1790ef0fba8ba0ca41a308fa0e5a1bbb44ad3969"
+    },
+    {
+      "file": "04-aluno-painel.jpg",
+      "sha256": "a158342420b3066f1f6ee1991c7686892e17e76b464badb0479d029934a9e28e"
+    },
+    {
+      "file": "04-aluno-painel.jpg",
+      "sha256": "a158342420b3066f1f6ee1991c7686892e17e76b464badb0479d029934a9e28e"
+    },
+    {
+      "file": "05-aluno-boletim.jpg",
+      "sha256": "9b386bd6991fce6849412689b5e053f4162438f37ba6664063517a038ed8f501"
+    },
+    {
+      "file": "06-aluno-agenda.jpg",
+      "sha256": "cc12ece676e1dba614a4455721d20460c22fb945d6d66b4a5886b11c861e0881"
+    },
+    {
+      "file": "07-aluno-horario.jpg",
+      "sha256": "1e3c3e262ef675fb3c5fd073109b9db08a46ff95f0bdd5d17bfafc3bc1427a8e"
+    },
+    {
+      "file": "08-aluno-exercicios.jpg",
+      "sha256": "cd625a0cc9d32fee0796aea73d5b7f3447d8ec683f2337d44a0ce27f25182675"
+    },
+    {
+      "file": "15-entrega.jpg",
+      "sha256": "3bdf1fc1035b2602a6dcacdd0c9b1dc3310581835ca9fba3a3ee6a456dd0b971"
+    },
+    {
+      "file": "09-aluno-comunicados.jpg",
+      "sha256": "811024123d67b05329400d3d3cb38cd521a1022116c86c1408bbc1bfc89797b3"
+    },
+    {
+      "file": "10-aluno-secretaria.jpg",
+      "sha256": "1a126bff019384e7b8cc86501b72c53832ab979b5a529d4c25b55707f6c3229e"
+    },
+    {
+      "file": "11-aluno-estagios.jpg",
+      "sha256": "f5e49bd8b105908a70351ddcfaf320a1982edf5a93a0cdc9c82cb48f308984d7"
+    },
+    {
+      "file": "16-mensagens-grupo.jpg",
+      "sha256": "5526ccf3aeb012bfe48ec24e70f634c24d9bd0d2779a2fcf3b18568b2440c5c4"
+    },
+    {
+      "file": "27-notificacoes.jpg",
+      "sha256": "2f2cf532066dd4e30f62149f437b62c11a8430f34d502b9b127128a7bf572e8a"
+    },
+    {
+      "file": "18-professor-painel.jpg",
+      "sha256": "a87f4ee93fbff563a2d6b954dc78703167c271996fc2d6bae7adeced83a206cb"
+    },
+    {
+      "file": "19-professor-turmas.jpg",
+      "sha256": "5268a90d4f046e2b1610eaacd591d43c4163a286a70b36814fb2bd8ab7129646"
+    },
+    {
+      "file": "20-professor-notas.jpg",
+      "sha256": "5af5a20f1ad05227ac8c02de3af14c7cbaf4059e28584a409df84daf60268113"
+    },
+    {
+      "file": "21-professor-chamada.jpg",
+      "sha256": "3a1e3b7ff901e7c798e2622e64401223e1680401fadca48aca8e83a062824d71"
+    },
+    {
+      "file": "22-professor-diario.jpg",
+      "sha256": "484481426d047fe5cb35db7278f4d522af783171cbd32566db7ab93bf811dadb"
+    },
+    {
+      "file": "52-criar-atividade.jpg",
+      "sha256": "d7926167082f77ea6d7490cc39f1fd176b12695c4912d8b27785e8ac5a075603"
+    },
+    {
+      "file": "53-criar-aviso.jpg",
+      "sha256": "68f08e32a2c65c2c51a7c480245c429bfc37cd17c16a846de6464c3b183a1d7c"
+    },
+    {
+      "file": "54-criar-estagio.jpg",
+      "sha256": "0337840737ff396e19b8033a4e029e7326bb1771c391d37e55bd4e1b6d001f09"
+    },
+    {
+      "file": "28-diretor-painel.jpg",
+      "sha256": "becaaec6f4824e338fbdbbe74812dacb9d5c9fab8a4bd2d001d69ebcf51c5bb5"
+    },
+    {
+      "file": "29-diretor-usuarios.jpg",
+      "sha256": "b5f7e139e46949bb212e6c4d106671de8cfa60d61970bc24c8c27cdb88ea516b"
+    },
+    {
+      "file": "30-diretor-estrutura.jpg",
+      "sha256": "fcecc901934e714ac929c25846ae58b0253e3127fa934d3792bc017b5b8bbfc4"
+    },
+    {
+      "file": "38-estrutura-anos.jpg",
+      "sha256": "4c18b3ec8d42359a428eb97fb350ce4e478672962ed43ad777312fcad5b541f4"
+    },
+    {
+      "file": "39-estrutura-catalogo.jpg",
+      "sha256": "deb11ec1b01a6744c361b8635f89156ed543f70f3906037e5888f81109f6f0be"
+    },
+    {
+      "file": "40-estrutura-turmas.jpg",
+      "sha256": "8a9a0287517102a8d295fc99bb0a526e8439d2d89062d38eed04350afdece8ae"
+    },
+    {
+      "file": "41-estrutura-matriculas.jpg",
+      "sha256": "07d260769b75834c9f1dd763aa3f21b29726b3f65067bc39b533144c9473a49d"
+    },
+    {
+      "file": "42-estrutura-docentes.jpg",
+      "sha256": "e7ceb53b5d0f1d01b80cfaa75e8c6992af6f512e5c03ca5f8570869ff98a5677"
+    },
+    {
+      "file": "43-estrutura-horarios.jpg",
+      "sha256": "86472b23e0cfd0378560da3e0d4bb7f3d1d5fcc28b2061185effd6d7eb6ef5b6"
+    },
+    {
+      "file": "45-secretaria-atualizar.jpg",
+      "sha256": "851feff2beba839d4216ecfa3c8e57a1d6f489f473a656aea1ff4f2868b8c485"
+    },
+    {
+      "file": "32-diretor-coordenacao.jpg",
+      "sha256": "0d91a4a66c20d9978a69a5e06fc4c75e16618a5eea98075f9039354d3861f7a3"
+    },
+    {
+      "file": "34-diretor-periodos.jpg",
+      "sha256": "b37db580b4dbd7848e7ed754ac235189ab03afdc0bc7a200d18d4645974894e5"
+    },
+    {
+      "file": "35-diretor-calendario.jpg",
+      "sha256": "56ef206f4f541efabfa16d91d78f1180c81675ee26a2daaf6eb0e9fb9af7e9ba"
+    },
+    {
+      "file": "33-diretor-relatorios.jpg",
+      "sha256": "57a0ca4bb73e77c84c22f5dfeb7e7a3018803065b02a3e52ce52ebd517a61932"
+    },
+    {
+      "file": "36-diretor-configuracoes.jpg",
+      "sha256": "02411b793469f569ff2809dfae6d975997fc3c1b4fdd7429e130d2c11318dac3"
+    },
+    {
+      "file": "44-diretor-historico.jpg",
+      "sha256": "957f92495ca5355254f30ff80ff6747c13bbfd6554b07db945d2bb66e2bb29bf"
+    },
+    {
+      "file": "47-responsavel-painel.jpg",
+      "sha256": "8521640ed3964e7d1915e1a4455d9aabc93e13742ea860f69544e1c8a1ea26ea"
+    },
+    {
+      "file": "13-faenet.jpg",
+      "sha256": "2ee04e6bdd8f6fb886f97be2434c5bb04b5b4fc6fdffca3d1e9970d8296686fa"
+    }
+  ]
+}

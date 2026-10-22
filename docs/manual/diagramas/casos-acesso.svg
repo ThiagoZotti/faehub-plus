@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<svg width="675.0" height="391.5" preserveAspectRatio="xMinYMin meet" viewBox="0 0 675 391" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>Casos de uso de acesso e serviços</title>
+	<desc>Titular representa os perfis com acesso permitido. Gmail participa de convite e recuperação; FaeNet é o aplicativo de destino; Drive é destino opcional da cópia criptografada. Backup é uma ferramenta operacional externa ao menu. As associações indicam participação, não sequência de execução.</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="675.0" height="391.5"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-391)" style="clip-path: url(#clip)">
+		<g transform=" matrix(0.9,0,0,0.9,0,0)">
+			<rect x="115" y="12" width="515" height="414" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="130" y="405" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 12px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,810) scale(1,-1)">FaeHub+</text>
+			<polyline points="64 265, 205 370" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="64 265, 205 324" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="64 265, 205 278" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="64 265, 205 232" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="64 265, 205 186" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="64 265, 205 140" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="64 265, 205 94" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="64 85, 205 48" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="684 315, 545 324" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="684 315, 545 278" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="684 170, 545 94" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<polyline points="684 55, 545 48" style="stroke: rgb(29%,33%,38%); stroke-linecap: butt; stroke-width: 0.8; fill: None; fill-rule: evenodd;"/>
+			<ellipse cx="375.0" cy="370.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="363.75078125" y="375" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,750) scale(1,-1)">UC01</text>
+			<text x="335.537109375" y="361" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,722) scale(1,-1)">Entrar no campus</text>
+			<ellipse cx="375.0" cy="324.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="363.75078125" y="329" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,658) scale(1,-1)">UC02</text>
+			<text x="336.3720703125" y="315" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,630) scale(1,-1)">Ativar por convite</text>
+			<ellipse cx="375.0" cy="278.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="363.75078125" y="283" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,566) scale(1,-1)">UC03</text>
+			<text x="334.423828125" y="269" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,538) scale(1,-1)">Recuperar acesso</text>
+			<ellipse cx="375.0" cy="232.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="363.75078125" y="237" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,474) scale(1,-1)">UC04</text>
+			<text x="335.53466796875" y="223" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,446) scale(1,-1)">Usar autenticador</text>
+			<ellipse cx="375.0" cy="186.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="363.75078125" y="191" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,382) scale(1,-1)">UC14</text>
+			<text x="351.93603515625" y="177" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,354) scale(1,-1)">Conversar</text>
+			<ellipse cx="375.0" cy="140.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="363.75078125" y="145" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,290) scale(1,-1)">UC15</text>
+			<text x="339.98046875" y="131" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,262) scale(1,-1)">Ler notificações</text>
+			<ellipse cx="375.0" cy="94.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="363.75078125" y="99" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,198) scale(1,-1)">UC38</text>
+			<text x="336.64794921875" y="85" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,170) scale(1,-1)">Entrar na FaeNet</text>
+			<ellipse cx="375.0" cy="48.0" rx="171.0" ry="20.0" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(93%,95%,98%); fill-rule: evenodd;"/>
+			<text x="363.75078125" y="53" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 8.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,106) scale(1,-1)">UC39</text>
+			<text x="337.75634765625" y="39" style="font-family: Arial, Helvetica, sans-serif; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,78) scale(1,-1)">Executar backup</text>
+			<circle cx="48" cy="288" r="8" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<path d="M 48,280 L 48,254 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 34,270 L 62,270 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 48,254 L 36,238 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 48,254 L 60,238 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="32.7216796875" y="223" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,446) scale(1,-1)">Titular</text>
+			<circle cx="48" cy="108" r="8" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<path d="M 48,100 L 48,74 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 34,90 L 62,90 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 48,74 L 36,58 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 48,74 L 60,58 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="25.4951171875" y="43" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,86) scale(1,-1)">Operador</text>
+			<circle cx="700" cy="338" r="8" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<path d="M 700,330 L 700,304 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 686,320 L 714,320 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 700,304 L 688,288 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 700,304 L 712,288 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="686.10595703125" y="273" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,546) scale(1,-1)">Gmail</text>
+			<circle cx="700" cy="193" r="8" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<path d="M 700,185 L 700,159 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 686,175 L 714,175 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 700,159 L 688,143 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 700,159 L 712,143 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="683.32763671875" y="128" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,256) scale(1,-1)">FaeNet</text>
+			<circle cx="700" cy="78" r="8" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<path d="M 700,70 L 700,44 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 686,60 L 714,60 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 700,44 L 688,28 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 700,44 L 712,28 Z" style="stroke: rgb(6%,9%,15%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="687.49267578125" y="13" style="font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,26) scale(1,-1)">Drive</text>
+		</g>
+	</g>
+</svg>
