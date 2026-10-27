@@ -1,0 +1,31 @@
+@startuml
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 19
+skinparam shadowing false
+skinparam actorStyle awesome
+skinparam usecaseBackgroundColor #DCE8FF
+skinparam usecaseBorderColor #1647D8
+skinparam ArrowColor #182230
+skinparam rectangleBorderColor #1647D8
+actor Aluno as A
+actor "Responsável" as R
+rectangle "FaeHub+" {
+  usecase "Consultar boletim\ne frequência" as U1
+  usecase "Consultar horários\ne enviar atividades" as U2
+  usecase "Registrar notas\ne chamada" as U6
+  usecase "Publicar atividades" as U7
+  usecase "Gerenciar estrutura\ne usuários" as U8
+  usecase "Consultar relatórios" as U9
+}
+actor Professor as P
+actor "Direção" as D
+A -- U1
+A -- U2
+R -- U1
+U6 -- P
+U7 -- P
+U8 -- D
+U9 -- D
+@enduml

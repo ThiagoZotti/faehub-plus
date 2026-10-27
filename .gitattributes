@@ -1,2 +1,5 @@
 # Keep the generated manual byte-for-byte; PDF streams must not use CRLF conversion.
 output/pdf/FaeHub_documentacao_e_manual.pdf binary
+docs/apresentacao/*.pdf binary
+docs/apresentacao/*.pptx binary
+docs/apresentacao/*.zip binary

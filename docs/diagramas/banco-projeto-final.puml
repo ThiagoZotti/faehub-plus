@@ -1,0 +1,58 @@
+@startuml
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 20
+skinparam shadowing false
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #DCE8FF
+skinparam classBorderColor #1647D8
+skinparam ArrowColor #182230
+hide methods
+entity "students" as S {
+  id : PK
+  registration
+}
+entity "enrollments" as E {
+  id : PK
+  student_id : FK
+  class_id : FK
+}
+entity "classes" as C {
+  id : PK
+  code
+}
+entity "class_subjects" as CS {
+  id : PK
+  class_id : FK
+  subject_id : FK
+}
+entity "subjects" as SU {
+  id : PK
+  name
+}
+entity "assessments" as A {
+  id : PK
+  class_subject_id : FK
+  academic_period_id : FK
+}
+entity "academic_periods" as AP {
+  id : PK
+  name
+}
+entity "assessment_scores" as SC {
+  id : PK
+  assessment_id : FK
+  enrollment_id : FK
+  score
+}
+S "1" -- "0..*" E
+E "0..*" -- "1" C
+C "1" -- "0..*" CS
+CS "0..*" -- "1" SU
+CS "1" -- "0..*" A
+A "0..*" -- "1" AP
+A "1" -- "0..*" SC
+E "1" -- "0..*" SC
+@enduml
