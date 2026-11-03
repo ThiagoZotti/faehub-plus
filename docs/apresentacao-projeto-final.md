@@ -1,5 +1,9 @@
 # Apresentação de projeto final: FaeHub+
 
+**Versão atual:** [PowerPoint com os cinco slides do guia](apresentacao/FaeHub-Projeto-Final-3-Perfis.pptx). O material cobre Aluno, Professor e Direção. O roteiro da demonstração ao vivo está nas notas do quinto slide.
+
+## Edição anterior
+
 Integrantes: **Thiago Souza Zotti** e **Jonathan Samuel Martins Tannes**.
 
 Arquivos prontos: [PowerPoint editável](apresentacao/FaeHub-Projeto-Final.pptx), [PDF](apresentacao/FaeHub-Projeto-Final.pdf) e [imagens dos seis slides](apresentacao/FaeHub-Slides-PNG.zip). O PowerPoint inclui notas para os apresentadores. O PDF é uma versão visual dos slides.
