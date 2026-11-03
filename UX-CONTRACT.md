@@ -48,6 +48,8 @@
 - Cadastro escolar e nome de exibição são distintos: nome/matrícula/turma vêm
   do banco. Perfis sem notas ou presenças não recebem os números das demos.
 
+O perfil Responsável está indisponível nesta versão. O login, convites e seletores de público não o oferecem; sessões e acesso federado são revalidados no servidor. Contas e vínculos existentes são preservados.
+
 A interface oculta rotas não autorizadas, mas o servidor sempre revalida sessão, perfil, propriedade e vínculo. Downloads de anexos verificam remetente/destinatário, turma, estudante, professor ou direção.
 
 ### Mensagens e privacidade familiar

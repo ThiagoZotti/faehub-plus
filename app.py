@@ -6,6 +6,7 @@ import secrets
 import hashlib
 import time
 import database as db
+import account_policy
 from io import BytesIO
 from dashboard import student_summary
 from academic import attendance_calendar
@@ -1101,7 +1102,7 @@ def attachment_map(entity_type, entity_ids):
 
 def eligible_message_users(username, role):
     """Return server-authorized message contacts for one account."""
-    users = [user for user in list_users() if user["username"] != username and user["active"]]
+    users = [user for user in list_users() if user["username"] != username and user["active"] and account_policy.role_available(user["role"])]
     if role != "responsavel":
         return users
     linked_ids = {row["student_id"] for row in operations.guardian_students(username)}
@@ -1379,7 +1380,7 @@ def calendario():
                 if event_type not in operations.EVENT_TYPES:
                     raise ValueError("Tipo de evento inválido.")
                 audience = request.form.get("audience", "todos")
-                if audience not in {"todos", "aluno", "professor", "admin", "responsavel", "turma"}:
+                if audience not in {"todos", "aluno", "professor", "admin", "turma"}:
                     raise ValueError("Público inválido.")
                 event_id = operations.save_calendar_event(session["username"], {
                     "title": p1_text("title", 160), "description": p1_text("description", 5000, False),
@@ -1424,7 +1425,7 @@ def notificacoes():
                 operations.mark_notification(request.form.get("id", type=int), session["username"], action == "read", role)
             elif action == "publish" and role == "admin":
                 target = request.form.get("role_target", "todos")
-                if target not in {"todos", "aluno", "professor", "admin", "responsavel"}:
+                if target not in {"todos", "aluno", "professor", "admin"}:
                     raise ValueError("Público da notificação inválido.")
                 operations.create_notification(
                     p1_text("title", 160), p1_text("body", 2000), role_target=target,
@@ -1705,7 +1706,7 @@ def mensagens():
                                if active_thread and active_thread.get("is_group") else [],
                                can_create_group=session.get("role") in {"professor", "admin"})
     return render_template("mensagens.html", messages=get_messages(session["username"]),
-                           users=[u for u in list_users() if u["username"] != session["username"] and u["active"]])
+                           users=eligible)
 
 
 @app.get("/api/mensagens/estado")

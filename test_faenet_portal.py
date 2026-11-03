@@ -32,7 +32,7 @@ class FaeNetPortalTests(unittest.TestCase):
 
     def test_portal_shared_by_all_existing_profiles(self):
         for username, role in [('pablo.sousa','aluno'), ('aline','professor'),
-                               ('gilberto','admin'), ('responsavel.thiago','responsavel')]:
+                               ('gilberto','admin')]:
             with self.subTest(role=role):
                 html = self.client(username,role).get('/faenet')
                 self.assertEqual(html.status_code,200)
@@ -60,6 +60,7 @@ class FaeNetPortalTests(unittest.TestCase):
             with db.connection() as conn:
                 conn.execute("UPDATE users SET active=TRUE WHERE username='pablo.sousa'")
 
+    @patch('account_policy.GUARDIAN_ACCESS_ENABLED', True)
     def test_family_theme_only_changes_on_portal(self):
         client=self.client('responsavel.thiago','responsavel')
         self.assertNotIn('campus-electric view-painel',client.get('/painel').get_data(as_text=True))

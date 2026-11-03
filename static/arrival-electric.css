@@ -31,7 +31,7 @@ body.arrival-electric{margin:0;background:var(--campus-ink);color:var(--campus-t
 .arrival-electric .login-brand-symbol{display:block;width:52px;height:52px}
 .arrival-electric .credential-heading h3{font:800 30px/1.2 var(--font-display);color:var(--campus-text);letter-spacing:-.045em;margin:0 0 10px}
 .arrival-electric .credential-heading p{color:var(--campus-muted);font-size:13px;line-height:1.6}
-.arrival-electric .credential-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:0;margin:0 0 14px;border:0;background:none}
+.arrival-electric .credential-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0;margin:0 0 14px;border:0;background:none}
 .arrival-electric .credential-tabs button{display:flex;flex-direction:column;gap:9px;align-items:center;justify-content:center;min-width:0;min-height:86px;padding:12px 4px;border:1px solid var(--campus-line);border-radius:12px;background:var(--campus-panel);color:var(--campus-muted);font-size:11px}
 .arrival-electric .credential-tabs button span{font-size:22px;color:inherit}
 .arrival-electric .credential-tabs button:hover{color:var(--campus-text);border-color:var(--campus-accent)}
@@ -75,7 +75,7 @@ body.arrival-electric{margin:0;background:var(--campus-ink);color:var(--campus-t
   .arrival-electric .credential-wrap{border:0;border-top:1px solid var(--campus-line);padding:32px 24px 48px;min-height:0}
   .arrival-electric .credential-tabs button{font-size:11px;min-height:78px}.arrival-electric .arrival-options button{font-size:10px;padding:7px 9px}
 }
-@media(max-width:380px){.arrival-electric .credential-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.arrival-electric .credential-tabs button{min-height:64px;flex-direction:row;gap:8px}.arrival-electric .arrival-story h1{font-size:44px}}
+@media(max-width:380px){.arrival-electric .arrival-story h1{font-size:44px}}
 /* Accessibility preferences override legacy decorative transforms. */
 @media(prefers-reduced-motion:reduce){.arrival-electric *,.arrival-electric *::before,.arrival-electric *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media(forced-colors:active){.arrival-electric .credential-tabs button[aria-pressed=true]{outline:2px solid Highlight}.arrival-electric .arrival-story h1 em{-webkit-text-fill-color:CanvasText}.arrival-electric .arrival-scene{display:none}}
@@ -117,6 +117,6 @@ body.arrival-electric{display:block;padding:0;min-height:100dvh;background:var(-
 /* Focus belongs to the whole field, not a second rectangle inside the input. */
 .arrival-electric .field-shell input:is(:focus,:focus-visible){outline:none;box-shadow:none}
 @media(forced-colors:active){.arrival-electric .field-shell:focus-within{outline:2px solid Highlight;outline-offset:2px}}
-@media(max-width:960px){.arrival-electric .credential-wrap{padding:35px 28px}.arrival-electric .arrival-story{padding-inline:28px}.arrival-electric .credential-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.arrival-electric .credential-tabs button{flex-direction:row;gap:8px;min-height:60px}}
-@media(max-width:760px){.arrival-electric .arrival-main{display:block;min-height:100dvh}.arrival-electric .arrival-scene{inset:0 0 auto;height:305px}.arrival-electric .arrival-header{right:0;padding:22px}.arrival-electric .arrival-story{min-height:305px;padding:95px 26px 25px}.arrival-electric .arrival-story h1{font-size:42px;margin:16px 0 12px}.arrival-electric .arrival-pulse{display:none}.arrival-electric .credential-wrap{padding:28px 24px 34px;border-left:0;border-top:1px solid var(--campus-line)}.arrival-electric .credential-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.arrival-electric .credential-heading h3{font-size:24px}}
+@media(max-width:960px){.arrival-electric .credential-wrap{padding:35px 28px}.arrival-electric .arrival-story{padding-inline:28px}.arrival-electric .credential-tabs button{min-height:60px}}
+@media(max-width:760px){.arrival-electric .arrival-main{display:block;min-height:100dvh}.arrival-electric .arrival-scene{inset:0 0 auto;height:305px}.arrival-electric .arrival-header{right:0;padding:22px}.arrival-electric .arrival-story{min-height:305px;padding:95px 26px 25px}.arrival-electric .arrival-story h1{font-size:42px;margin:16px 0 12px}.arrival-electric .arrival-pulse{display:none}.arrival-electric .credential-wrap{padding:28px 24px 34px;border-left:0;border-top:1px solid var(--campus-line)}.arrival-electric .credential-heading h3{font-size:24px}}
 @media(max-width:380px){.arrival-electric .credential-wrap{padding-inline:18px}.arrival-electric .arrival-brand{font-size:23px}.arrival-electric .arrival-story{padding-inline:22px}}

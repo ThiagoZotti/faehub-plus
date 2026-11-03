@@ -109,14 +109,24 @@ class FaeNetSsoTests(unittest.TestCase):
             self.assertIn(b'/sso/faenet/authorize',result.data)
             self.assertTrue(self.client.get('/sso/faenet/authorize').location.startswith(sso.CALLBACK+'?'))
 
-    def test_all_four_verified_roles_are_eligible(self):
-        for role in ('aluno','professor','diretor','responsavel'):
+    def test_hidden_guardian_role_revokes_a_previous_federated_token(self):
+        with db.connection() as conn:
+            conn.execute("INSERT INTO account_roles(username,role) VALUES('thiago.zotti','responsavel')")
+        with patch('account_policy.GUARDIAN_ACCESS_ENABLED', True):
+            with self.client.session_transaction() as session:
+                session.update(username='thiago.zotti', role='responsavel', auth_version=0, mfa_verified=True)
+            response = self.client.get('/sso/faenet/authorize', query_string=self.args)
+            code = parse_qs(urlsplit(response.location).query)['code'][0]
+            token = self.exchange(code).json['access_token']
+        response = self.client.post('/sso/faenet/introspect', data=dict(token=token), headers=self.headers)
+        self.assertFalse(response.json['active'])
+
+    def test_available_verified_roles_are_eligible(self):
+        for role in ('aluno','professor','diretor'):
             with self.subTest(role=role):
                 with db.connection() as conn:
                     conn.execute("DELETE FROM account_roles WHERE username='thiago.zotti'")
-                    conn.execute("UPDATE users SET role=? WHERE username='thiago.zotti'",('aluno' if role=='responsavel' else role,))
-                    if role=='responsavel':
-                        conn.execute("INSERT INTO account_roles(username,role) VALUES('thiago.zotti',?)",(role,))
+                    conn.execute("UPDATE users SET role=? WHERE username='thiago.zotti'",(role,))
                 with self.client.session_transaction() as session:
                     session.update(username='thiago.zotti',role='admin' if role=='diretor' else role,auth_version=0,mfa_verified=True)
                 code=parse_qs(urlsplit(self.client.get('/sso/faenet/authorize',query_string=self.args).location).query)['code'][0]

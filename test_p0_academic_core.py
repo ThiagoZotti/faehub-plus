@@ -66,6 +66,7 @@ class AcademicCoreTests(unittest.TestCase):
         scores = [score["score"] for year in rows for score in year["subjects"] if score["code"] == "LP3"]
         self.assertEqual(scores, [8.0, 9.0])
 
+    @patch('account_policy.GUARDIAN_ACCESS_ENABLED', True)
     def test_student_and_guardian_history_scope(self):
         self.login("thiago.zotti", "aluno", "23081")
         self.assertEqual(self.client.get("/historico").status_code, 200)

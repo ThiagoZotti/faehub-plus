@@ -44,6 +44,7 @@ class P1OperationsTests(unittest.TestCase):
                 **extra,
             )
 
+    @patch('account_policy.GUARDIAN_ACCESS_ENABLED', True)
     def test_all_p1_pages_render_for_authorized_roles(self):
         self.login("gilberto", "admin")
         for path in ("secretaria", "coordenacao", "periodos", "calendario", "notificacoes", "diario", "relatorios"):
@@ -52,6 +53,7 @@ class P1OperationsTests(unittest.TestCase):
         for path in ("painel", "secretaria", "calendario", "notificacoes", "mensagens"):
             self.assertEqual(self.client.get("/" + path).status_code, 200, path)
 
+    @patch('account_policy.GUARDIAN_ACCESS_ENABLED', True)
     def test_guardian_authentication_and_empty_document_scope(self):
         account = db.authenticate("responsavel.thiago", "responsavel@123")
         self.assertEqual(account["role"], "responsavel")
@@ -80,6 +82,7 @@ class P1OperationsTests(unittest.TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(operations.list_diary_entries("aline")[0]["status"], "validated")
 
+    @patch('account_policy.GUARDIAN_ACCESS_ENABLED', True)
     def test_document_protocol_and_guardian_scope(self):
         self.login("responsavel.thiago", "responsavel")
         response = self.client.post("/secretaria", data={

@@ -18,6 +18,7 @@ from urllib.error import URLError, HTTPError
 from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 import database as db
+import account_policy
 import account_ownership as ownership
 import gmail_mail
 
@@ -156,6 +157,8 @@ def authorize_invitation_actor(actor, action, *, username=None, email=None, invi
             target = conn.execute('SELECT username,email FROM account_invitations WHERE id=?', (invitation_id,)).fetchone()
             if target:
                 username, email = target['username'], target['email']
+        if username and not account_policy.role_available(effective_role(conn, username)):
+            raise ValueError('Este perfil está indisponível.')
         ownership.protect_account(conn, actor, username, action, email=(email or '').strip().lower())
         user = conn.execute('''SELECT u.active,COALESCE(ar.role,u.role) role,ai.verified_at
                                FROM users u LEFT JOIN account_roles ar ON ar.username=u.username
@@ -180,6 +183,13 @@ def authorize_invitation_actor(actor, action, *, username=None, email=None, invi
         normalize_email(allowed)
 
 
+def effective_role(conn, username):
+    row = conn.execute('''SELECT COALESCE(ar.role,u.role) role FROM users u
+                          LEFT JOIN account_roles ar ON ar.username=u.username
+                          WHERE u.username=?''', (username,)).fetchone()
+    return row['role'] if row else None
+
+
 def create_invitation(actor, username, email, *, name=None, role=None, student_id=None, roster=()):
     email = normalize_email(email)
     username = username.strip().lower()
@@ -188,6 +198,8 @@ def create_invitation(actor, username, email, *, name=None, role=None, student_i
     with db.connection() as conn:
         ownership.protect_account(conn, actor, username, 'invite', email=email)
         existing = conn.execute('SELECT * FROM users WHERE username=?', (username,)).fetchone()
+        if not account_policy.role_available(effective_role(conn, username) if existing else role):
+            raise ValueError('Este perfil está indisponível.')
         identity = conn.execute('SELECT * FROM account_identities WHERE username=?', (username,)).fetchone()
         if identity and identity['verified_at']:
             raise ValueError('Esta conta já foi ativada. O titular deve usar a recuperação de senha.')
@@ -238,6 +250,9 @@ def deliver_invitation(actor, invitation_id):
     digest = hashlib.sha256(token.encode()).hexdigest()
     with db.connection() as conn:
         ownership.protect_invitation(conn, actor, invitation_id, 'send_invite')
+        target = conn.execute('SELECT username FROM account_invitations WHERE id=?', (invitation_id,)).fetchone()
+        if target and not account_policy.role_available(effective_role(conn, target['username'])):
+            raise ValueError('Este perfil está indisponível.')
         # Atomic cooldown across workers. No provider call while holding a lock.
         row = conn.execute('''UPDATE account_invitations SET status='sending',token_hash=?,
                               expires_at=?,last_sent_at=? WHERE id=? AND status IN ('draft','failed','sent','sending')
@@ -269,7 +284,7 @@ def invitation_by_digest(digest):
                               LEFT JOIN account_roles ar ON ar.username=u.username
                               WHERE i.token_hash=? AND i.status='sent' AND i.expires_at>?''',
                            (digest, int(time.time()))).fetchone()
-        if row:
+        if row and account_policy.role_available(row['role']):
             try:
                 ownership.protect_activation(conn, row['username'], row['email'])
             except ValueError:
@@ -301,6 +316,8 @@ def complete_invitation(digest, password, confirmation, display_name=None):
         if not identity or identity['email'] != row['email'] or identity['verified_at']:
             conn.rollback()
             raise ValueError('O cadastro mudou. Peça um novo convite à escola.')
+        if not account_policy.role_available(effective_role(conn, row['username'])):
+            raise ValueError('Este perfil está indisponível.')
         ownership.protect_activation(conn, row['username'], row['email'])
         conn.execute('UPDATE account_identities SET verified_at=? WHERE username=?', (int(time.time()), row['username']))
         conn.execute('UPDATE users SET active=TRUE,password_hash=?,name=? WHERE username=?', (hashed_password, name, row['username']))

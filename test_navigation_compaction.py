@@ -146,6 +146,7 @@ class NavigationCompactionTests(unittest.TestCase):
         self.assertNotIn('arrival-bright.css', public_login)
         self.assertIn('campus-electric.css', public_login)
 
+    @patch('account_policy.GUARDIAN_ACCESS_ENABLED', True)
     def test_guardian_modules_share_electric_but_dashboard_stays_approved(self):
         self.login('responsavel.thiago','responsavel')
         for route in ('/painel','/secretaria','/calendario','/notificacoes','/mensagens'):

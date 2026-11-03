@@ -6,15 +6,18 @@ from datetime import datetime, timedelta, timezone
 from flask import current_app
 from werkzeug.security import generate_password_hash
 import database as db
+import account_policy
 import account_enrollment as enrollment
 
 NEUTRAL = 'Se este e-mail estiver confirmado em uma conta ativa, você receberá as instruções. Confira também o spam.'
 
 
 def verified_account(conn, email):
-    return conn.execute('''SELECT u.username FROM users u
+    row = conn.execute('''SELECT u.username,COALESCE(ar.role,u.role) role FROM users u
+        LEFT JOIN account_roles ar ON ar.username=u.username
         JOIN account_identities ai ON ai.username=u.username
         WHERE ai.email=? AND ai.verified_at IS NOT NULL AND ai.verified_at<>0 AND u.active=TRUE''', (email,)).fetchone()
+    return row if row and account_policy.role_available(row['role']) else None
 
 
 def request_recovery(email, purpose, remote):

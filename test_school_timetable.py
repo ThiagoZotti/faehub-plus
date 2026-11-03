@@ -192,6 +192,7 @@ class SchoolTimetableTests(unittest.TestCase):
         self.assertEqual(self.client.get(path).status_code, 403)
         self.assertEqual(self.client.get('/horario').status_code, 200)
 
+    @patch('account_policy.GUARDIAN_ACCESS_ENABLED', True)
     def test_new_registration_and_guardian_are_not_limited_to_demo_profiles(self):
         with db.connection() as conn:
             sid = conn.execute("INSERT INTO students(registration,full_name,active) VALUES('new-900','Nome Escolar Real',TRUE) RETURNING id").fetchone()['id']

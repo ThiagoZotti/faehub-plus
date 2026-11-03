@@ -7,6 +7,7 @@ from dashboard import CAMPUS_TZ
 from flask import request, session, render_template, redirect, url_for, flash, Response
 from werkzeug.security import generate_password_hash
 import database as db
+import account_policy
 import p1_operations as operations
 import account_enrollment as enrollment
 import account_ownership as ownership
@@ -56,6 +57,7 @@ def account_access(username):
         result = dict(row) if row else None
         if result:
             result['is_owner'] = bool(result['is_owner'])
+            result['active'] = bool(result['active']) and account_policy.role_available(result['role'])
     return result
 
 
@@ -200,7 +202,7 @@ def manage(section, roster, subjects):
             if not db.is_integrity_error(exc):
                 raise
             error='Cadastro já existente ou vínculo inválido. Confira os dados.'
-    users=db.list_users() if section in ('painel','usuarios','turmas') else []
+    users=[u for u in db.list_users() if account_policy.role_available(u['role'])] if section in ('painel','usuarios','turmas') else []
     with db.connection() as conn:
         assignments=[dict(r) for r in conn.execute('SELECT a.*,u.name FROM teacher_assignments a JOIN users u ON u.username=a.teacher ORDER BY class_name,discipline')] if section in ('painel','turmas') else []
         metadata={r['class_name']:dict(r) for r in conn.execute('SELECT * FROM class_settings')} if section=='turmas' else {}

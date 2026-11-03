@@ -188,7 +188,7 @@
   if (identity) {
     function student() {
       const field = document.getElementById("studentLink");
-      field.hidden = !["aluno", "responsavel"].includes(identity.value);
+      field.hidden = identity.value !== "aluno";
       field.querySelector("select").required = !field.hidden;
     }
     identity.addEventListener("change", student);

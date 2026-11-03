@@ -4,6 +4,8 @@ Edição de 22 de outubro de 2026. O material foi produzido por leitura e navega
 da interface, com 55 capturas de uma cópia local descartável. Não foram alterados
 registros de produção. Dados de demonstração não representam a situação da escola.
 
+> Atualização de 03/11/2026: o perfil Responsável foi ocultado e está sem acesso. As referências a esse perfil no PDF e nas capturas descrevem a edição anterior, não a versão atual.
+
 ## Entregas
 
 - [PDF ilustrado](../../output/pdf/FaeHub_documentacao_e_manual.pdf)

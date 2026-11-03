@@ -38,7 +38,7 @@ class IdentitySocialTests(unittest.TestCase):
 
     @patch('app.log_action')
     @patch('app.send_message')
-    @patch('app.list_users',return_value=[{'username':'aline','active':1}])
+    @patch('app.list_users',return_value=[{'username':'aline','role':'professor','active':1}])
     def test_send_validation(self, users, send, log):
         valid={'token':'test-token','recipient':'aline','subject':'Dúvida','body':'Olá!'}
         for update in [{'token':''},{'recipient':'unknown'},{'body':' '},{'subject':'x'*161}]:
@@ -68,6 +68,7 @@ class IdentitySocialTests(unittest.TestCase):
         {'username': 'aline', 'name': 'Profa. Aline', 'role': 'professor', 'student_id': None, 'active': 1},
         {'username': 'gilberto', 'name': 'Gilberto', 'role': 'diretor', 'student_id': None, 'active': 1},
     ])
+    @patch('account_policy.GUARDIAN_ACCESS_ENABLED', True)
     def test_guardian_only_lists_linked_student_and_staff(self, users, links, messages):
         with self.client.session_transaction() as session:
             session.update(username='responsavel.thiago', role='responsavel',
@@ -87,6 +88,7 @@ class IdentitySocialTests(unittest.TestCase):
         {'username': 'thiago.zotti', 'name': 'Thiago', 'role': 'aluno', 'student_id': '23081', 'active': 1},
         {'username': 'pablo.sousa', 'name': 'Pablo', 'role': 'aluno', 'student_id': '23104', 'active': 1},
     ])
+    @patch('account_policy.GUARDIAN_ACCESS_ENABLED', True)
     def test_guardian_cannot_post_to_unlinked_student(self, users, links, messages, send, log):
         with self.client.session_transaction() as session:
             session.update(username='responsavel.thiago', role='responsavel',

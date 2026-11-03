@@ -134,6 +134,7 @@ class EnrollmentTests(unittest.TestCase):
         with self.admin.session_transaction() as s:s.update(username='aline',role='professor',auth_version=access_version('aline'))
         self.assertEqual(self.admin.post('/usuarios',data=dict(token='admin-csrf',action='invite')).status_code,403)
 
+    @patch('account_policy.GUARDIAN_ACCESS_ENABLED', True)
     def test_guardian_link_and_student_uniqueness(self):
         _,_,digest=self.delivered('real.guardian','guardian@example.com','responsavel','23081')
         enrollment.complete_invitation(digest,'a very secure family phrase','a very secure family phrase')

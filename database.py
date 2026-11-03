@@ -15,6 +15,7 @@ from pathlib import Path
 from flask import g, has_request_context
 
 from werkzeug.security import check_password_hash, generate_password_hash
+import account_policy
 from school_roster import GENERIC_ACCOUNTS, LEGACY_STUDENT_IDS, canonical_student_id
 
 
@@ -592,7 +593,7 @@ def authenticate(username, password):
                  AND u.active = TRUE""", (username, username)
         ).fetchone()
     valid_password = check_password_hash(row["password_hash"] if row else DUMMY_PASSWORD_HASH, password)
-    if not row or not valid_password:
+    if not row or not valid_password or not account_policy.role_available(row["effective_role"]):
         return None
     account = dict(row)
     account["role"] = account.pop("effective_role")

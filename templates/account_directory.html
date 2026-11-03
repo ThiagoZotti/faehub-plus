@@ -10,7 +10,7 @@
 <div class="director-toolbar">
   <label for="directorySearch">Buscar pessoa<input id="directorySearch" type="search" data-directory-search placeholder="Nome, usuário, perfil ou matrícula…"></label>
   <button class="director-secondary" type="button" data-directory-clear hidden aria-label="Limpar busca">Limpar</button>
-  <label for="directoryRole">Perfil<select id="directoryRole" data-directory-role><option value="">Todos os perfis</option><option value="aluno">Aluno</option><option value="professor">Professor</option><option value="diretor">Diretor</option><option value="responsavel">Responsável pelo aluno</option><option value="proprietario">Proprietário do sistema</option></select></label>
+  <label for="directoryRole">Perfil<select id="directoryRole" data-directory-role><option value="">Todos os perfis</option><option value="aluno">Aluno</option><option value="professor">Professor</option><option value="diretor">Diretor</option><option value="proprietario">Proprietário do sistema</option></select></label>
   <button class="director-primary" type="button" data-open-director="newIdentity" aria-haspopup="dialog" aria-controls="newIdentity">＋ Preparar convite</button>
 </div>
 <p data-directory-count aria-live="polite">{{ users|length }} contas</p>
@@ -66,7 +66,7 @@
     <label>Identificação interna<input name="username" pattern="[a-z0-9_.\-]{3,50}" maxlength="50" required autocomplete="off"></label>
     <p>Use uma identificação estável, como nome.sobrenome. O titular poderá entrar com o e-mail confirmado.</p>
     <label>E-mail do titular<input name="email" type="email" maxlength="254" autocomplete="off" required></label>
-    <label for="identityRole">Perfil</label><select name="role" id="identityRole"><option value="aluno">Aluno</option><option value="professor">Professor</option><option value="diretor">Diretor</option><option value="responsavel">Responsável pelo aluno</option></select>
+    <label for="identityRole">Perfil</label><select name="role" id="identityRole"><option value="aluno">Aluno</option><option value="professor">Professor</option><option value="diretor">Diretor</option></select>
     <div id="studentLink"><label for="invitationStudent">Aluno da lista</label><select name="student_id" id="invitationStudent"><option value="">Selecione a matrícula</option>{% for s in roster %}<option value="{{ s.id }}">{{ s.nome }} · {{ s.id }} · {{ s.turma }}</option>{% endfor %}</select></div>
     <label>Sua senha atual<input name="current_password" type="password" maxlength="128" autocomplete="current-password" required></label>
     <p>A conta ficará bloqueada até a ativação. Para responsáveis, selecione somente o aluno cujo vínculo foi confirmado pela escola.</p>

@@ -32,7 +32,6 @@ class ModuleSystemTests(unittest.TestCase):
             ('thiago.zotti','aluno',('boletim','agenda','horario','exercicios','comunicados','secretaria','estagios','mensagens','frequencia','calendario','historico','conta/seguranca')),
             ('aline','professor',('turmas','notas','chamada','diario','exercicios','mensagens','avisos','estagios','calendario','notificacoes','conta/seguranca')),
             ('gilberto','admin',('usuarios','estrutura','secretaria','coordenacao','relatorios','mensagens','periodos','calendario','notificacoes','configuracoes','diario','historico','conta/seguranca')),
-            ('responsavel.thiago','responsavel',('secretaria','calendario','notificacoes','mensagens','historico','conta/seguranca')),
         ]
         for username,role,paths in profiles:
             client=self.login(username,role)
@@ -45,7 +44,7 @@ class ModuleSystemTests(unittest.TestCase):
                     self.assertIn(b'campus-electric',result.data)
 
     def test_approved_dashboards_and_portal_are_not_recomposed(self):
-        for username,role in [('thiago.zotti','aluno'),('aline','professor'),('gilberto','admin'),('responsavel.thiago','responsavel')]:
+        for username,role in [('thiago.zotti','aluno'),('aline','professor'),('gilberto','admin')]:
             client=self.login(username,role)
             for path in ('/painel','/faenet'):
                 result=client.get(path)
