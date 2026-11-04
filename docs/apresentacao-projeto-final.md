@@ -1,6 +1,6 @@
 # Apresentação de projeto final: FaeHub+
 
-**Versão atual** · [PowerPoint animado com os cinco slides do guia](apresentacao/FaeHub-Projeto-Final-Animado-2026.pptx). O material cobre Aluno, Professor e Direção. As transições avançam por clique no modo Apresentação. O roteiro da demonstração ao vivo está nas notas do quinto slide.
+**Versão atual** · [PowerPoint com os cinco slides do guia](apresentacao/FaeHub-Projeto-Final-Editorial.pptx). O material cobre Aluno, Professor e Direção. O quinto slide usa a imagem original do diagrama físico da seção 5.3 da [documentação do projeto](projeto-final/Projeto_Final_FaeHub_com_manual.docx). As transições avançam por clique e o roteiro da demonstração ao vivo está nas notas do último slide.
 
 ## Edição anterior
 
