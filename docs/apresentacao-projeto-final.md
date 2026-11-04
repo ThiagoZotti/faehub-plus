@@ -1,6 +1,6 @@
 # Apresentação de projeto final: FaeHub+
 
-**Versão atual** · [PowerPoint com os cinco slides do guia](apresentacao/FaeHub-Projeto-Final-Editorial.pptx). O material cobre Aluno, Professor e Direção. O quinto slide usa a imagem original do diagrama físico da seção 5.3 da [documentação do projeto](projeto-final/Projeto_Final_FaeHub_com_manual.docx). As transições avançam por clique e o roteiro da demonstração ao vivo está nas notas do último slide.
+**Versão atual** · [PowerPoint animado com os cinco slides do guia](apresentacao/FaeHub-Projeto-Final-Keynote.pptx). Os slides 4 e 5 usam as figuras originais de casos de uso e do banco de dados da [documentação do projeto](projeto-final/Projeto_Final_FaeHub_com_manual.docx). No modo Apresentação, os três objetivos específicos são revelados um por clique. O roteiro da demonstração ao vivo está nas notas do último slide.
 
 ## Edição anterior
 
