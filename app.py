@@ -223,10 +223,10 @@ def initials(nome):
     return "".join(p[0] for p in partes[:2]).upper()
 
 
-def student_profile(student_id):
+def student_identity(student_id):
     """School identity comes from registrations, never name matching or demos."""
     sid = canonical_student_id(student_id)
-    cache = getattr(g, 'student_profiles', {}) if has_request_context() else {}
+    cache = getattr(g, 'student_identities', {}) if has_request_context() else {}
     if sid in cache:
         return cache[sid]
     with db.connection() as conn:
@@ -235,13 +235,29 @@ def student_profile(student_id):
              LEFT JOIN classes c ON c.id=e.class_id
              LEFT JOIN academic_years y ON y.id=c.academic_year_id
              WHERE s.registration=? ORDER BY e.id DESC LIMIT 1""", (sid,)).fetchone()
+    result = dict(nome=student['full_name'] if student else 'Estudante', matricula=sid,
+                  turma=(student['class_name'] or '') if student else '')
+    if has_request_context():
+        cache[sid] = result
+        g.student_identities = cache
+    return result
+
+
+def current_student_identity():
+    return student_identity(session['aluno_id'])
+
+
+def student_profile(student_id):
+    sid = canonical_student_id(student_id)
+    cache = getattr(g, 'student_profiles', {}) if has_request_context() else {}
+    if sid in cache:
+        return cache[sid]
+    identity = student_identity(sid)
     grades = []
     for grade in load_grades(student_id=sid):
         media = round((grade['n1'] + grade['n2']) / 2, 2)
         grades.append(dict(disciplina=grade['discipline'], n1=grade['n1'], n2=grade['n2'], media=media, situacao=_situacao(media)))
-    result = dict(nome=student['full_name'] if student else 'Estudante', matricula=sid,
-                  turma=student['class_name'] or '' if student else '', grades=grades,
-                  frequencia=0, faltas=0, aulas_dadas=0)
+    result = dict(identity, grades=grades, frequencia=0, faltas=0, aulas_dadas=0)
     records=current_student_attendance(sid)
     if records:
         absent=sum(record['status']=='ausente' for record in records)
@@ -289,7 +305,8 @@ def inject_shell():
     role = session.get("role")
     if not role:
         return {}
-    nome = session.get("display_name") or (current_aluno()["nome"] if role == "aluno" else PROFILE_FALLBACKS[role])
+    identity = current_student_identity() if role == "aluno" else None
+    nome = session.get("display_name") or (identity["nome"] if identity else PROFILE_FALLBACKS[role])
     cached_notifications = getattr(g, 'notification_cache', {}).get((session['username'], role))
     notification_unread = (
         sum(not item['is_read'] and not (role == 'aluno' and item.get('category') == 'mensagem')
@@ -318,7 +335,7 @@ def inject_shell():
         "nav_more_current": any(item[0] == current_view for item in nav_more),
         "profile_nome": nome,
         "profile_iniciais": initials(nome),
-        "profile_turma": current_aluno()["turma"] if role == "aluno" else "",
+        "profile_turma": identity["turma"] if identity else "",
         "profile_photo_url": url_for("foto_perfil", v=session["profile_photo_revision"]) if session["profile_photo_revision"] else "",
         "profile_token": session["profile_token"],
         "current_view": current_view,
@@ -757,7 +774,7 @@ def agenda():
 def horario():
     if session.get("role") != "aluno":
         return redirect(url_for("painel"))
-    aluno = current_aluno()
+    aluno = current_student_identity()
     d = dict(aluno, schedule=school_timetable.grid(school_timetable.slots(student_id=aluno['matricula'])))
     from dashboard import upcoming_lessons
     upcoming = upcoming_lessons(d['schedule'])
@@ -784,7 +801,7 @@ def faenet():
 def avisos():
     role = session.get("role")
     if role == "aluno":
-        return render_template("aluno_avisos.html", avisos=student_notices(current_aluno()['turma'],[]), username=session['username'])
+        return render_template("aluno_avisos.html", avisos=student_notices(current_student_identity()['turma'],[]), username=session['username'])
     if role == "professor":
         return studio('avisos')
     return redirect(url_for("painel"))
@@ -798,7 +815,7 @@ def comunicados():
         return redirect(url_for("notificacoes"))
     error = None
     username = session["username"]
-    notices = student_notices(current_aluno()["turma"], [])
+    notices = student_notices(current_student_identity()["turma"], [])
     notifications = [
         item for item in request_notifications(username, "aluno")
         if item.get("category") != "mensagem"
@@ -1355,10 +1372,10 @@ def periodos():
 @login_required("calendario")
 def calendario():
     role = session.get("role")
-    class_name = current_aluno()["turma"] if role == "aluno" else ""
+    class_name = current_student_identity()["turma"] if role == "aluno" else ""
     if role == "responsavel":
         linked = operations.guardian_students(session["username"])
-        profile = student_profile(linked[0]["student_id"]) if linked else {}
+        profile = student_identity(linked[0]["student_id"]) if linked else {}
         class_name = profile.get("turma", "")
     error = None
     if request.method == "POST":
@@ -1503,7 +1520,7 @@ def baixar_anexo(attachment_id):
             allowed = allowed or bool(entity and not entity["deleted_at"] and (counterpart in permitted or group_allowed))
         elif attachment["entity_type"] == "exercise":
             entity = conn.execute("SELECT teacher,class_name FROM exercises WHERE id=?", (attachment["entity_id"],)).fetchone()
-            allowed = allowed or bool(entity and session.get("role") == "aluno" and current_aluno()["turma"] == entity["class_name"])
+            allowed = allowed or bool(entity and session.get("role") == "aluno" and current_student_identity()["turma"] == entity["class_name"])
         else:
             entity = conn.execute(
                 """SELECT s.student,e.teacher FROM submissions s JOIN exercises e ON e.id=s.exercise_id WHERE s.id=?""",
@@ -1777,7 +1794,7 @@ def estagios():
         raw_items = get_internships(teacher=session["username"], include_archived=True)
     else:
         raw_items = get_internships(
-            class_name=current_aluno()["turma"], active_on=today.isoformat()
+            class_name=current_student_identity()["turma"], active_on=today.isoformat()
         )
     items = [present_internship(item, today) for item in raw_items]
     open_items = [item for item in items if not item["archived"] and item["days_left"] >= 0]
@@ -1823,7 +1840,8 @@ def exercicios():
             except ValueError as exc:
                 flash(str(exc))
                 return redirect(url_for("exercicios"))
-            allowed = {e['id'] for e in get_exercises() if e['class_name'] == current_aluno()['turma']}
+            class_name = current_student_identity()['turma']
+            allowed = {e['id'] for e in get_exercises() if e['class_name'] == class_name}
             if exercise_id not in allowed or (not answer and not validated) or len(answer) > 20000:
                 flash("Entrega inválida. Escreva uma resposta ou envie um anexo permitido.")
                 return redirect(url_for("exercicios"))
@@ -1837,7 +1855,8 @@ def exercicios():
         import secrets
         from dashboard import CAMPUS_TZ, datetime
         session.setdefault('exercise_token', secrets.token_hex(24))
-        exercises = [e for e in get_exercises() if e['class_name'] == current_aluno()['turma']]
+        class_name = current_student_identity()['turma']
+        exercises = [e for e in get_exercises() if e['class_name'] == class_name]
         exercise_filter = request.args.get("status", "all")
         if exercise_filter not in {"all", "pending", "done"}:
             exercise_filter = "all"

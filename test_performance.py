@@ -5,6 +5,20 @@ from app import app
 import database
 
 class PerformanceTests(unittest.TestCase):
+    def test_student_navigation_does_not_query_unrelated_academic_records(self):
+        client = app.test_client()
+        with client.session_transaction() as session:
+            session.update(username='thiago.zotti', role='aluno', aluno_id='23081')
+
+        with patch('app.load_grades') as load_grades, patch('app.student_attendance') as attendance:
+            for path in ('/horario', '/comunicados', '/faenet'):
+                with self.subTest(path=path):
+                    response = client.get(path)
+                    self.assertEqual(response.status_code, 200)
+                    self.assertIn('Thiago Zotti', response.get_data(as_text=True))
+            load_grades.assert_not_called()
+            attendance.assert_not_called()
+
     def test_one_connection_per_request_and_closed_afterwards(self):
         client=app.test_client()
         with client.session_transaction() as s:s.update(username='gilberto',role='admin')
